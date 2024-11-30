@@ -1,0 +1,41 @@
+const validate = require("validator");
+const db = require("../config/DBmanager");
+
+const validateRegister = async (req, res, next) => {
+  const { email, Fname, Lname, password, PhoneNum } = req.body;
+  if (!email || !Fname || !Lname || !password || !PhoneNum) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  try {
+    const query = `SELECT * FROM "User" WHERE "email" = $1`;
+    const params = [email];
+    const result = await db.query(query, params);
+    if (result.rows.length > 0) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+  } catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  if (!validate.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+  if (!validate.isAlpha(Fname) || !validate.isAlpha(Lname)) {
+    return res
+      .status(400)
+      .json({ message: "First name and last name must be alphabets" });
+  }
+  if (!validate.isMobilePhone(PhoneNum)) {
+    return res.status(400).json({ message: "Invalid phone number" });
+  }
+  if (!validate.isStrongPassword(password)) {
+    return res.status(400).json({
+      message:
+        "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+    });
+  }
+  next();
+};
+module.exports = {
+  validateRegister,
+};
