@@ -1,10 +1,15 @@
 const { Pool } = require("pg");
 
 const pool = new Pool({
-  connectionString: process.env.connectionString,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  //   connectionString: process.env.connectionString,
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  host: "localhost",
+  port: 5432,
+  user: "postgres",
+  password: "1234",
+  database: "Db project",
 });
 
 const connect = async () => {
@@ -22,6 +27,7 @@ const query = async (text, params) => {
     return result;
   } catch (error) {
     console.log("Error executing query", error);
+    throw error;
   }
 };
 const testQuery = async () => {
