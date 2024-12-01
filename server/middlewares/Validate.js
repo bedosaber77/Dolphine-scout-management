@@ -61,8 +61,20 @@ const validateAchivement = (req, res, next) => {
   next();
 };
 
+const validateLocation = (req, res, next) => {
+  const { name, link } = req.body;
+  if (!name) {
+    return res.status(400).json({ message: "Location name is required" });
+  }
+  if (link && !validate.isURL(link)) {
+    return res.status(400).json({ message: "Invalid location" });
+  }
+  next();
+};
+
 module.exports = {
   validateRegister,
   validateLogin,
   validateAchivement,
+  validateLocation,
 };
