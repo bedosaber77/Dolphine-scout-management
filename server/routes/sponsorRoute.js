@@ -1,6 +1,6 @@
 const express = require("express");
 const Router = express.Router();
-const { validateSponsor } = require("../middlewares/Validate");
+const { validateSponsor, validateSponsorUpdate } = require("../middlewares/Validate");
 const sponsorController = require("../controllers/sponsorController");
 
 Router.route("/")
@@ -9,7 +9,7 @@ Router.route("/")
 
 Router.route("/:sponsor_id")
     .get(sponsorController.getSponsor)
-    .put(validateSponsor, sponsorController.updateSponsor)
+    .put(validateSponsorUpdate, sponsorController.updateSponsor)
     .delete(sponsorController.deleteSponsor);
 
 module.exports = Router;

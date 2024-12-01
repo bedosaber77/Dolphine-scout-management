@@ -19,7 +19,7 @@ module.exports.getTransaction = async (req, res) => {
         const params = [transaction_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Transaction not found" });
         }
         return res.json(result.rows[0]);
@@ -51,13 +51,19 @@ module.exports.addTransaction = async (req, res) => {
 
 module.exports.updateTransaction = async (req, res) => {
     const { transaction_id } = req.params;
-    const { amount, date, purpose, type, method, status, sponsor_id, leader_id } = req.body;
+    const { amount, date, purpose, method, status, sponsor_id, leader_id } = req.body;
+    let type;
+    if (sponsor_id)
+        type = "Deposit";
+    else
+        type = "Withdraw";
+    
     try {
         const query = `UPDATE "Transaction" SET "Amount" = $1, "Tdate" = $2, "Purpose" = $3, "TransactionType" = $4, "PaymentMethod" = $5, "Status" = $6, "Sponsor_ID" = $7, "ScoutLeader_ID" = $8 WHERE "Transaction_ID" = $9 RETURNING *`;
         const params = [amount, date, purpose, type, method, status, sponsor_id, leader_id, transaction_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Transaction not found" });
         }
         return res.json({ message: "Transaction updated successfully", Transaction: result[0] });

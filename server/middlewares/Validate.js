@@ -189,8 +189,8 @@ const validateMedia = async (req, res, next) => {
 };
 
 const validateSponsor = async (req, res, next) => {
-  const { Fname, Lname, email } = req.body;
-  if (!Fname || !Lname) {
+  const { fName, lName, email } = req.body;
+  if (!fName || !lName) {
     return res.status(400).json({ message: "First and last names are required" });
   }
 
@@ -201,6 +201,33 @@ const validateSponsor = async (req, res, next) => {
     try {
       const query = `SELECT * FROM "Sponsor" WHERE "Email" = $1`;
       const params = [email];
+      const result = await db.query(query, params);
+      if (result.rows.length > 0) {
+        return res.status(409).json({ message: "Email already exists" });
+      }
+    }
+    catch (error) {
+      console.log("Error executing query", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  next();
+};
+
+const validateSponsorUpdate = async (req, res, next) => {
+  const { fName, lName, email } = req.body;
+  const { sponsor_id } = req.params
+  if (!fName || !lName) {
+    return res.status(400).json({ message: "First and last names are required" });
+  }
+
+  if (email) {
+    if (!validate.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid Email" });
+    }
+    try {
+      const query = `SELECT * FROM "Sponsor" WHERE "Email" = $1 AND "Sponsor_ID" != $2`;
+      const params = [email, sponsor_id];
       const result = await db.query(query, params);
       if (result.rows.length > 0) {
         return res.status(409).json({ message: "Email already exists" });
@@ -228,7 +255,7 @@ const validateTransaction = async (req, res, next) => {
   }
 
   const allowedMethods = ['Cash', 'Visa'];
-  if (!allowedMethods.includes(type)) {
+  if (!allowedMethods.includes(method)) {
     return res.status(400).json({ message: `Type must be one of "Cash", "Visa"` });
   }
 
@@ -287,6 +314,7 @@ module.exports = {
   validateAnnouncement,
   validateEquipment,
   validateSponsor,
+  validateSponsorUpdate,
   validateMedia,
   validateTransaction,
   validateTransactionStatus,

@@ -19,7 +19,7 @@ module.exports.getAnnouncement = async (req, res) => {
         const params = [announcement_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Announcement not found" });
         }
         return res.json(result.rows[0]);
@@ -30,10 +30,10 @@ module.exports.getAnnouncement = async (req, res) => {
 };
 
 module.exports.addAnnouncement = async (req, res) => {
-    const { content, date, priority, visibility, leader_ID } = req.body;
+    const { content, date, priority, visibility, leader_id } = req.body;
     try {
-        const query = `INSERT INTO "Announcement" ("Content", "CreateDate", "Priority", "Visibility", "ScoutLeader_ID") VALUES ($1, $2, $3, $4, $5) RETURNING *`; // return inserted Announcement
-        const params = [content, date, priority, visibility, leader_ID];
+        const query = `INSERT INTO "Announcement" ("Content", "CreateDate", "Priority", "Visibility", "ScoutLeader_ID") VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+        const params = [content, date, priority, visibility, leader_id];
         const result = await db.query(query, params);
         return res.status(201).json({ message: "Added Announcement successfully", Announcement: result[0] });
     } catch (error) {
@@ -44,13 +44,13 @@ module.exports.addAnnouncement = async (req, res) => {
 
 module.exports.updateAnnouncement = async (req, res) => {
     const { announcement_id } = req.params;
-    const { name, level, criteria, description } = req.body;
+    const { content, date, priority, visibility, leader_id } = req.body;
     try {
-        const query = `UPDATE "Announcement" SET "Content" = $1, "CreateDate" = $2, "Priority" = $3, "Visibility" = $4, WHERE "Announcement_ID" = $5 RETURNING *`;
-        const params = [name, level, criteria, description, announcement_id];
+        const query = `UPDATE "Announcement" SET "Content" = $1, "CreateDate" = $2, "Priority" = $3, "Visibility" = $4, "ScoutLeader_ID" = $5 WHERE "Announcement_ID" = $6 RETURNING *`;
+        const params = [content, date, priority, visibility, leader_id, announcement_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Announcement not found" });
         }
         return res.json({ message: "Announcement updated successfully", Announcement: result[0] });

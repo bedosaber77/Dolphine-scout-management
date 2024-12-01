@@ -19,7 +19,7 @@ module.exports.getEquipment = async (req, res) => {
         const params = [equipment_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Equipment not found" });
         }
         return res.json(result.rows[0]);
@@ -30,10 +30,10 @@ module.exports.getEquipment = async (req, res) => {
 };
 
 module.exports.addEquipment = async (req, res) => {
-    const { name, quantity, date, location_ID } = req.body;
+    const { name, quantity, date, location_id } = req.body;
     try {
         const query = `INSERT INTO "Equipment" ("Ename", "Quantity", "AddedDate", "Location_ID") VALUES ($1, $2, $3, $4) RETURNING *`; // return inserted Equipment
-        const params = [name, quantity, date, location_ID];
+        const params = [name, quantity, date, location_id];
         const result = await db.query(query, params);
         return res.status(201).json({ message: "Added Equipment successfully", Equipment: result[0] });
     } catch (error) {
@@ -44,13 +44,13 @@ module.exports.addEquipment = async (req, res) => {
 
 module.exports.updateEquipment = async (req, res) => {
     const { equipment_id } = req.params;
-    const { name, level, criteria, description } = req.body;
+    const { name, quantity, date, location_id } = req.body;
     try {
-        const query = `UPDATE "Equipment" SET "Ename" = $1, "Quantity" = $2, "AddedDate" = $3, "Location_ID" = $4, WHERE "Equipment_ID" = $5 RETURNING *`;
-        const params = [name, level, criteria, description, equipment_id];
+        const query = `UPDATE "Equipment" SET "Ename" = $1, "Quantity" = $2, "AddedDate" = $3, "Location_ID" = $4 WHERE "Equipment_ID" = $5 RETURNING *`;
+        const params = [name, quantity, date, location_id, equipment_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Equipment not found" });
         }
         return res.json({ message: "Equipment updated successfully", Equipment: result[0] });

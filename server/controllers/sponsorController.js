@@ -19,7 +19,7 @@ module.exports.getSponsor = async (req, res) => {
         const params = [sponsor_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Sponsor not found" });
         }
         return res.json(result.rows[0]);
@@ -50,7 +50,7 @@ module.exports.updateSponsor = async (req, res) => {
         const params = [fName, lName, phoneNum, email, sponsor_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Sponsor not found" });
         }
         return res.json({ message: "Sponsor updated successfully", Sponsor: result[0] });

@@ -19,7 +19,7 @@ module.exports.getMedia = async (req, res) => {
         const params = [media_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Media not found" });
         }
         return res.json(result.rows[0]);
@@ -30,10 +30,10 @@ module.exports.getMedia = async (req, res) => {
 };
 
 module.exports.addMedia = async (req, res) => {
-    const { date, link, description, type, event_ID, leader_ID } = req.body;
+    const { date, link, description, type, event_id, leader_id } = req.body;
     try {
         const query = `INSERT INTO "Media" ("UploadDate", "Link", "Description", "Type", "Event_ID", "ScoutLeader_ID") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`; // return inserted Media
-        const params = [date, link, description, type, event_ID, leader_ID];
+        const params = [date, link, description, type, event_id, leader_id];
         const result = await db.query(query, params);
         return res.status(201).json({ message: "Added Media successfully", Media: result[0] });
     } catch (error) {
@@ -44,13 +44,13 @@ module.exports.addMedia = async (req, res) => {
 
 module.exports.updateMedia = async (req, res) => {
     const { media_id } = req.params;
-    const { date, link, description, type, event_ID, leader_ID } = req.body;
+    const { date, link, description, type, event_id, leader_id } = req.body;
     try {
         const query = `UPDATE "Media" SET "UploadDate" = $1, "Link" = $2, "Description" = $3, "Type" = $4, "Event_ID" = $5, "ScoutLeader_ID" = $6 WHERE "Media_ID" = $7 RETURNING *`;
-        const params = [date, link, description, type, event_ID, leader_ID, media_id];
+        const params = [date, link, description, type, event_id, leader_id, media_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Media not found" });
         }
         return res.json({ message: "Media updated successfully", Media: result[0] });
