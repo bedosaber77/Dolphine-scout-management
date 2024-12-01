@@ -8,8 +8,8 @@ const pool = new Pool({
   host: "localhost",
   port: 5432,
   user: "postgres",
-  password: "1234",
-  database: "Db project",
+  password: process.env.DBPASS || "1234",
+  database: process.env.DBNAME || "Db project",
 });
 
 const connect = async () => {

@@ -46,7 +46,23 @@ const validateLogin = (req, res, next) => {
   }
   next();
 };
+
+const validateAchivement = (req, res, next) => {
+  const { name, level } = req.body;
+  if (!name && level && level <= 0) {
+    return res.status(400).json({ message: "achievement name is required, level must be greater than 0" });
+  }
+  if (!name) {
+    return res.status(400).json({ message: "achievement name is required" });
+  }
+  if (level && level <= 0) {
+    return res.status(400).json({ message: "level must be greater than 0" });
+  }
+  next();
+};
+
 module.exports = {
   validateRegister,
   validateLogin,
+  validateAchivement,
 };
