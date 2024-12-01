@@ -1,18 +1,3 @@
 :root {
-    --bs-primary: #4caf50;
-    /* Change primary color (e.g., green) */
-    --bs-secondary: #ff9800;
-    /* Change secondary color (e.g., orange) */
-    --bs-success: #8bc34a;
-    /* Change success color */
-    --bs-info: #00bcd4;
-    /* Change info color */
-    --bs-warning: #ffeb3b;
-    /* Change warning color */
-    --bs-danger: #f44336;
-    /* Change danger color */
-    --bs-light: #f1f1f1;
-    /* Change light color */
-    --bs-dark: #212121;
-    /* Change dark color */
+    --bs-dark: #043873;
 }

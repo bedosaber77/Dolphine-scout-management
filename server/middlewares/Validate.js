@@ -36,6 +36,17 @@ const validateRegister = async (req, res, next) => {
   }
   next();
 };
+const validateLogin = (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  if (!validate.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+  next();
+};
 module.exports = {
   validateRegister,
+  validateLogin,
 };
