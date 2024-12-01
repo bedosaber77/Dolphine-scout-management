@@ -14,7 +14,7 @@ const AppHeader = () => {
         <Navbar className="bg-body-tertiary">
             <Container>
                 <Nav className="d-flex align-items-center gap-2" >
-                    <Button variant="primary" as={NavLink} to='/login'>
+                    <Button variant="primary" as={NavLink} to='/Login'>
                         تسجيل الدخول
                     </Button>
                     <Button variant="outline-secondary">انضم الينا</Button>
