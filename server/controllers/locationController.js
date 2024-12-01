@@ -19,7 +19,7 @@ module.exports.getLocation = async (req, res) => {
         const params = [location_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Location not found" });
         }
         return res.json(result.rows[0]);
@@ -50,7 +50,7 @@ module.exports.updateLocation = async (req, res) => {
         const params = [name, government, city, link, location_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Location not found" });
         }
         return res.json({ message: "Location updated successfully", Location: result[0] });

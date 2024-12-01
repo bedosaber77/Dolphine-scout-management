@@ -19,7 +19,7 @@ module.exports.getAchievement = async (req, res) => {
         const params = [achievement_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Achievement not found" });
         }
         return res.json(result.rows[0]);
@@ -50,7 +50,7 @@ module.exports.updateAchievement = async (req, res) => {
         const params = [name, level, criteria, description, achievement_id];
         const result = await db.query(query, params);
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ message: "Achievement not found" });
         }
         return res.json({ message: "Achievement updated successfully", achievement: result[0] });
