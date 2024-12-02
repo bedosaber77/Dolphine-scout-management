@@ -9,7 +9,7 @@ exports.register = async (req, res) => {
     const query = `INSERT INTO "User" ("email", "Fname", "Lname", "password", "Phonenum") VALUES ($1, $2, $3, $4, $5) 
     returning *`;
     const params = [
-      email.tolowercase(),
+      email.toLowerCase(),
       Fname,
       Lname,
       hashedPassword,
@@ -49,6 +49,7 @@ exports.login = async (req, res) => {
         email: user.email,
         Fname: user.Fname,
         Lname: user.Lname,
+        role: user.role,
       },
     });
   } catch (error) {
