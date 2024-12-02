@@ -2,14 +2,13 @@ const validate = require("validator");
 const db = require("../config/DBmanager");
 
 const validateRegister = async (req, res, next) => {
-  req.body.email = req.body.email.toLowerCase();
   const { email, Fname, Lname, password, PhoneNum } = req.body;
   if (!email || !Fname || !Lname || !password || !PhoneNum) {
     return res.status(400).json({ message: "All fields are required" });
   }
   try {
     const query = `SELECT * FROM "User" WHERE "email" = $1`;
-    const params = [email];
+    const params = [email.toLowerCase()];
     const result = await db.query(query, params);
     if (result.rows.length > 0) {
       return res.status(409).json({ message: "User already exists" });
@@ -44,6 +43,23 @@ const validateLogin = (req, res, next) => {
   }
   if (!validate.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email" });
+  }
+  next();
+};
+
+const validateUpdatePassword = (req, res, next) => {
+  const { email, oldPassword, newPassword } = req.body;
+  if (!email || !oldPassword || !newPassword) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  if (!validate.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid user id" });
+  }
+  if (!validate.isStrongPassword(newPassword)) {
+    return res.status(400).json({
+      message:
+        "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+    });
   }
   next();
 };
@@ -343,4 +359,5 @@ module.exports = {
   validateMedia,
   validateTransaction,
   validateTransactionStatus,
+  validateUpdatePassword,
 };
