@@ -5,6 +5,11 @@ module.exports.getAnnouncements = async (req, res) => {
         const query = `SELECT * FROM "Announcement"`;
         const params = [];
         const result = await db.query(query, params);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "no announcements found" });
+        }
+
         return res.json(result.rows);
     } catch (error) {
         console.log("Error executing query", error);
