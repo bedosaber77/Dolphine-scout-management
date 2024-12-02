@@ -1,5 +1,9 @@
 const express = require("express");
-const { validateRegister, validateLogin } = require("../middlewares/Validate");
+const {
+  validateRegister,
+  validateLogin,
+  validateUpdatePassword,
+} = require("../middlewares/Validate");
 const authController = require("../controllers/authController");
 const Router = express.Router();
 
@@ -10,4 +14,10 @@ Router.get("/", (req, res) => {
 Router.post("/register", validateRegister, authController.register);
 
 Router.post("/login", validateLogin, authController.login);
+Router.put(
+  "/updatePassword",
+  validateUpdatePassword,
+  authController.updatePassword
+);
+
 module.exports = Router;
