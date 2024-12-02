@@ -345,6 +345,69 @@ const validateTransactionStatus = async (req, res, next) => {
       .status(400)
       .json({ message: `Type must be one of "Completed", "Failed"` });
   }
+  next();
+};
+
+const validateScoutAchievement = async (req, res, next) => {
+  const { id } = req.params;
+  const { achievement_id } = req.body;
+
+
+  if (!validate.isInt(id)) {
+    return res.status(400).json({ message: "Invalid scout id" });
+  }
+  if (!validate.isInt(achievement_id)) {
+    return res.status(400).json({ message: "Invalid achievement id" });
+  }
+
+  try {
+    const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    const params = [id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "no scout with that id was found" });
+    }
+  }
+  catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+
+  try {
+    const query = `SELECT * FROM "Achievement" WHERE "Achievement_ID" = $1`;
+    const params = [achievement_id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "no achievement with that id was found" });
+    }
+  }
+  catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  next();
+};
+
+const validateScoutID = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!validate.isInt(id)) {
+    return res.status(400).json({ message: "Invalid scout id" });
+  }
+
+  try {
+    const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    const params = [id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "no scout with that id was found" });
+    }
+  }
+  catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  next();
 };
 
 module.exports = {
@@ -360,4 +423,6 @@ module.exports = {
   validateTransaction,
   validateTransactionStatus,
   validateUpdatePassword,
+  validateScoutAchievement,
+  validateScoutID
 };

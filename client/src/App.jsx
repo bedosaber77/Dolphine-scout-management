@@ -1,6 +1,8 @@
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import routes from "./routes";
+import routes from "./routers/routes";
+import AuthProvider from "./hooks/AuthProvider";
+
+
 const router = createBrowserRouter(routes);
 
 function App() {
@@ -8,7 +10,9 @@ function App() {
 
   return (
     <div className="App">
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </div>
   )
 }

@@ -5,6 +5,11 @@ module.exports.getAllMedia = async (req, res) => {
         const query = `SELECT * FROM "Media"`;
         const params = [];
         const result = await db.query(query, params);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "no media found" });
+        }
+
         return res.json(result.rows);
     } catch (error) {
         console.log("Error executing query", error);

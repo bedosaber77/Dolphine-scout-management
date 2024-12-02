@@ -13,21 +13,6 @@ const AppHeader = () => {
     return (
         <Navbar className="bg-body-tertiary">
             <Container>
-                <Nav className="d-flex align-items-center gap-2" >
-                    <Button variant="primary" as={NavLink} to='/Login'>
-                        تسجيل الدخول
-                    </Button>
-                    <Button variant="outline-secondary">انضم الينا</Button>
-                </Nav>
-                <Navbar.Toggle aria-controls="navbar-nav" />
-                <Navbar.Collapse id="navbar-nav">
-                    <Nav className="mx-auto">
-                        <Nav.Link as={NavLink} to='/#events'>الاحداث</Nav.Link>
-                        <Nav.Link as={NavLink} to="/#news">الاخبار</Nav.Link>
-                        <Nav.Link as={NavLink} to="/aboutUs">من نحن</Nav.Link>
-                    </Nav>
-                </Navbar.Collapse>
-
                 <Navbar.Brand>
                     <Nav.Link as={NavLink} to='/'>
                         <img
@@ -40,6 +25,23 @@ const AppHeader = () => {
                     </Nav.Link>
 
                 </Navbar.Brand>
+                <Navbar.Toggle aria-controls="navbar-nav" />
+                <Navbar.Collapse id="navbar-nav">
+                    <Nav className="mx-auto">
+                        <Nav.Link as={NavLink} to='/#events'>الاحداث</Nav.Link>
+                        <Nav.Link as={NavLink} to="/#news">الاخبار</Nav.Link>
+                        <Nav.Link as={NavLink} to="/aboutUs">من نحن</Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+
+
+
+                <Nav className="d-flex align-items-center gap-2" >
+                    <Button variant="primary" as={NavLink} to='/Login'>
+                        تسجيل الدخول
+                    </Button>
+                    <Button variant="outline-secondary">انضم الينا</Button>
+                </Nav>
             </Container>
         </Navbar>
     )

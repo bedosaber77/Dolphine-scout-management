@@ -1,11 +1,33 @@
 import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import "../styles/login.css";
+import { useState } from "react";
+import { useAuth } from "../hooks/AuthProvider";
+import { useNavigate } from "react-router-dom";
+
+
 
 const Login = () => {
+
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (email !== "" && password !== "") {
+      const input = { email, password };
+      auth.loginAction(input, (path) => navigate(path));
+      return;
+    }
+    alert("please provide a valid input");
+  }
+
   return (
     <div className="login">
-      <Form className="loginForm ">
+      <Form className="loginForm " onSubmit={handleSubmit}>
         <h2 className="text-center  mb-4" dir="rtl">
           تسجيل الدخول
         </h2>
@@ -17,7 +39,7 @@ const Login = () => {
             label="الحساب الالكتروني"
             className="mb-3 form-label"
           >
-            <Form.Control type="email" placeholder="name@example.com" />
+            <Form.Control type="email" placeholder="name@example.com" value={email} onChange={e => setEmail(e.target.value)} />
           </FloatingLabel>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formPassword">
@@ -28,7 +50,7 @@ const Login = () => {
             label="كلمة السر"
             className="mb-3 form-label"
           >
-            <Form.Control type="password" placeholder="Password" />
+            <Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
           </FloatingLabel>
         </Form.Group>
         <Form.Group className="mb-3" dir="rtl" controlId="checkBoxStaySigned">
