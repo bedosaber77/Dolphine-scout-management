@@ -1,8 +1,9 @@
-import Home from "./pages/home";
-import Login from "./pages/login";
-import MainLayout from "./components/MainLayout";
-import AboutUs from "./pages/aboutUs";
-import ScoutDashboard from "./pages/scoutDashboard"
+import Home from "../pages/home";
+import Login from "../pages/login";
+import MainLayout from "../components/MainLayout";
+import AboutUs from "../pages/aboutUs";
+import ScoutDashboard from "../pages/scoutDashboard"
+import ProtectedRoute from "./protectedRoute";
 const routes = [
     {
         path: '/',
@@ -23,7 +24,13 @@ const routes = [
             },
             {
                 path: '/scoutDashboard',
-                element: <ScoutDashboard />
+                element: <ProtectedRoute />,
+                children: [
+                    {
+                        path: '',
+                        element: <ScoutDashboard />
+                    }
+                ]
             }
 
         ]
