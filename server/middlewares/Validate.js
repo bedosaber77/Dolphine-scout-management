@@ -293,7 +293,7 @@ const validateTransaction = async (req, res, next) => {
   if (!allowedMethods.includes(method)) {
     return res
       .status(400)
-      .json({ message: `Type must be one of "Cash", "Visa"` });
+      .json({ message: `method must be one of "Cash", "Visa"` });
   }
 
   if (leader_id) {
@@ -343,7 +343,7 @@ const validateTransactionStatus = async (req, res, next) => {
   if (!allowedStatus.includes(status)) {
     return res
       .status(400)
-      .json({ message: `Type must be one of "Completed", "Failed"` });
+      .json({ message: `status must be one of "Completed", "Failed"` });
   }
   next();
 };
@@ -352,6 +352,11 @@ const validateScoutAchievement = async (req, res, next) => {
   const { id } = req.params;
   const { achievement_id } = req.body;
 
+  if (!id || !achievement_id) {
+    return res
+      .status(400)
+      .json({ message: "scout and achievement ids are required" });
+  }
 
   if (!validate.isInt(id)) {
     return res.status(400).json({ message: "Invalid scout id" });
@@ -391,6 +396,12 @@ const validateScoutAchievement = async (req, res, next) => {
 const validateScoutID = async (req, res, next) => {
   const { id } = req.params;
 
+  if (!id) {
+    return res
+      .status(400)
+      .json({ message: "scout id is required" });
+  }
+
   if (!validate.isInt(id)) {
     return res.status(400).json({ message: "Invalid scout id" });
   }
@@ -401,6 +412,85 @@ const validateScoutID = async (req, res, next) => {
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
       return res.status(409).json({ message: "no scout with that id was found" });
+    }
+  }
+  catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  next();
+};
+
+const validateParentScout = async (req, res, next) => {
+  const { id } = req.params;
+  const { scout_id, relationship } = req.body;
+
+  if (!id || !scout_id) {
+    return res
+      .status(400)
+      .json({ message: "scout and parent ids are required" });
+  }
+
+  if (!validate.isInt(id)) {
+    return res.status(400).json({ message: "Invalid parent id" });
+  }
+  if (!validate.isInt(scout_id)) {
+    return res.status(400).json({ message: "Invalid scout id" });
+  }
+  const allowedRelationship = ["Father", "Mother"];
+  if (!allowedRelationship.includes(relationship)) {
+    return res
+      .status(400)
+      .json({ message: `relationship must be one of "Father", "Mother"` });
+  }
+
+  try {
+    const query = `SELECT * FROM "Parent" WHERE "User_ID" = $1`;
+    const params = [id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "no parent with that id was found" });
+    }
+  }
+  catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+
+  try {
+    const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    const params = [scout_id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "no scout with that id was found" });
+    }
+  }
+  catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  next();
+};
+
+const validateParentID = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ message: "parent id is required" });
+  }
+
+  if (!validate.isInt(id)) {
+    return res.status(400).json({ message: "Invalid parent id" });
+  }
+
+  try {
+    const query = `SELECT * FROM "Parent" WHERE "User_ID" = $1`;
+    const params = [id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "no parent with that id was found" });
     }
   }
   catch (error) {
@@ -424,5 +514,7 @@ module.exports = {
   validateTransactionStatus,
   validateUpdatePassword,
   validateScoutAchievement,
-  validateScoutID
+  validateScoutID,
+  validateParentScout,
+  validateParentID,
 };
