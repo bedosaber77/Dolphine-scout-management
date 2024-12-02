@@ -5,6 +5,11 @@ module.exports.getSponsors = async (req, res) => {
         const query = `SELECT * FROM "Sponsor"`;
         const params = [];
         const result = await db.query(query, params);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "no sponsors found" });
+        }
+
         return res.json(result.rows);
     } catch (error) {
         console.log("Error executing query", error);

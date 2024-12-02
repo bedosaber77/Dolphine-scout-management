@@ -5,6 +5,11 @@ module.exports.getTransactions = async (req, res) => {
         const query = `SELECT * FROM "Transaction"`;
         const params = [];
         const result = await db.query(query, params);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "no transactions found" });
+        }
+
         return res.json(result.rows);
     } catch (error) {
         console.log("Error executing query", error);
@@ -57,7 +62,7 @@ module.exports.updateTransaction = async (req, res) => {
         type = "Deposit";
     else
         type = "Withdraw";
-    
+
     try {
         const query = `UPDATE "Transaction" SET "Amount" = $1, "Tdate" = $2, "Purpose" = $3, "TransactionType" = $4, "PaymentMethod" = $5, "Status" = $6, "Sponsor_ID" = $7, "ScoutLeader_ID" = $8 WHERE "Transaction_ID" = $9 RETURNING *`;
         const params = [amount, date, purpose, type, method, status, sponsor_id, leader_id, transaction_id];
