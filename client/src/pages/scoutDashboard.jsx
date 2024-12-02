@@ -1,11 +1,15 @@
 import "../styles/souctDashboard.css";
 import { Container, Row, Col, Table } from "react-bootstrap";
 import createTable from "../components/createTable";
+import { useAuth } from "../hooks/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 const ScoutDashboard = () => {
   const name = "أحمد";
   const groupName = "المجموعة الأولى";
   const groupLeader = "محمد";
+  const auth = useAuth();
+  const navigate = useNavigate();
 
   const arr = ["Achievement 1", "Achievement 2", "Achievement 3"];
 
@@ -28,9 +32,9 @@ const ScoutDashboard = () => {
         ))}
       </ul>
     );
-    };
-    
-    const events = {
+  };
+
+  const events = {
     3: "Event 1",
     10: "Event 2",
     15: "Event 3",
@@ -38,10 +42,14 @@ const ScoutDashboard = () => {
   };
 
 
- 
+
   return (
     <>
-      <Container fluid style={{ backgroundColor: "var(--bs-dark)",paddingLeft: "90px", paddingRight: "90px", }}>
+      <Container fluid style={{ backgroundColor: "var(--bs-dark)", paddingLeft: "90px", paddingRight: "90px", }}>
+        <button onClick={() => auth.logOut(path => navigate(path))} className="btn-submit">
+          logout
+        </button>
+        <h1>hello{auth.user.name}</h1>
         <Row>
           <Col>
             <h1>الصفحة الشخصية</h1>
