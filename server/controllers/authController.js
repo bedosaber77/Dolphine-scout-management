@@ -9,7 +9,7 @@ exports.register = async (req, res) => {
     const query = `INSERT INTO "User" ("email", "Fname", "Lname", "password", "Phonenum") VALUES ($1, $2, $3, $4, $5) 
     returning *`;
     const params = [
-      email.tolowercase(),
+      email.toLowerCase(),
       Fname,
       Lname,
       hashedPassword,
@@ -41,14 +41,18 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
     const token = jwtGenerator(user.User_ID);
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
     return res.status(200).json({
       message: "User logged in successfully",
-      token,
       user: {
         id: user.User_ID,
         email: user.email,
         Fname: user.Fname,
         Lname: user.Lname,
+        role: user.role,
       },
     });
   } catch (error) {
