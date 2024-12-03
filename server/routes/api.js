@@ -8,6 +8,7 @@ const transactionRouter = require("./transactionRoute");
 const locationRouter = require("./locationRoute");
 const scoutAchievementsRouter = require("./scoutAchievementsRoute");
 const apiRouter = require("express").Router();
+const authorization = require("../middlewares/authorization");
 
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/achievements", achievementRouter);
