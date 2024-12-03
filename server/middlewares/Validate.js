@@ -2,8 +2,8 @@ const validate = require("validator");
 const db = require("../config/DBmanager");
 
 const validateRegister = async (req, res, next) => {
-  const { email, Fname, Lname, password, PhoneNum } = req.body;
-  if (!email || !Fname || !Lname || !password || !PhoneNum) {
+  const { email, Fname, Lname, password, Phonenum } = req.body;
+  if (!email || !Fname || !Lname || !password || !Phonenum) {
     return res.status(400).json({ message: "All fields are required" });
   }
   try {
@@ -25,7 +25,7 @@ const validateRegister = async (req, res, next) => {
       .status(400)
       .json({ message: "First name and last name must be alphabets" });
   }
-  if (!validate.isMobilePhone(PhoneNum)) {
+  if (!validate.isMobilePhone(Phonenum)) {
     return res.status(400).json({ message: "Invalid phone number" });
   }
   if (!validate.isStrongPassword(password)) {
@@ -352,7 +352,6 @@ const validateScoutAchievement = async (req, res, next) => {
   const { id } = req.params;
   const { achievement_id } = req.body;
 
-
   if (!validate.isInt(id)) {
     return res.status(400).json({ message: "Invalid scout id" });
   }
@@ -365,10 +364,11 @@ const validateScoutAchievement = async (req, res, next) => {
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "no scout with that id was found" });
+      return res
+        .status(409)
+        .json({ message: "no scout with that id was found" });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -378,10 +378,11 @@ const validateScoutAchievement = async (req, res, next) => {
     const params = [achievement_id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "no achievement with that id was found" });
+      return res
+        .status(409)
+        .json({ message: "no achievement with that id was found" });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -400,12 +401,39 @@ const validateScoutID = async (req, res, next) => {
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "no scout with that id was found" });
+      return res
+        .status(409)
+        .json({ message: "no scout with that id was found" });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+  next();
+};
+
+const ValidateAddUser = async (req, res, next) => {
+  const { email, password, Fname, Lname, role, Phonenum } = req.body;
+  console.log(req.body, email, password, Fname, Lname, role, Phonenum);
+  if (!email || !password || !Fname || !Lname || !role || !Phonenum) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  if (!validate.isEmail(email)) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+  if (!validate.isAlpha(Fname) || !validate.isAlpha(Lname)) {
+    return res
+      .status(400)
+      .json({ message: "First name and last name must be alphabets" });
+  }
+  if (!validate.isMobilePhone(Phonenum)) {
+    return res.status(400).json({ message: "Invalid phone number" });
+  }
+  if (!validate.isStrongPassword(password)) {
+    return res.status(400).json({
+      message:
+        "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+    });
   }
   next();
 };
@@ -424,5 +452,6 @@ module.exports = {
   validateTransactionStatus,
   validateUpdatePassword,
   validateScoutAchievement,
-  validateScoutID
+  validateScoutID,
+  ValidateAddUser,
 };

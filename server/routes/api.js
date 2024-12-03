@@ -8,6 +8,7 @@ const transactionRouter = require("./transactionRoute");
 const locationRouter = require("./locationRoute");
 const scoutAchievementsRouter = require("./scoutAchievementsRoute");
 const apiRouter = require("express").Router();
+const userRouter = require("./userRoute");
 const authorization = require("../middlewares/authorization");
 
 apiRouter.use("/auth", authRouter);
@@ -19,5 +20,6 @@ apiRouter.use("/sponsors", sponsorRouter);
 apiRouter.use("/transactions", transactionRouter);
 apiRouter.use("/locations", locationRouter);
 apiRouter.use("/scouts/:id/achievements", scoutAchievementsRouter);
+apiRouter.use("/users", authorization, userRouter);
 
 module.exports = apiRouter;
