@@ -10,6 +10,7 @@ const scoutAchievementsRouter = require("./scoutAchievementsRoute");
 const parentScoutRouter = require("./parentScoutRoute");
 const apiRouter = require("express").Router();
 const userRouter = require("./userRoute");
+const scoutRouter = require("./scoutRoute");
 const authorization = require("../middlewares/authorization");
 
 apiRouter.use("/auth", authRouter);
@@ -23,5 +24,6 @@ apiRouter.use("/locations", locationRouter);
 apiRouter.use("/scouts/:id/achievements", scoutAchievementsRouter);
 apiRouter.use("/users", authorization, userRouter);
 apiRouter.use("/parents/:id/scouts", parentScoutRouter);
+apiRouter.use("/scouts", authorization, scoutRouter);
 
 module.exports = apiRouter;

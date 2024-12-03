@@ -399,9 +399,7 @@ const validateScoutID = async (req, res, next) => {
   const { id } = req.params;
 
   if (!id) {
-    return res
-      .status(400)
-      .json({ message: "scout id is required" });
+    return res.status(400).json({ message: "scout id is required" });
   }
 
   if (!validate.isInt(id)) {
@@ -446,7 +444,10 @@ const ValidateAddUser = async (req, res, next) => {
       message:
         "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
     });
-    
+  }
+  next();
+};
+
 const validateParentScout = async (req, res, next) => {
   const { id } = req.params;
   const { scout_id, relationship } = req.body;
@@ -475,10 +476,11 @@ const validateParentScout = async (req, res, next) => {
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "no parent with that id was found" });
+      return res
+        .status(409)
+        .json({ message: "no parent with that id was found" });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -488,10 +490,11 @@ const validateParentScout = async (req, res, next) => {
     const params = [scout_id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "no scout with that id was found" });
+      return res
+        .status(409)
+        .json({ message: "no scout with that id was found" });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -502,9 +505,7 @@ const validateParentID = async (req, res, next) => {
   const { id } = req.params;
 
   if (!id) {
-    return res
-      .status(400)
-      .json({ message: "parent id is required" });
+    return res.status(400).json({ message: "parent id is required" });
   }
 
   if (!validate.isInt(id)) {
@@ -516,12 +517,60 @@ const validateParentID = async (req, res, next) => {
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "no parent with that id was found" });
+      return res
+        .status(409)
+        .json({ message: "no parent with that id was found" });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+  next();
+};
+
+const validateAddScout = async (req, res, next) => {
+  const { User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate } =
+    req.body;
+  if (
+    !User_ID ||
+    !rank ||
+    !PaperSubmitted ||
+    !Birthdate ||
+    !academicYear ||
+    !joinDate
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  console.log(
+    typeof User_ID,
+    rank,
+    PaperSubmitted,
+    Birthdate,
+    academicYear,
+    joinDate
+  );
+  if (!validate.isInt(User_ID)) {
+    return res.status(400).json({ message: "Invalid User ID" });
+  }
+  try {
+    const query = `SELECT * FROM "User" WHERE "User_ID" = $1`;
+    const params = [User_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  if (!validate.isBoolean(PaperSubmitted)) {
+    return res.status(400).json({ message: "Invalid PaperSubmitted" });
+  }
+  if (!validate.isDate(Birthdate)) {
+    return res.status(400).json({ message: "Invalid Birthdate" });
+  }
+  if (!validate.isDate(joinDate)) {
+    return res.status(400).json({ message: "Invalid joinDate" });
   }
   next();
 };
@@ -544,4 +593,5 @@ module.exports = {
   ValidateAddUser,
   validateParentScout,
   validateParentID,
+  validateAddScout,
 };
