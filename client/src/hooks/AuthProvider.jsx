@@ -1,4 +1,5 @@
 import { useContext, createContext, useState } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 // import { useNavigate } from "react-router-dom";
 
@@ -36,15 +37,23 @@ const AuthProvider = ({ children }) => {
 
   const loginAction = async (data, onLogin) => {
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        //mocked through the fetchData function will be replaced by regular fetch
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
+      // const response = await fetch('http://localhost:3000/api/auth/login', {
+      //   method: 'POST',
+      //   mode: 'no-cors',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(data),
+      //   credentials: 'include',
+      // });
+      const response = await axios.post(
+        'http://localhost:3000/api/auth/login',
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+      const result = response.data;
       console.log(response);
       console.log(result);
       if (response.status == 200) {
