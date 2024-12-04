@@ -3,7 +3,6 @@ const jwtGenerator = require("../utils/jwtGenerator");
 
 const authorization = (req, res, next) => {
   const token = req.headers.accesstoken;
-  console.log(req.headers, token);
   if (!token) {
     return res.status(401).json({ message: "Unauthorized - Token not found" });
   }
