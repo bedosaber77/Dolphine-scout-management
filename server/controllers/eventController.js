@@ -128,3 +128,68 @@ exports.updateEvent = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getEventAttendees = async (req, res) => {
+  const { event_id } = req.params;
+  try {
+    const query = `SELECT 
+    ea.*,
+    s."User_ID" AS "Scout_ID",
+    u."User_ID",
+    u."Fname",
+    u."Lname",
+    u."Phonenum",
+    u."email",
+    u."role",
+    e.*
+FROM 
+    "EventAttendance" ea
+JOIN 
+    "Scout" s ON ea."Scout_ID" = s."User_ID"
+JOIN 
+    "User" u ON s."User_ID" = u."User_ID"
+JOIN 
+    "Event" e ON e."Event_ID" = ea."Event_ID";
+`;
+    const eventAttendees = await db.query(query);
+    return res.status(200).json(eventAttendees.rows);
+  } catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.addEventAttendee = async (req, res) => {
+  const { event_id } = req.params;
+  const { Scout_ID } = req.body;
+  try {
+    const query = `INSERT INTO "EventAttendance" ("Event_ID", "Scout_ID") VALUES ($1, $2) RETURNING *`;
+    const params = [event_id, Scout_ID];
+    const eventAttendance = await db.query(query, params);
+    return res.status(201).json({
+      message: "Added Event Attendance successfully",
+      EventAttendance: eventAttendance.rows[0],
+    });
+  } catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.deleteEventAttendee = async (req, res) => {
+  const { event_id, scout_id } = req.params;
+  try {
+    const query = `DELETE FROM "EventAttendance" WHERE "Event_ID" = $1 AND "Scout_ID" = $2 RETURNING *`;
+    const params = [event_id, scout_id];
+    const eventAttendance = await db.query(query, params);
+    if (eventAttendance.rows.length === 0) {
+      return res.status(404).json({ message: "Event Attendance not found" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Event Attendance deleted successfully" });
+  } catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

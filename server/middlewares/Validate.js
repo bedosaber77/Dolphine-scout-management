@@ -753,6 +753,40 @@ const validateAddEvent = async (req, res, next) => {
   next();
 };
 
+const validateAddEventAttendace = async (req, res, next) => {
+  const { event_id } = req.params;
+  const { Scout_ID } = req.body;
+  if (!Scout_ID) {
+    return res.status(400).json({ message: "Scout ID is required" });
+  }
+  if (!validate.isInt(Scout_ID)) {
+    return res.status(400).json({ message: "Invalid Scout ID" });
+  }
+  try {
+    const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    const params = [Scout_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "Scout not found" });
+    }
+  } catch (err) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  try {
+    const query = `SELECT * FROM "Event" WHERE "Event_ID" = $1`;
+    const params = [event_id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: "Event not found" });
+    }
+  } catch (err) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  next();
+};
+
 module.exports = {
   validateRegister,
   validateLogin,
@@ -777,4 +811,5 @@ module.exports = {
   validateAddScouttoTroop,
   validateAddScoutleader,
   validateAddEvent,
+  validateAddEventAttendace,
 };
