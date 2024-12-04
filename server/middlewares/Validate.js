@@ -1,37 +1,37 @@
-const validate = require("validator");
-const db = require("../config/DBmanager");
+const validate = require('validator');
+const db = require('../config/DBmanager');
 
 const validateRegister = async (req, res, next) => {
   const { email, Fname, Lname, password, Phonenum } = req.body;
   if (!email || !Fname || !Lname || !password || !Phonenum) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   try {
     const query = `SELECT * FROM "User" WHERE "email" = $1`;
     const params = [email.toLowerCase()];
     const result = await db.query(query, params);
     if (result.rows.length > 0) {
-      return res.status(409).json({ message: "User already exists" });
+      return res.status(409).json({ message: 'User already exists' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   if (!validate.isEmail(email)) {
-    return res.status(400).json({ message: "Invalid email" });
+    return res.status(400).json({ message: 'Invalid email' });
   }
   if (!validate.isAlpha(Fname) || !validate.isAlpha(Lname)) {
     return res
       .status(400)
-      .json({ message: "First name and last name must be alphabets" });
+      .json({ message: 'First name and last name must be alphabets' });
   }
   if (!validate.isMobilePhone(Phonenum)) {
-    return res.status(400).json({ message: "Invalid phone number" });
+    return res.status(400).json({ message: 'Invalid phone number' });
   }
   if (!validate.isStrongPassword(password)) {
     return res.status(400).json({
       message:
-        "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+        'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character',
     });
   }
   next();
@@ -39,10 +39,10 @@ const validateRegister = async (req, res, next) => {
 const validateLogin = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isEmail(email)) {
-    return res.status(400).json({ message: "Invalid email" });
+    return res.status(400).json({ message: 'Invalid email' });
   }
   next();
 };
@@ -50,15 +50,15 @@ const validateLogin = (req, res, next) => {
 const validateUpdatePassword = (req, res, next) => {
   const { email, oldPassword, newPassword } = req.body;
   if (!email || !oldPassword || !newPassword) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isEmail(email)) {
-    return res.status(400).json({ message: "Invalid user id" });
+    return res.status(400).json({ message: 'Invalid user id' });
   }
   if (!validate.isStrongPassword(newPassword)) {
     return res.status(400).json({
       message:
-        "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+        'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character',
     });
   }
   next();
@@ -68,14 +68,14 @@ const validateAchievement = (req, res, next) => {
   const { name, level } = req.body;
   if (!name && level && level <= 0) {
     return res.status(400).json({
-      message: "achievement name is required, level must be greater than 0",
+      message: 'achievement name is required, level must be greater than 0',
     });
   }
   if (!name) {
-    return res.status(400).json({ message: "achievement name is required" });
+    return res.status(400).json({ message: 'achievement name is required' });
   }
   if (level && level <= 0) {
-    return res.status(400).json({ message: "level must be greater than 0" });
+    return res.status(400).json({ message: 'level must be greater than 0' });
   }
   next();
 };
@@ -83,10 +83,10 @@ const validateAchievement = (req, res, next) => {
 const validateLocation = (req, res, next) => {
   const { name, link } = req.body;
   if (!name) {
-    return res.status(400).json({ message: "Location name is required" });
+    return res.status(400).json({ message: 'Location name is required' });
   }
   if (link && !validate.isURL(link)) {
-    return res.status(400).json({ message: "Invalid location link" });
+    return res.status(400).json({ message: 'Invalid location link' });
   }
   next();
 };
@@ -94,12 +94,12 @@ const validateLocation = (req, res, next) => {
 const validateAnnouncement = async (req, res, next) => {
   const { content, date, priority, visibility, leader_id } = req.body;
   if (!content || !date || !priority || !visibility || !leader_id) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
 
   if (leader_id) {
     if (!validate.isInt(leader_id)) {
-      return res.status(400).json({ message: "Invalid leader id" });
+      return res.status(400).json({ message: 'Invalid leader id' });
     }
     try {
       const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
@@ -108,15 +108,15 @@ const validateAnnouncement = async (req, res, next) => {
       if (result.rows.length === 0) {
         return res
           .status(409)
-          .json({ message: "no leader with that id was found" });
+          .json({ message: 'no leader with that id was found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
 
-  const allowedPriorities = ["Low", "Medium", "High"];
+  const allowedPriorities = ['Low', 'Medium', 'High'];
   if (!allowedPriorities.includes(priority)) {
     return res
       .status(400)
@@ -130,11 +130,11 @@ const validateEquipment = async (req, res, next) => {
   if (!name || !date || !location_id) {
     return res
       .status(400)
-      .json({ message: "name, date, location_id are required" });
+      .json({ message: 'name, date, location_id are required' });
   }
   if (quantity) {
     if (!validate.isInt(quantity)) {
-      return res.status(400).json({ message: "Quantity must be a number" });
+      return res.status(400).json({ message: 'Quantity must be a number' });
     }
     if (quantity < 0) {
       return res.status(400).json({ message: "Quantity can't be negative" });
@@ -143,7 +143,7 @@ const validateEquipment = async (req, res, next) => {
 
   if (location_id) {
     if (!validate.isInt(location_id)) {
-      return res.status(400).json({ message: "Invalid location id" });
+      return res.status(400).json({ message: 'Invalid location id' });
     }
     try {
       const query = `SELECT * FROM "Location" WHERE "Location_ID" = $1`;
@@ -152,11 +152,11 @@ const validateEquipment = async (req, res, next) => {
       if (result.rows.length === 0) {
         return res
           .status(409)
-          .json({ message: "no location with that id was found" });
+          .json({ message: 'no location with that id was found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   next();
@@ -167,12 +167,12 @@ const validateMedia = async (req, res, next) => {
   if (!link || !date || !type || !event_id || !leader_id) {
     return res
       .status(400)
-      .json({ message: "link, date, type, event_id, leader_id are required" });
+      .json({ message: 'link, date, type, event_id, leader_id are required' });
   }
   if (link && !validate.isURL(link)) {
-    return res.status(400).json({ message: "Invalid location" });
+    return res.status(400).json({ message: 'Invalid location' });
   }
-  const allowedTypes = ["Image", "Video", "Document"];
+  const allowedTypes = ['Image', 'Video', 'Document'];
   if (!allowedTypes.includes(type)) {
     return res
       .status(400)
@@ -181,7 +181,7 @@ const validateMedia = async (req, res, next) => {
 
   if (event_id) {
     if (!validate.isInt(event_id)) {
-      return res.status(400).json({ message: "Invalid event id" });
+      return res.status(400).json({ message: 'Invalid event id' });
     }
     try {
       const query = `SELECT * FROM "Event" WHERE "Event_ID" = $1`;
@@ -190,17 +190,17 @@ const validateMedia = async (req, res, next) => {
       if (result.rows.length === 0) {
         return res
           .status(409)
-          .json({ message: "no event with that id was found" });
+          .json({ message: 'no event with that id was found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
 
   if (leader_id) {
     if (!validate.isInt(leader_id)) {
-      return res.status(400).json({ message: "Invalid leader id" });
+      return res.status(400).json({ message: 'Invalid leader id' });
     }
     try {
       const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
@@ -209,11 +209,11 @@ const validateMedia = async (req, res, next) => {
       if (result.rows.length === 0) {
         return res
           .status(409)
-          .json({ message: "no leader with that id was found" });
+          .json({ message: 'no leader with that id was found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   next();
@@ -224,23 +224,23 @@ const validateSponsor = async (req, res, next) => {
   if (!fName || !lName) {
     return res
       .status(400)
-      .json({ message: "First and last names are required" });
+      .json({ message: 'First and last names are required' });
   }
 
   if (email) {
     if (!validate.isEmail(email)) {
-      return res.status(400).json({ message: "Invalid Email" });
+      return res.status(400).json({ message: 'Invalid Email' });
     }
     try {
       const query = `SELECT * FROM "Sponsor" WHERE "Email" = $1`;
       const params = [email];
       const result = await db.query(query, params);
       if (result.rows.length > 0) {
-        return res.status(409).json({ message: "Email already exists" });
+        return res.status(409).json({ message: 'Email already exists' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   next();
@@ -252,23 +252,23 @@ const validateSponsorUpdate = async (req, res, next) => {
   if (!fName || !lName) {
     return res
       .status(400)
-      .json({ message: "First and last names are required" });
+      .json({ message: 'First and last names are required' });
   }
 
   if (email) {
     if (!validate.isEmail(email)) {
-      return res.status(400).json({ message: "Invalid Email" });
+      return res.status(400).json({ message: 'Invalid Email' });
     }
     try {
       const query = `SELECT * FROM "Sponsor" WHERE "Email" = $1 AND "Sponsor_ID" != $2`;
       const params = [email, sponsor_id];
       const result = await db.query(query, params);
       if (result.rows.length > 0) {
-        return res.status(409).json({ message: "Email already exists" });
+        return res.status(409).json({ message: 'Email already exists' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   next();
@@ -279,17 +279,17 @@ const validateTransaction = async (req, res, next) => {
   if (!date || !amount || !method) {
     return res
       .status(400)
-      .json({ message: "date, amount, transaction method are required" });
+      .json({ message: 'date, amount, transaction method are required' });
   }
   if (!(sponsor_id || leader_id)) {
-    return res.status(400).json({ message: "sponsor/leader ID required" });
+    return res.status(400).json({ message: 'sponsor/leader ID required' });
   }
 
   if (amount && !validate.isFloat(amount)) {
-    return res.status(400).json({ message: "Invalid amount" });
+    return res.status(400).json({ message: 'Invalid amount' });
   }
 
-  const allowedMethods = ["Cash", "Visa"];
+  const allowedMethods = ['Cash', 'Visa'];
   if (!allowedMethods.includes(method)) {
     return res
       .status(400)
@@ -298,7 +298,7 @@ const validateTransaction = async (req, res, next) => {
 
   if (leader_id) {
     if (!validate.isInt(leader_id)) {
-      return res.status(400).json({ message: "Invalid leader id" });
+      return res.status(400).json({ message: 'Invalid leader id' });
     }
     try {
       const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
@@ -307,17 +307,17 @@ const validateTransaction = async (req, res, next) => {
       if (result.rows.length === 0) {
         return res
           .status(409)
-          .json({ message: "no leader with that id was found" });
+          .json({ message: 'no leader with that id was found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
 
   if (sponsor_id) {
     if (!validate.isInt(sponsor_id)) {
-      return res.status(400).json({ message: "Invalid leader id" });
+      return res.status(400).json({ message: 'Invalid leader id' });
     }
     try {
       const query = `SELECT * FROM "Sponsor" WHERE "Sponsor_ID" = $1`;
@@ -326,11 +326,11 @@ const validateTransaction = async (req, res, next) => {
       if (result.rows.length === 0) {
         return res
           .status(409)
-          .json({ message: "no Sponsor with that id was found" });
+          .json({ message: 'no Sponsor with that id was found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   next();
@@ -339,7 +339,7 @@ const validateTransaction = async (req, res, next) => {
 const validateTransactionStatus = async (req, res, next) => {
   const { status } = req.body;
 
-  const allowedStatus = ["Completed", "Failed"];
+  const allowedStatus = ['Completed', 'Failed'];
   if (!allowedStatus.includes(status)) {
     return res
       .status(400)
@@ -355,14 +355,14 @@ const validateScoutAchievement = async (req, res, next) => {
   if (!id || !achievement_id) {
     return res
       .status(400)
-      .json({ message: "scout and achievement ids are required" });
+      .json({ message: 'scout and achievement ids are required' });
   }
 
   if (!validate.isInt(id)) {
-    return res.status(400).json({ message: "Invalid scout id" });
+    return res.status(400).json({ message: 'Invalid scout id' });
   }
   if (!validate.isInt(achievement_id)) {
-    return res.status(400).json({ message: "Invalid achievement id" });
+    return res.status(400).json({ message: 'Invalid achievement id' });
   }
 
   try {
@@ -372,11 +372,11 @@ const validateScoutAchievement = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res
         .status(409)
-        .json({ message: "no scout with that id was found" });
+        .json({ message: 'no scout with that id was found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 
   try {
@@ -386,11 +386,11 @@ const validateScoutAchievement = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res
         .status(409)
-        .json({ message: "no achievement with that id was found" });
+        .json({ message: 'no achievement with that id was found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   next();
 };
@@ -399,11 +399,11 @@ const validateScoutID = async (req, res, next) => {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(400).json({ message: "scout id is required" });
+    return res.status(400).json({ message: 'scout id is required' });
   }
 
   if (!validate.isInt(id)) {
-    return res.status(400).json({ message: "Invalid scout id" });
+    return res.status(400).json({ message: 'Invalid scout id' });
   }
 
   try {
@@ -413,11 +413,11 @@ const validateScoutID = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res
         .status(409)
-        .json({ message: "no scout with that id was found" });
+        .json({ message: 'no scout with that id was found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   next();
 };
@@ -428,30 +428,30 @@ const ValidateAddUser = async (req, res, next) => {
     return res.status(400).json({ message: "All fields are required" });
   }
   if (!validate.isEmail(email)) {
-    return res.status(400).json({ message: "Invalid email" });
+    return res.status(400).json({ message: 'Invalid email' });
   }
   try {
     const query = `SELECT * FROM "User" WHERE "email" = $1`;
     const params = [email.toLowerCase()];
     const result = await db.query(query, params);
     if (result.rows.length > 0)
-      return res.status(400).json({ message: "User Already Exists" });
+      return res.status(400).json({ message: 'User Already Exists' });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   if (!validate.isAlpha(Fname) || !validate.isAlpha(Lname)) {
     return res
       .status(400)
-      .json({ message: "First name and last name must be alphabets" });
+      .json({ message: 'First name and last name must be alphabets' });
   }
   if (!validate.isMobilePhone(Phonenum)) {
-    return res.status(400).json({ message: "Invalid phone number" });
+    return res.status(400).json({ message: 'Invalid phone number' });
   }
   if (!validate.isStrongPassword(password)) {
     return res.status(400).json({
       message:
-        "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+        'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character',
     });
   }
   next();
@@ -464,16 +464,16 @@ const validateParentScout = async (req, res, next) => {
   if (!id || !scout_id) {
     return res
       .status(400)
-      .json({ message: "scout and parent ids are required" });
+      .json({ message: 'scout and parent ids are required' });
   }
 
   if (!validate.isInt(id)) {
-    return res.status(400).json({ message: "Invalid parent id" });
+    return res.status(400).json({ message: 'Invalid parent id' });
   }
   if (!validate.isInt(scout_id)) {
-    return res.status(400).json({ message: "Invalid scout id" });
+    return res.status(400).json({ message: 'Invalid scout id' });
   }
-  const allowedRelationship = ["Father", "Mother"];
+  const allowedRelationship = ['Father', 'Mother'];
   if (!allowedRelationship.includes(relationship)) {
     return res
       .status(400)
@@ -487,11 +487,11 @@ const validateParentScout = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res
         .status(409)
-        .json({ message: "no parent with that id was found" });
+        .json({ message: 'no parent with that id was found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 
   try {
@@ -501,11 +501,11 @@ const validateParentScout = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res
         .status(409)
-        .json({ message: "no scout with that id was found" });
+        .json({ message: 'no scout with that id was found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   next();
 };
@@ -514,11 +514,11 @@ const validateParentID = async (req, res, next) => {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(400).json({ message: "parent id is required" });
+    return res.status(400).json({ message: 'parent id is required' });
   }
 
   if (!validate.isInt(id)) {
-    return res.status(400).json({ message: "Invalid parent id" });
+    return res.status(400).json({ message: 'Invalid parent id' });
   }
 
   try {
@@ -528,11 +528,11 @@ const validateParentID = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res
         .status(409)
-        .json({ message: "no parent with that id was found" });
+        .json({ message: 'no parent with that id was found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   next();
 };
@@ -548,41 +548,41 @@ const validateAddScout = async (req, res, next) => {
     !academicYear ||
     !joinDate
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isInt(User_ID)) {
-    return res.status(400).json({ message: "Invalid User ID" });
+    return res.status(400).json({ message: 'Invalid User ID' });
   }
   try {
     const query = `SELECT * FROM "User" WHERE "User_ID" = $1`;
     const params = [User_ID];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "User not found" });
+      return res.status(409).json({ message: 'User not found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   try {
     const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
     const params = [User_ID];
     const result = await db.query(query, params);
     if (result.rows.length > 0) {
-      return res.status(409).json({ message: "Scout already exists" });
+      return res.status(409).json({ message: 'Scout already exists' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   if (!validate.isBoolean(PaperSubmitted)) {
-    return res.status(400).json({ message: "Invalid PaperSubmitted" });
+    return res.status(400).json({ message: 'Invalid PaperSubmitted' });
   }
   if (!validate.isDate(Birthdate)) {
-    return res.status(400).json({ message: "Invalid Birthdate" });
+    return res.status(400).json({ message: 'Invalid Birthdate' });
   }
   if (!validate.isDate(joinDate)) {
-    return res.status(400).json({ message: "Invalid joinDate" });
+    return res.status(400).json({ message: 'Invalid joinDate' });
   }
   next();
 };
@@ -590,33 +590,33 @@ const validateAddScout = async (req, res, next) => {
 const validateAddTroop = async (req, res, next) => {
   const { Troop_ID, Tname, type, max_Members, ScoutLeader_ID } = req.body;
   if (!Troop_ID || !Tname || !type || !max_Members || !ScoutLeader_ID) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isInt(Troop_ID)) {
-    return res.status(400).json({ message: "Invalid Troop ID" });
+    return res.status(400).json({ message: 'Invalid Troop ID' });
   }
   if (!validate.isAlpha(Tname)) {
-    return res.status(400).json({ message: "Invalid Troop Name" });
+    return res.status(400).json({ message: 'Invalid Troop Name' });
   }
   if (!validate.isAlpha(type)) {
-    return res.status(400).json({ message: "Invalid Troop Type" });
+    return res.status(400).json({ message: 'Invalid Troop Type' });
   }
   if (!validate.isInt(max_Members)) {
-    return res.status(400).json({ message: "Invalid Max Members" });
+    return res.status(400).json({ message: 'Invalid Max Members' });
   }
   if (!validate.isInt(ScoutLeader_ID)) {
-    return res.status(400).json({ message: "Invalid Scout Leader ID" });
+    return res.status(400).json({ message: 'Invalid Scout Leader ID' });
   }
   try {
     const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
     const params = [ScoutLeader_ID];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "Scout Leader not found" });
+      return res.status(409).json({ message: 'Scout Leader not found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   next();
 };
@@ -624,22 +624,22 @@ const validateAddTroop = async (req, res, next) => {
 const validateUpdateTroop = async (req, res, next) => {
   const { Tname, type, max_Members, ScoutLeader_ID } = req.body;
   if (!Tname && !type && !max_Members && !ScoutLeader_ID) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (ScoutLeader_ID) {
     if (!validate.isInt(ScoutLeader_ID)) {
-      return res.status(400).json({ message: "Invalid Scout Leader ID" });
+      return res.status(400).json({ message: 'Invalid Scout Leader ID' });
     }
     try {
       const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
       const params = [ScoutLeader_ID];
       const result = await db.query(query, params);
       if (result.rows.length === 0) {
-        return res.status(409).json({ message: "Scout Leader not found" });
+        return res.status(409).json({ message: 'Scout Leader not found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   next();
@@ -649,35 +649,35 @@ const validateAddScouttoTroop = async (req, res, next) => {
   const { Scout_ID, participationDate } = req.body;
   const { id } = req.params;
   if (!Scout_ID || !participationDate) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isInt(Scout_ID)) {
-    return res.status(400).json({ message: "Invalid Scout ID" });
+    return res.status(400).json({ message: 'Invalid Scout ID' });
   }
   try {
     const query = `SELECT * FROM "Troop" WHERE "Troop_ID" = $1`;
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "Troop not found" });
+      return res.status(409).json({ message: 'Troop not found' });
     }
   } catch (err) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   try {
     const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
     const params = [Scout_ID];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "Scout not found" });
+      return res.status(409).json({ message: 'Scout not found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   if (!validate.isDate(participationDate)) {
-    return res.status(400).json({ message: "Invalid Participation Date" });
+    return res.status(400).json({ message: 'Invalid Participation Date' });
   }
   next();
 };
