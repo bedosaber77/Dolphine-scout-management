@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../config/DBmanager");
 const jwtGenerator = require("../utils/jwtGenerator");
+const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   const { email, Fname, Lname, password, PhoneNum } = req.body;
@@ -18,7 +19,7 @@ exports.register = async (req, res) => {
     const result = await db.query(query, params);
     return res.status(201).json({
       message: "User registered successfully",
-      user: { id: result.rows[0].User_ID, email, Fname, Lname }, // needed to revisit this
+      // needed to revisit this
     });
   } catch (error) {
     console.log("Error executing query", error);
@@ -40,10 +41,11 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    const token = jwtGenerator(user.User_ID);
-    res.cookie("token", token, {
+    const accessToken = jwtGenerator(user, "30 min");
+    const refreshToken = jwtGenerator(user, "7d");
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(200).json({
       message: "User logged in successfully",
@@ -54,6 +56,7 @@ exports.login = async (req, res) => {
         Lname: user.Lname,
         role: user.role,
       },
+      accessToken,
     });
   } catch (error) {
     console.log("Error executing query", error);
@@ -84,4 +87,25 @@ exports.updatePassword = async (req, res) => {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
   }
+};
+
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.cookies;
+  console.log(refreshToken);
+  if (!refreshToken) {
+    return res.status(401).json({ message: "Unauthorized - Token not found" });
+  }
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const accessToken = jwtGenerator(decoded.user, "30 min");
+    return res.status(200).json({ accessToken });
+  } catch (error) {
+    console.error("Error verifying token", error);
+    return res.status(401).json({ message: "Unauthorized - Invalid token" });
+  }
+};
+
+exports.logout = async (req, res) => {
+  res.clearCookie("refreshToken");
+  return res.status(200).json({ message: "User logged out successfully" });
 };

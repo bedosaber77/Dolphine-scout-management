@@ -19,5 +19,6 @@ Router.put(
   validateUpdatePassword,
   authController.updatePassword
 );
-
+Router.post("/refreshToken", authController.refreshToken);
+Router.post("/logout", authController.logout);
 module.exports = Router;

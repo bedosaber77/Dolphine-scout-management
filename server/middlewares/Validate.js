@@ -424,12 +424,21 @@ const validateScoutID = async (req, res, next) => {
 
 const ValidateAddUser = async (req, res, next) => {
   const { email, password, Fname, Lname, role, Phonenum } = req.body;
-  console.log(req.body, email, password, Fname, Lname, role, Phonenum);
   if (!email || !password || !Fname || !Lname || !role || !Phonenum) {
     return res.status(400).json({ message: "All fields are required" });
   }
   if (!validate.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email" });
+  }
+  try {
+    const query = `SELECT * FROM "User" WHERE "email" = $1`;
+    const params = [email.toLowerCase()];
+    const result = await db.query(query, params);
+    if (result.rows.length > 0)
+      return res.status(400).json({ message: "User Already Exists" });
+  } catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
   if (!validate.isAlpha(Fname) || !validate.isAlpha(Lname)) {
     return res
@@ -541,14 +550,6 @@ const validateAddScout = async (req, res, next) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
-  console.log(
-    typeof User_ID,
-    rank,
-    PaperSubmitted,
-    Birthdate,
-    academicYear,
-    joinDate
-  );
   if (!validate.isInt(User_ID)) {
     return res.status(400).json({ message: "Invalid User ID" });
   }
@@ -558,6 +559,17 @@ const validateAddScout = async (req, res, next) => {
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
       return res.status(409).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  try {
+    const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    const params = [User_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length > 0) {
+      return res.status(409).json({ message: "Scout already exists" });
     }
   } catch (error) {
     console.log("Error executing query", error);
