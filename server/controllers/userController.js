@@ -37,20 +37,22 @@ exports.getUserById = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   const { email, password, Fname, Lname, role, Phonenum } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const query = `INSERT INTO "User" ("email", "password", "Fname", "Lname", "role", "Phonenum") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`; // return inserted User
     const params = [
       email.toLowerCase(),
-      password,
+      hashedPassword,
       Fname,
       Lname,
       role,
       Phonenum,
     ];
     const result = await db.query(query, params);
+    const { password, ...rest } = result.rows[0];
     return res
       .status(201)
-      .json({ message: "Added User successfully", User: result[0] });
+      .json({ message: "Added User successfully", User: rest });
   } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -99,7 +101,11 @@ exports.updateUser = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
-    return res.json(result.rows[0]);
+    const { password, ...rest } = result.rows[0];
+    return res.json({
+      message: "User updated successfully",
+      User: rest,
+    });
   } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -116,9 +122,10 @@ exports.deleteUser = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
+    const { password, ...rest } = result.rows[0];
     return res.json({
       message: "User deleted successfully",
-      User: result.rows[0],
+      User: rest,
     });
   } catch (error) {
     console.log("Error executing query", error);
