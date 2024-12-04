@@ -4,6 +4,8 @@ import MainLayout from "../components/MainLayout";
 import AboutUs from "../pages/aboutUs";
 import ScoutDashboard from "../pages/scoutDashboard"
 import ProtectedRoute from "./protectedRoute";
+import { Navigate } from "react-router-dom";
+
 const routes = [
     {
         path: '/',
@@ -16,7 +18,7 @@ const routes = [
 
             {
                 path: '/login',
-                element: <Login />
+                element: (!localStorage.getItem('site')) ? <Login /> : <Navigate to="/" replace={true} />
             },
             {
                 path: '/aboutUs',

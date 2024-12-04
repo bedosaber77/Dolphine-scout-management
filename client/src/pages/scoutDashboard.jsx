@@ -49,7 +49,7 @@ const ScoutDashboard = () => {
         <button onClick={() => auth.logOut(path => navigate(path))} className="btn-submit">
           logout
         </button>
-        <h1>hello{auth.user.name}</h1>
+        {auth.user ? <h1>Welcome, {auth.user.name}</h1> : <h1>Loading...</h1>}
         <Row>
           <Col>
             <h1>الصفحة الشخصية</h1>
