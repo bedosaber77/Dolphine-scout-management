@@ -1,0 +1,37 @@
+.loginForm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.form-label {
+  color: var(--bs-secondary);
+}
+
+h2 {
+  color: var(--bs-light);
+}
+
+span {
+  color: red;
+  font-size: 12px;
+  padding: 3px;
+  display: none;
+}
+
+input:invalid[focused='true'] {
+  border: 1px solid red;
+}
+input:invalid[focused='false'] {
+  border: 1px solid green;
+}
+
+input:invalid[focused='true'] ~ span {
+  display: block;
+}
