@@ -91,7 +91,6 @@ exports.updatePassword = async (req, res) => {
 
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.cookies;
-  console.log(refreshToken);
   if (!refreshToken) {
     return res.status(401).json({ message: "Unauthorized - Token not found" });
   }

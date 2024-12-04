@@ -45,6 +45,9 @@ exports.addScout = async (req, res) => {
       joinDate,
     ];
     const result = await db.query(query, params);
+    const query2 = `Update "User" Set "role" ='Scout' Where "User_ID" = $1`;
+    const params2 = [User_ID];
+    await db.query(query2, params2);
     return res
       .status(201)
       .json({ message: "Added Scout successfully", Scout: result.rows[0] });
