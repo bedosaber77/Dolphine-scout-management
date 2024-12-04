@@ -1,12 +1,23 @@
 const express = require("express");
 const scoutController = require("../controllers/scoutController");
-const { validateAddScout } = require("../middlewares/Validate");
+const { validateAddScout, validateScoutID, validateScoutAchievement } = require("../middlewares/Validate");
 const Router = express.Router();
 
-Router.get("/", scoutController.getAllScouts);
-Router.get("/:id", scoutController.getScoutbyId);
-Router.post("/", validateAddScout, scoutController.addScout);
-Router.put("/:id", scoutController.updateScout);
-Router.delete("/:id", scoutController.deleteScout);
+Router.route("/")
+    .get(scoutController.getAllScouts)
+    .post(validateAddScout, scoutController.addScout);
+
+Router.route("/:id")
+    .get(scoutController.getScoutbyId)
+    .put(scoutController.updateScout)
+    .delete(scoutController.deleteScout);
+
+Router.route("/:id/achievements")
+    .get(validateScoutID, scoutController.getScoutAchievements)
+    .post(validateScoutAchievement, scoutController.addScoutAchievement);
+
+Router.route("/:id/achievements:achievement_id")
+    .delete(scoutController.deleteScoutAchievement);
+
 
 module.exports = Router;
