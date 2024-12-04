@@ -12,6 +12,7 @@ const userRouter = require("./userRoute");
 const scoutRouter = require("./scoutRoute");
 const troopRouter = require("./troopRoute");
 const scoutLeaderRouter = require("./scoutleaderRoute");
+const eventRouter = require("./eventRoute");
 const authorization = require("../middlewares/authorization");
 
 apiRouter.use("/auth", authRouter);
@@ -27,5 +28,5 @@ apiRouter.use("/parents/:id/scouts", parentScoutRouter);
 apiRouter.use("/scouts", authorization, scoutRouter);
 apiRouter.use("/troops", authorization, troopRouter);
 apiRouter.use("/scoutleaders", authorization, scoutLeaderRouter);
-
+apiRouter.use("/events", authorization, eventRouter);
 module.exports = apiRouter;
