@@ -3,6 +3,7 @@ const db = require('../config/DBmanager');
 
 const validateRegister = async (req, res, next) => {
   const { email, Fname, Lname, password, Phonenum } = req.body;
+  console.log(req.body);
   if (!email || !Fname || !Lname || !password || !Phonenum) {
     return res.status(400).json({ message: 'All fields are required' });
   }
