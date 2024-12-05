@@ -1,13 +1,9 @@
-import { Form, useNavigate } from 'react-router-dom';
 import '../styles/formInputs.css';
 import { useState } from 'react';
-
-import FormInput from '../components/FormInput';
 import { useAuth } from '../hooks/AuthProvider';
-
+import { useNavigate, NavLink } from 'react-router-dom';
+import FormInput from '../components/FormInput';
 const Register = () => {
-  const auth = useAuth();
-  const navigate = useNavigate();
   const [values, setValues] = useState({
     Fname: '',
     Lname: '',
@@ -16,59 +12,65 @@ const Register = () => {
     password: '',
     confirmPassword: '',
   });
+
+  const auth = useAuth();
+  const navigate = useNavigate();
+
   const registerInputs = [
     {
       id: 0,
       name: 'Fname',
       type: 'text',
-      label: 'First Name',
-      pattern: `^[A-Za-z.-]+(\\s*[A-Za-z.-]+)*$`,
-      errorMessage: "Your Name shouldn't have neither numbers no symbols!",
+      label: 'الاسم الاول',
+      pattern: `^[\u0621-\u064A]+$`,
+      errorMessage:
+        'الاسم يجب ان يكون باللغة العربية ولا يحتوي علي ارقام او رموز',
       required: true,
     },
     {
       id: 1,
       name: 'Lname',
       type: 'text',
-      label: 'Last Name',
-      pattern: `^[A-Za-z.-]+(\\s*[A-Za-z.-]+)*$`,
-      errorMessage: "Your Name shouldn't have neither numbers no symbols!",
+      label: 'الاسم الاخير',
+      pattern: `^[\u0621-\u064A]+$`,
+      errorMessage:
+        'الاسم يجب ان يكون باللغة العربية ولا يحتوي علي ارقام او رموز',
       required: true,
     },
     {
       id: 2,
       name: 'email',
       type: 'email',
-      label: 'Email',
-      errorMessage: 'Enter a valid email address!',
+      label: 'الحساب الالكتروني',
+      errorMessage: 'ادخل حساب الكتروني صحيح   (example@example.com)',
       required: true,
     },
     {
       id: 3,
       name: 'Phonenum',
-      type: 'Phonenum',
-      label: 'Phone Number',
+      type: 'tel',
+      label: 'رقم الهاتف',
       pattern: `^(010|011|012|015)\\d{8}$`,
-      errorMessage: 'Enter a valid Phone Number!',
+      errorMessage: 'ادخل رقم هاتف صحيح',
       required: true,
     },
     {
       id: 4,
       name: 'password',
       type: 'password',
-      label: 'Password',
+      label: 'كلمة السر',
       pattern: `^(?=.*[A-Z])(?=.*[a-z])(?=.*\\W).{8,20}$`,
       errorMessage:
-        'Password should be 8~20 characters and include at least 1 UpperCase letter, 1 LowerCase letter and 1 symbol!',
+        'Password should be 8-20 characters and include at least 1 uppercase letter, 1 lowercase letter, and 1 symbol',
       required: true,
     },
     {
       id: 5,
       name: 'confirmPassword',
       type: 'password',
-      label: 'Confirm Password',
+      label: 'تاكيد كلمة السر ',
       pattern: values.password,
-      errorMessage: "Passwords don't match",
+      errorMessage: 'كلمة السر غير متطابقة',
       required: true,
     },
   ];
@@ -79,31 +81,51 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (values.password !== values.confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+
     auth.registerAction(values, (path) => navigate(path));
-    console.log(auth.isAuthenticated);
-    return;
   };
 
-  console.log(values);
-
   return (
-    <div className="login">
-      <Form className="loginForm " onSubmit={handleSubmit} method="post">
-        <h2 className="text-center  mb-4" dir="rtl">
-          تسجيل حساب
-        </h2>
+    <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800">
+      <div className="mb-8 text-center">
+        <h1
+          className="my-3 text-4xl font-bold "
+          style={{ color: 'var(text-primary)' }}
+        >
+          Sign up
+        </h1>
+        <p className="text-sm text-gray-600">Create a new account</p>
+      </div>
+      <form noValidate="" onSubmit={handleSubmit} className="space-y-4">
         {registerInputs.map((input) => (
           <FormInput
             key={input.id}
             {...input}
             value={values[input.name] || ''}
             onChange={onChange}
-          ></FormInput>
+          />
         ))}
-        <button type="submit" className="btn btn-primary w-auto ">
-          تسجيل حساب
-        </button>
-      </Form>
+        <div className="space-y-2">
+          <button
+            type="submit"
+            className="w-full px-8 py-3 font-semibold rounded-md text-white"
+            style={{ backgroundColor: 'var(--secondary-color)' }}
+          >
+            Sign up
+          </button>
+          <p className="text-sm text-center text-gray-600">
+            Already have an account?{' '}
+            <NavLink to="/login" className="text-primary hover:underline">
+              Sign in
+            </NavLink>
+          </p>
+        </div>
+      </form>
     </div>
   );
 };

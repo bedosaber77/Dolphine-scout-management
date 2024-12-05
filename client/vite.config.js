@@ -9,4 +9,11 @@ export default defineConfig({
       '/api': 'http://localhost:3000',
     },
   },
+  css: {
+    preprocessorOptions: {
+      css: {
+        additionalData: `@import "./src/styles/global.css";`, // Automatically include your global styles
+      },
+    },
+  },
 });
