@@ -1,29 +1,26 @@
-import Form from "react-bootstrap/Form";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
-import "../styles/login.css";
-import { useState } from "react";
-import { useAuth } from "../hooks/AuthProvider";
-import { useNavigate } from "react-router-dom";
-
-
+import Form from 'react-bootstrap/Form';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import '../styles/formInputs.css';
+import { useState } from 'react';
+import { useAuth } from '../hooks/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const auth = useAuth();
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email !== "" && password !== "") {
+    if (email !== '' && password !== '') {
       const input = { email, password };
       auth.loginAction(input, (path) => navigate(path));
+      console.log(auth.isAuthenticated);
       return;
     }
-    alert("please provide a valid input");
-  }
+    alert('please provide a valid input');
+  };
 
   return (
     <div className="login">
@@ -39,7 +36,12 @@ const Login = () => {
             label="الحساب الالكتروني"
             className="mb-3 form-label"
           >
-            <Form.Control type="email" placeholder="name@example.com" value={email} onChange={e => setEmail(e.target.value)} />
+            <Form.Control
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </FloatingLabel>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formPassword">
@@ -50,7 +52,12 @@ const Login = () => {
             label="كلمة السر"
             className="mb-3 form-label"
           >
-            <Form.Control type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </FloatingLabel>
         </Form.Group>
         <Form.Group className="mb-3" dir="rtl" controlId="checkBoxStaySigned">
