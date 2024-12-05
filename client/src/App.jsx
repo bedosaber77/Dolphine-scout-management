@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import AuthProvider from './hooks/AuthProvider';
 import AppRoutes from './routers/routes';
-import './styles/App.css';
 
 function App() {
   return (

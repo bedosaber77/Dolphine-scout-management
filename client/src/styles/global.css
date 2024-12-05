@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --text-primary: #000000; /* Example color */
+  --background: #3572ef;
+  --border-secondary: #cccccc;
+  --secondary-color: #3572ef;
+  --secondary-hover: #3abef9;
+  --input-bg: #f9f9f9; /* or dark version */
+}
+
+a {
+  text-decoration: none;
+}
+/* .bg-background {
+  background-color: var(--background-color);
+}
+
+.nav-link {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary-color);
+}
+
+/* Button styles */
+/* .btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-color);
+}
+
+.btn-outline {
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  background-color: transparent;
+}
+
+.btn-outline:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c53030; /* Darker red */
