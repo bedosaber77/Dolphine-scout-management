@@ -43,7 +43,7 @@ exports.getParentById = async (req, res) => {
                     FROM "User" U
                     INNER JOIN "Parent" P
                     ON U."User_ID" = P."User_ID"
-                    WHERE "Parent_ID" = $1`;
+                    WHERE P."User_ID" = $1`;
     const params = [id];
     const result = await db.query(query, params);
 
