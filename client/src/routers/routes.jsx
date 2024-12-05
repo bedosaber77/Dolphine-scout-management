@@ -1,27 +1,28 @@
-import Home from '../pages/Home';
-import Login from '../pages/Login';
-import MainLayout from '../components/MainLayout';
-import AboutUs from '../pages/AboutUs';
-import ScoutDashboard from '../pages/ScoutDashboard';
-import ProtectedRoute from './protectedRoute';
-import Register from '../pages/Register';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthProvider';
+import Home from "../pages/Home";
+import Login from "../pages/Login";
+import MainLayout from "../components/MainLayout";
+import AboutUs from "../pages/AboutUs";
+import ScoutDashboard from "../pages/ScoutDashboard";
+import ProtectedRoute from "./protectedRoute";
+import Register from "../pages/Register";
+import Event from "../pages/Event";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/AuthProvider";
 
 const AppRoutes = () => {
   const auth = useAuth();
 
   const routes = [
     {
-      path: '/',
+      path: "/",
       element: <MainLayout />,
       children: [
         {
-          path: '',
+          path: "",
           element: <Home />,
         },
         {
-          path: '/login',
+          path: "/login",
           element: !auth.isAuthenticated ? (
             <Login />
           ) : (
@@ -29,7 +30,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: '/register',
+          path: "/register",
           // action: registerAction,
           // element: !auth.isAuthenticated ? (
           element: <Register />,
@@ -38,18 +39,22 @@ const AppRoutes = () => {
           // ),
         },
         {
-          path: '/aboutUs',
+          path: "/aboutUs",
           element: <AboutUs />,
         },
         {
-          path: '/scoutDashboard',
+          path: "/scoutDashboard",
           element: <ProtectedRoute />,
           children: [
             {
-              path: '',
+              path: "",
               element: <ScoutDashboard />,
             },
           ],
+        },
+        {
+          path: "/event",
+          element: <Event />,
         },
       ],
     },
