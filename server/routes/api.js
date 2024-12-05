@@ -11,6 +11,7 @@ const apiRouter = require("express").Router();
 const userRouter = require("./userRoute");
 const scoutRouter = require("./scoutRoute");
 const troopRouter = require("./troopRoute");
+const scoutLeaderRouter = require("./scoutleaderRoute");
 const authorization = require("../middlewares/authorization");
 
 apiRouter.use("/auth", authRouter);
@@ -25,5 +26,6 @@ apiRouter.use("/users", authorization, userRouter);
 apiRouter.use("/parents", parentRouter);
 apiRouter.use("/scouts", authorization, scoutRouter);
 apiRouter.use("/troops", authorization, troopRouter);
+apiRouter.use("/scoutleaders", authorization, scoutLeaderRouter);
 
 module.exports = apiRouter;
