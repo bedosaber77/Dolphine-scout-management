@@ -6,12 +6,12 @@ const mediaRouter = require("./mediaRoute");
 const sponsorRouter = require("./sponsorRoute");
 const transactionRouter = require("./transactionRoute");
 const locationRouter = require("./locationRoute");
-const scoutAchievementsRouter = require("./scoutAchievementsRoute");
 const parentScoutRouter = require("./parentScoutRoute");
 const apiRouter = require("express").Router();
 const userRouter = require("./userRoute");
 const scoutRouter = require("./scoutRoute");
 const troopRouter = require("./troopRoute");
+const scoutLeaderRouter = require("./scoutleaderRoute");
 const authorization = require("../middlewares/authorization");
 
 apiRouter.use("/auth", authRouter);
@@ -22,10 +22,10 @@ apiRouter.use("/media", mediaRouter);
 apiRouter.use("/sponsors", sponsorRouter);
 apiRouter.use("/transactions", transactionRouter);
 apiRouter.use("/locations", locationRouter);
-apiRouter.use("/scouts/:id/achievements", scoutAchievementsRouter);
 apiRouter.use("/users", authorization, userRouter);
 apiRouter.use("/parents/:id/scouts", parentScoutRouter);
 apiRouter.use("/scouts", authorization, scoutRouter);
 apiRouter.use("/troops", authorization, troopRouter);
+apiRouter.use("/scoutleaders", authorization, scoutLeaderRouter);
 
 module.exports = apiRouter;
