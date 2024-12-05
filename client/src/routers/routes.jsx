@@ -1,42 +1,61 @@
-import Home from "../pages/home";
-import Login from "../pages/login";
-import MainLayout from "../components/MainLayout";
-import AboutUs from "../pages/aboutUs";
-import ScoutDashboard from "../pages/scoutDashboard"
-import ProtectedRoute from "./protectedRoute";
-import { Navigate } from "react-router-dom";
+import Home from '../pages/Home';
+import Login from '../pages/Login';
+import MainLayout from '../components/MainLayout';
+import AboutUs from '../pages/AboutUs';
+import ScoutDashboard from '../pages/ScoutDashboard';
+import ProtectedRoute from './protectedRoute';
+import Register from '../pages/Register';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthProvider';
 
-const routes = [
+const AppRoutes = () => {
+  const auth = useAuth();
+
+  const routes = [
     {
-        path: '/',
-        element: <MainLayout />,
-        children: [
+      path: '/',
+      element: <MainLayout />,
+      children: [
+        {
+          path: '',
+          element: <Home />,
+        },
+        {
+          path: '/login',
+          element: !auth.isAuthenticated ? (
+            <Login />
+          ) : (
+            <Navigate to="/" replace={true} />
+          ),
+        },
+        {
+          path: '/register',
+          // action: registerAction,
+          // element: !auth.isAuthenticated ? (
+          element: <Register />,
+          // ) : (
+          //   <Navigate to="/" replace={true} />
+          // ),
+        },
+        {
+          path: '/aboutUs',
+          element: <AboutUs />,
+        },
+        {
+          path: '/scoutDashboard',
+          element: <ProtectedRoute />,
+          children: [
             {
-                path: '',
-                element: <Home />
+              path: '',
+              element: <ScoutDashboard />,
             },
-
-            {
-                path: '/login',
-                element: (!localStorage.getItem('site')) ? <Login /> : <Navigate to="/" replace={true} />
-            },
-            {
-                path: '/aboutUs',
-                element: <AboutUs />
-            },
-            {
-                path: '/scoutDashboard',
-                element: <ProtectedRoute />,
-                children: [
-                    {
-                        path: '',
-                        element: <ScoutDashboard />
-                    }
-                ]
-            }
-
-        ]
+          ],
+        },
+      ],
     },
-];
+  ];
 
-export default routes
+  return routes;
+};
+
+export default AppRoutes;

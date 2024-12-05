@@ -1,0 +1,19 @@
+/* .App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  flex-shrink: 0; /* Ensures the header is not overlapped 
+}*/
+/*
+.mainLayout {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
+body {
+  background-color: #fff;
+}
