@@ -4,11 +4,12 @@
 
 :root {
   --text-primary: #000000; /* Example color */
-  --background: #3572ef;
-  --border-secondary: #cccccc;
+  /* --background: #3572ef; */
+  --background: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+  /* --border-secondary: #cccccc; */
   --secondary-color: #3572ef;
   --secondary-hover: #3abef9;
-  --input-bg: #f9f9f9; /* or dark version */
+  /* --input-bg: #f9f9f9; or dark version */
 }
 
 a {

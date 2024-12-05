@@ -701,8 +701,6 @@ const validateAddScoutleader = async (req, res, next) => {
   } catch (error) {
     console.log('Error executing query', error);
     return res.status(500).json({ message: 'Internal server error' });
-    console.log('Error executing query', error);
-    return res.status(500).json({ message: 'Internal server error' });
   }
   if (!validate.isBoolean(isAdmin)) {
     return res.status(400).json({ message: 'Invalid isAdmin' });
@@ -753,10 +751,7 @@ const validateAddEvent = async (req, res, next) => {
     console.log('Error executing query', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-  if (!validate.isBoolean(isAdmin)) {
-    return res.status(400).json({ message: 'Invalid isAdmin' });
-    next();
-  }
+  next();
 };
 
 const validateAddEventAttendace = async (req, res, next) => {

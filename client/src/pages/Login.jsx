@@ -23,10 +23,21 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800">
+    <div
+      className="flex flex-col max-w-md p-6 rounded-md sm:p-10"
+      style={{
+        backgroundColor: 'var(--background)',
+        color: 'var(--text-primary)',
+      }}
+    >
       <div className="mb-8 text-center">
-        <h1 className="my-3 text-4xl font-bold">Sign in</h1>
-        <p className="text-sm dark:text-gray-600">
+        <h1
+          className="my-3 text-4xl font-bold"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          Sign in
+        </h1>
+        <p className="text-sm" style={{ color: 'var(--secondary-color)' }}>
           Sign in to access your account
         </p>
       </div>
@@ -79,7 +90,8 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full px-8 py-3 font-semibold rounded-md dark:bg-violet-600 dark:text-gray-50"
+              className="w-full px-8 py-3 font-semibold rounded-md dark:text-gray-50"
+              style={{ backgroundColor: 'var(--secondary-color)' }}
             >
               Sign in
             </button>

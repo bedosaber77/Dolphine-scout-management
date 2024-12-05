@@ -93,7 +93,12 @@ const Register = () => {
   return (
     <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800">
       <div className="mb-8 text-center">
-        <h1 className="my-3 text-4xl font-bold text-primary">Sign up</h1>
+        <h1
+          className="my-3 text-4xl font-bold "
+          style={{ color: 'var(text-primary)' }}
+        >
+          Sign up
+        </h1>
         <p className="text-sm text-gray-600">Create a new account</p>
       </div>
       <form noValidate="" onSubmit={handleSubmit} className="space-y-4">
@@ -108,7 +113,8 @@ const Register = () => {
         <div className="space-y-2">
           <button
             type="submit"
-            className="w-full px-8 py-3 font-semibold rounded-md dark:bg-primary text-white"
+            className="w-full px-8 py-3 font-semibold rounded-md text-white"
+            style={{ backgroundColor: 'var(--secondary-color)' }}
           >
             Sign up
           </button>
