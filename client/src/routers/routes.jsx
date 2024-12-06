@@ -7,7 +7,15 @@ import ProtectedRoute from './protectedRoute';
 import Register from '../pages/Register';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthProvider';
-import AdminDashboard from '../pages/adminDashboard';
+import AdminDashboard from '../components/AdminDashboardLayout';
+import ScoutsView from '../pages/ScoutsView';
+import ParentsView from '../pages/ParentsView';
+import LeadersView from '../pages/LeadersView';
+import TransactionsView from '../pages/TransactionsView';
+import SponsorHistory from '../pages/SponsorHistory';
+import Announcements from '../pages/Announcements';
+import AddLeaderAccount from '../pages/AddLeaderAccount';
+import WithdrawRequests from '../pages/WithdrawRequests';
 
 const AppRoutes = () => {
   const auth = useAuth();
@@ -55,7 +63,41 @@ const AppRoutes = () => {
         {
           path: '/adminDashboard',
           element: <AdminDashboard />,
-        }
+          children: [
+            {
+              path: 'scouts',
+              element: <ScoutsView />,
+            },
+            {
+              path: 'parents',
+              element: <ParentsView />,
+            },
+            {
+              path: 'leaders',
+              element: <LeadersView />,
+            },
+            {
+              path: 'transactions',
+              element: <TransactionsView />,
+            },
+            {
+              path: 'sponsors',
+              element: <SponsorHistory />,
+            },
+            {
+              path: 'announcements',
+              element: <Announcements />,
+            },
+            {
+              path: 'addLeader',
+              element: <AddLeaderAccount />,
+            },
+            {
+              path: 'requests',
+              element: <WithdrawRequests />,
+            },
+          ],
+        },
       ],
     },
   ];

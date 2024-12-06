@@ -14,26 +14,29 @@ const Sidebar = () => {
     >
       <h2>لوحة التحكم</h2>
       <List>
-        <ListItem button component={Link} to="/scouts">
+        <ListItem button component={Link} to="/adminDashboard/scouts">
           <ListItemText primary="الكشافون" />
         </ListItem>
-        <ListItem button component={Link} to="/parents">
+        <ListItem button component={Link} to="/adminDashboard/parents">
           <ListItemText primary="أولياء الأمور" />
         </ListItem>
-        <ListItem button component={Link} to="/leaders">
+        <ListItem button component={Link} to="/adminDashboard/leaders">
           <ListItemText primary="قادة الكشافين" />
         </ListItem>
-        <ListItem button component={Link} to="/finance">
-          <ListItemText primary="إدارة مالية" />
+        <ListItem button component={Link} to="/adminDashboard/transactions">
+          <ListItemText primary="المعاملات المالية" />
         </ListItem>
-        <ListItem button component={Link} to="/sponsors">
+        <ListItem button component={Link} to="/adminDashboard/sponsors">
           <ListItemText primary="سجل الرعاة" />
         </ListItem>
-        <ListItem button component={Link} to="/announcements">
+        <ListItem button component={Link} to="/adminDashboard/announcements">
           <ListItemText primary="الإعلانات" />
         </ListItem>
-        <ListItem button component={Link} to="/add">
-          <ListItemText primary="إضافة عناصر جديدة" />
+        <ListItem button component={Link} to="/adminDashboard/addLeader">
+          <ListItemText primary="إضافة قائد جديد" />
+        </ListItem>
+        <ListItem button component={Link} to="/adminDashboard/requests">
+          <ListItemText primary="طلبات السحب" />
         </ListItem>
       </List>
     </Box>
