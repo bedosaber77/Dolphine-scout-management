@@ -5,6 +5,8 @@ import AboutUs from '../pages/AboutUs';
 import ScoutDashboard from '../pages/ScoutDashboard';
 import ProtectedRoute from './protectedRoute';
 import Register from '../pages/Register';
+import Events from "../pages/Events";
+import Event from "../pages/Event";
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthProvider';
 import AdminDashboard from '../components/AdminDashboardLayout';
@@ -22,20 +24,21 @@ import Equipment from '../pages/Equipment';
 import Troops from '../pages/Troops';
 import Statistics from '../pages/Statistics';
 
+
 const AppRoutes = () => {
   const auth = useAuth();
 
   const routes = [
     {
-      path: '/',
+      path: "/",
       element: <MainLayout />,
       children: [
         {
-          path: '',
+          path: "",
           element: <Home />,
         },
         {
-          path: '/login',
+          path: "/login",
           element: !auth.isAuthenticated ? (
             <Login />
           ) : (
@@ -43,7 +46,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: '/register',
+          path: "/register",
           // action: registerAction,
           // element: !auth.isAuthenticated ? (
           element: <Register />,
@@ -52,15 +55,15 @@ const AppRoutes = () => {
           // ),
         },
         {
-          path: '/aboutUs',
+          path: "/aboutUs",
           element: <AboutUs />,
         },
         {
-          path: '/scoutDashboard',
-          // element: <ProtectedRoute />,
+          path: "/scoutDashboard",
+          element: <ProtectedRoute />,
           children: [
             {
-              path: '',
+              path: "",
               element: <ScoutDashboard />,
             },
           ],
@@ -122,7 +125,20 @@ const AppRoutes = () => {
               element: <Statistics />,
             },
           ],
+          
         },
+        {
+          path: "/events",
+          element: <Events />,
+        },
+        {
+          path: "events/:id",
+          element: <Event />,
+          loader: ({ params }) => {
+            const { id } = params;
+            return { id };
+          },
+        }
       ],
     },
   ];
