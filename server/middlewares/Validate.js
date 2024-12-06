@@ -3,6 +3,7 @@ const db = require("../config/DBmanager");
 
 const validateRegister = async (req, res, next) => {
   const { email, Fname, Lname, password, Phonenum } = req.body;
+  console.log(req.body);
   if (!email || !Fname || !Lname || !password || !Phonenum) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -425,7 +426,7 @@ const validateScoutID = async (req, res, next) => {
 const ValidateAddUser = async (req, res, next) => {
   const { email, password, Fname, Lname, role, Phonenum } = req.body;
   if (!email || !password || !Fname || !Lname || !Phonenum) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email" });
@@ -685,27 +686,104 @@ const validateAddScouttoTroop = async (req, res, next) => {
 const validateAddScoutleader = async (req, res, next) => {
   const { User_ID, isAdmin, startDate } = req.body;
   if (!User_ID || !isAdmin || !startDate) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isInt(User_ID)) {
-    return res.status(400).json({ message: "Invalid User ID" });
+    return res.status(400).json({ message: 'Invalid User ID' });
   }
   try {
     const query = `SELECT * FROM "User" WHERE "User_ID" = $1`;
     const params = [User_ID];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "User not found" });
+      return res.status(409).json({ message: 'User not found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   if (!validate.isBoolean(isAdmin)) {
-    return res.status(400).json({ message: "Invalid isAdmin" });
+    return res.status(400).json({ message: 'Invalid isAdmin' });
   }
   if (!validate.isDate(startDate)) {
-    return res.status(400).json({ message: "Invalid Start Date" });
+    return res.status(400).json({ message: 'Invalid Start Date' });
+  }
+  next();
+};
+
+const validateAddEvent = async (req, res, next) => {
+  const { Budget, Ename, Edate, Location_ID, ScoutLeader_ID } = req.body;
+  console.log(Budget, Ename, Edate, Location_ID, ScoutLeader_ID);
+  if (!Budget || !Ename || !Edate || !Location_ID || !ScoutLeader_ID) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+  if (!validate.isInt(Budget)) {
+    return res.status(400).json({ message: 'Invalid Budget' });
+  }
+  if (!validate.isDate(Edate)) {
+    return res.status(400).json({ message: 'Invalid Event Date' });
+  }
+  if (!validate.isInt(Location_ID)) {
+    return res.status(400).json({ message: 'Invalid Location ID' });
+  }
+  if (!validate.isInt(ScoutLeader_ID)) {
+    return res.status(400).json({ message: 'Invalid Scout Leader ID' });
+  }
+  try {
+    const query = `SELECT * FROM "Location" WHERE "Location_ID" = $1`;
+    const params = [Location_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Location not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  try {
+    const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
+    const params = [ScoutLeader_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Scout Leader not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  next();
+};
+
+const validateAddEventAttendace = async (req, res, next) => {
+  const { event_id } = req.params;
+  const { Scout_ID } = req.body;
+  if (!Scout_ID) {
+    return res.status(400).json({ message: 'Scout ID is required' });
+  }
+  if (!validate.isInt(Scout_ID)) {
+    return res.status(400).json({ message: 'Invalid Scout ID' });
+  }
+  try {
+    const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    const params = [Scout_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Scout not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  try {
+    const query = `SELECT * FROM "Event" WHERE "Event_ID" = $1`;
+    const params = [event_id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Event not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   next();
 };

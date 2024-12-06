@@ -1,4 +1,4 @@
-h1 {
+/* h1 {
   margin: 40px 0px;
   color: white;
 }
@@ -24,7 +24,6 @@ h4 {
   border: 1px solid #ffffff;
   outline-width: 5px;
   outline-color: #aec6e1;
-  
 }
 
 .achievements-list li,
