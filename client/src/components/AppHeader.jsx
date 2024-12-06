@@ -1,53 +1,63 @@
-import { NavLink } from 'react-router-dom';
-import Nav from 'react-bootstrap/Nav';
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthProvider';
 
 const AppHeader = () => {
   const auth = useAuth();
-  return (
-    <Navbar className="bg-body-tertiary">
-      <Container>
-        <Navbar.Brand>
-          <Nav.Link as={NavLink} to="/">
-            <img
-              src="./src/assets/logo-dolphins-png.png"
-              width="100"
-              height="100"
-              className="d-inline-block align-top"
-              alt="React Bootstrap logo"
-            />
-          </Nav.Link>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="navbar-nav" />
-        <Navbar.Collapse id="navbar-nav">
-          <Nav className="mx-auto">
-            <Nav.Link as={NavLink} to="/#events">
-              الاحداث
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/#news">
-              الاخبار
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/aboutUs">
-              من نحن
-            </Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
+  const navigate = useNavigate();
 
-        {!auth.isAuthenticated && (
-          <Nav className="d-flex align-items-center gap-2">
-            <Button variant="primary" as={NavLink} to="/login">
+  return (
+    <div className="navbar bg-background shadow-md p-4 rtl">
+      {/* Buttons Section */}
+      <div className="navbar-start flex items-center">
+        {!auth.isAuthenticated ? (
+          <div className="flex gap-3">
+            <NavLink
+              to="/login"
+              className="btn-primary px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+            >
               تسجيل الدخول
-            </Button>
-            <Button variant="outline-secondary" as={NavLink} to="/register">
+            </NavLink>
+            <NavLink
+              to="/register"
+              className="btn-outline px-4 py-2 rounded-lg transition-transform transform hover:scale-105"
+            >
               انضم الينا
-            </Button>
-          </Nav>
+            </NavLink>
+          </div>
+        ) : (
+          <button
+            onClick={() => auth.logOut((path) => navigate(path))}
+            className="btn-danger px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+          >
+            تسجيل الخروج
+          </button>
         )}
-      </Container>
-    </Navbar>
+      </div>
+
+      {/* Logo Section */}
+      <div className="navbar-center">
+        <NavLink to="/" className="flex items-center">
+          <img
+            src="./src/assets/logo-dolphins-png.png"
+            alt="Logo"
+            className="h-16 w-auto"
+          />
+        </NavLink>
+      </div>
+
+      {/* Navigation Links */}
+      <div className="navbar-end flex justify-center gap-6">
+        <NavLink to="/#events" className="nav-link">
+          الاحداث
+        </NavLink>
+        <NavLink to="/#news" className="nav-link">
+          الاخبار
+        </NavLink>
+        <NavLink to="/aboutUs" className="nav-link">
+          من نحن
+        </NavLink>
+      </div>
+    </div>
   );
 };
 
