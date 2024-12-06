@@ -24,7 +24,7 @@ const AppHeader = () => {
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Nav className="mx-auto">
-            <Nav.Link as={NavLink} to="/#events">
+            <Nav.Link as={NavLink} to="/events">
               الاحداث
             </Nav.Link>
             <Nav.Link as={NavLink} to="/#news">

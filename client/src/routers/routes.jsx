@@ -5,6 +5,7 @@ import AboutUs from "../pages/AboutUs";
 import ScoutDashboard from "../pages/ScoutDashboard";
 import ProtectedRoute from "./protectedRoute";
 import Register from "../pages/Register";
+import Events from "../pages/Events";
 import Event from "../pages/Event";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthProvider";
@@ -53,8 +54,16 @@ const AppRoutes = () => {
           ],
         },
         {
-          path: "/event",
+          path: "/events",
+          element: <Events />,
+        },
+        {
+          path: "events/:id",
           element: <Event />,
+          loader: ({ params }) => {
+            const { id } = params;
+            return { id };
+          },
         },
       ],
     },

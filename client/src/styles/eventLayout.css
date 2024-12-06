@@ -1,0 +1,65 @@
+.layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 20px;
+  background-color: #fff; /* Light background color */
+}
+
+.eventLayout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff; /* Light background color */
+}
+
+.event-info,
+.meeting-details {
+  background-color: #e6f0ff; /* Light blue background */
+  border-radius: 10px;
+  padding: 20px;
+  width: 40%; /* Adjust the width as needed */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-info h2,
+.meeting-details h2 {
+  color: #04356c;
+  font-size: 24px;
+}
+
+.meeting-details ul {
+  list-style-type: none;
+  padding: 0;
+  font-size: 18px;
+}
+
+.meeting-details a {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 18px;
+  justify-self: end;
+}
+
+.meeting-details a:hover {
+  text-decoration: underline;
+}
+
+.meeting-details li {
+  margin: 10px 0;
+}
+
+.attendance-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.attendance-button:hover {
+  background-color: #0056b3;
+}
