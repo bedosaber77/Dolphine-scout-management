@@ -12,7 +12,7 @@ const AppHeader = () => {
         {!auth.isAuthenticated ? (
           <div className="flex gap-3">
             <NavLink
-              to="/adminDashboard"
+              to="/login"
               className="btn-primary px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
             >
               تسجيل الدخول
