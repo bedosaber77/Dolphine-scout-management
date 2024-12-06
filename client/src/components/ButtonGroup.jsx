@@ -18,11 +18,11 @@ function CustomButtonGroup({ groups }) {
           return (
             <DropdownButton
               as={ButtonGroup}
-              title={`Dropdown ${index + 1}`}
+              title={group[0]}
               id={`dropdown-${index}`}
               key={index}
             >
-              {group.map((item, itemIndex) => (
+              {group.slice(1).map((item, itemIndex) => (
                 <Dropdown.Item eventKey={itemIndex} key={itemIndex}>
                   {item}
                 </Dropdown.Item>
@@ -38,8 +38,7 @@ function CustomButtonGroup({ groups }) {
 CustomButtonGroup.propTypes = {
   groups: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string)
-  ).isRequired, // Array of arrays of strings, required
+  ).isRequired,
 };
 
 export default CustomButtonGroup;
-

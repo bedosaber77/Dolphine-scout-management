@@ -38,7 +38,7 @@ const AppHeader = () => {
 
         {!auth.isAuthenticated && (
           <Nav className="d-flex align-items-center gap-2">
-            <Button variant="primary" as={NavLink} to="/login">
+            <Button variant="primary" as={NavLink} to="/adminDashboard">
               تسجيل الدخول
             </Button>
             <Button variant="outline-secondary" as={NavLink} to="/register">

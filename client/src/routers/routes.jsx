@@ -7,6 +7,7 @@ import ProtectedRoute from './protectedRoute';
 import Register from '../pages/Register';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthProvider';
+import AdminDashboard from '../pages/adminDashboard';
 
 const AppRoutes = () => {
   const auth = useAuth();
@@ -51,6 +52,10 @@ const AppRoutes = () => {
             },
           ],
         },
+        {
+          path: '/adminDashboard',
+          element: <AdminDashboard />,
+        }
       ],
     },
   ];
