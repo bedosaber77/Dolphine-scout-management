@@ -426,7 +426,7 @@ const validateScoutID = async (req, res, next) => {
 const ValidateAddUser = async (req, res, next) => {
   const { email, password, Fname, Lname, role, Phonenum } = req.body;
   if (!email || !password || !Fname || !Lname || !Phonenum) {
-    return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: "All fields are required" });
   }
   if (!validate.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email" });
@@ -686,27 +686,27 @@ const validateAddScouttoTroop = async (req, res, next) => {
 const validateAddScoutleader = async (req, res, next) => {
   const { User_ID, isAdmin, startDate } = req.body;
   if (!User_ID || !isAdmin || !startDate) {
-    return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: "All fields are required" });
   }
   if (!validate.isInt(User_ID)) {
-    return res.status(400).json({ message: 'Invalid User ID' });
+    return res.status(400).json({ message: "Invalid User ID" });
   }
   try {
     const query = `SELECT * FROM "User" WHERE "User_ID" = $1`;
     const params = [User_ID];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: 'User not found' });
+      return res.status(409).json({ message: "User not found" });
     }
   } catch (error) {
-    console.log('Error executing query', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.log("Error executing query", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
   if (!validate.isBoolean(isAdmin)) {
-    return res.status(400).json({ message: 'Invalid isAdmin' });
+    return res.status(400).json({ message: "Invalid isAdmin" });
   }
   if (!validate.isDate(startDate)) {
-    return res.status(400).json({ message: 'Invalid Start Date' });
+    return res.status(400).json({ message: "Invalid Start Date" });
   }
   next();
 };
@@ -720,9 +720,9 @@ const validateAddEvent = async (req, res, next) => {
   if (!validate.isInt(Budget)) {
     return res.status(400).json({ message: "Invalid Budget" });
   }
-  if (!validate.isDate(Edate)) {
-    return res.status(400).json({ message: "Invalid Event Date" });
-  }
+  // if (!validate.isDate(Edate)) {
+  //   return res.status(400).json({ message: "Invalid Event Date" });
+  // }
   if (!validate.isInt(Location_ID)) {
     return res.status(400).json({ message: "Invalid Location ID" });
   }
