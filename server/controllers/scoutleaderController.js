@@ -2,7 +2,7 @@ const db = require("../config/DBmanager");
 
 exports.getAllScoutleaders = async (req, res) => {
   try {
-    const query = `SELECT s.*, u."User_ID", u."Fname", u."Lname", u."Phonenum", u."email", u."role"
+    const query = `SELECT s.*, u."Fname", u."Lname", u."Phonenum", u."email", u."role"
     FROM "ScoutLeader" s
     JOIN "User" u ON s."User_ID" = u."User_ID"`;
     const result = await db.query(query);
@@ -16,7 +16,9 @@ exports.getAllScoutleaders = async (req, res) => {
 exports.getScoutleaderbyId = async (req, res) => {
   const { id } = req.params;
   try {
-    const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
+    const query = `SELECT s.*, u."Fname", u."Lname", u."Phonenum", u."email", u."role"
+                  FROM "ScoutLeader" s INNER JOIN "User" u ON s."User_ID" = u."User_ID"
+                  WHERE s."User_ID" = $1`;
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {

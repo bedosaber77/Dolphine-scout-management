@@ -25,7 +25,7 @@ apiRouter.use("/transactions", transactionRouter);
 apiRouter.use("/locations", locationRouter);
 apiRouter.use("/users", userRouter);
 // apiRouter.use("/users", authorization, userRouter);
-apiRouter.use("/parents/:id/scouts", parentScoutRouter);
+apiRouter.use("/parents/:id/scouts", parentRouter);
 apiRouter.use("/scouts", scoutRouter);
 // apiRouter.use("/scouts", authorization, scoutRouter);
 apiRouter.use("/troops", troopRouter);
