@@ -18,9 +18,7 @@ const Events = () => {
                     month: "long",
                     day: "numeric",
                   })}
-                  <a>
-                    <Link to={`/events/${event.Event_ID}`}>زيارة</Link>
-                  </a>
+                  <Link to={`/events/${event.Event_ID}`}>زيارة</Link>
                 </p>
               </div>
             ))

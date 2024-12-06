@@ -17,39 +17,40 @@ const OPTIONS = {
 };
 const Event = () => {
   const { id } = useParams();
-  const event = useFetchEvent(id);
-  const { LocationName } = useFetchLocation(event.Location_ID);
-  if (event.length === 0) {
-    return <p>event not found</p>;
-  } else {
-    return (
-      <>
-        <EmblaCarousel slides={IMAGES} options={OPTIONS} />
-        <div className="layout">
-          <div className="meeting-details">
-            <ul>
-              <li>{event.Ename}</li>
-              <li>
-                {new Date(event.Edate).toLocaleDateString("ar-EG", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </li>
-              <li>{LocationName}</li>
-              <li>{event.ScoutLeader_ID}</li>
-              <li>حضرت: ×</li>
-              <li>{event.Budget}</li>
-            </ul>
-            <button className="attendance-button">سجل الحضور</button>
-          </div>
-          {/* <div className="event-info">
+  const eventAndLocation = useFetchEvent(id);
+
+  if (!eventAndLocation) {
+    return <p>Event not found</p>;
+  }
+  return (
+    <>
+      <EmblaCarousel slides={IMAGES} options={OPTIONS} />
+      <div className="layout">
+        <div className="meeting-details">
+          <ul>
+            <li>{eventAndLocation.Ename}</li>
+            <li>
+              {new Date(eventAndLocation.Edate).toLocaleDateString("ar-EG", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </li>
+            <li>{eventAndLocation.LocationName}</li>
+            <li>
+              {eventAndLocation.Fname} {eventAndLocation.Lname}
+            </li>
+            <li>حضرت: ×</li>
+            <li>{eventAndLocation.Budget}</li>
+          </ul>
+          <button className="attendance-button">سجل الحضور</button>
+        </div>
+        {/* <div className="event-info">
             <h2>Camp/gathering data</h2>
           </div> */}
-        </div>
-      </>
-    );
-  }
+      </div>
+    </>
+  );
 };
 
 export default Event;
