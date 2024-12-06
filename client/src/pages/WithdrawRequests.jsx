@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography } from '@mui/material';
 
 const WithdrawRequests = () => {
   const [requests, setRequests] = useState([
@@ -19,51 +18,46 @@ const WithdrawRequests = () => {
   };
 
   return (
-    <div>
-      <Typography variant="h6" gutterBottom>
+    <div className="p-4">
+      <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--secondary-color)' }}>
         طلبات السحب الحالية
-      </Typography>
+      </h2>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>الرقم</TableCell>
-              <TableCell>اسم القائد</TableCell>
-              <TableCell>المبلغ</TableCell>
-              <TableCell>التاريخ</TableCell>
-              <TableCell>العمليات</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
+        <table className="min-w-full border-collapse table-auto">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2 text-right">اسم القائد</th>
+              <th className="border px-4 py-2 text-right">المبلغ</th>
+              <th className="border px-4 py-2 text-right">التاريخ</th>
+              <th className="border px-4 py-2 text-right">العمليات</th>
+            </tr>
+          </thead>
+          <tbody>
             {requests.map((request) => (
-              <TableRow key={request.id}>
-                <TableCell>{request.id}</TableCell>
-                <TableCell>{request.leaderName}</TableCell>
-                <TableCell>{request.amount}</TableCell>
-                <TableCell>{request.date}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
+              <tr key={request.id} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">{request.leaderName}</td>
+                <td className="border px-4 py-2">{request.amount}</td>
+                <td className="border px-4 py-2">{request.date}</td>
+                <td className="border px-4 py-2 flex gap-x-4">
+                  <button
+                    className="bg-green-600 hover:bg-green-600 hover:text-white text-white py-2 px-4 rounded-lg"
                     onClick={() => handleAccept(request.id)}
-                    sx={{ marginRight: 1 }}
                   >
                     قبول
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-600 hover:text-white text-white py-2 px-4 rounded-lg"
                     onClick={() => handleReject(request.id)}
                   >
                     رفض
-                  </Button>
-                </TableCell>
-              </TableRow>
+                  </button>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

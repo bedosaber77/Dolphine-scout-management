@@ -16,6 +16,11 @@ import SponsorHistory from '../pages/SponsorHistory';
 import Announcements from '../pages/Announcements';
 import AddLeaderAccount from '../pages/AddLeaderAccount';
 import WithdrawRequests from '../pages/WithdrawRequests';
+import Achievements from '../pages/Achievements';
+import Locations from '../pages/Locations';
+import Equipment from '../pages/Equipment';
+import Troops from '../pages/Troops';
+import Statistics from '../pages/Statistics';
 
 const AppRoutes = () => {
   const auth = useAuth();
@@ -52,7 +57,7 @@ const AppRoutes = () => {
         },
         {
           path: '/scoutDashboard',
-          element: <ProtectedRoute />,
+          // element: <ProtectedRoute />,
           children: [
             {
               path: '',
@@ -77,6 +82,10 @@ const AppRoutes = () => {
               element: <LeadersView />,
             },
             {
+              path: 'troops',
+              element: <Troops />,
+            },
+            {
               path: 'transactions',
               element: <TransactionsView />,
             },
@@ -95,6 +104,22 @@ const AppRoutes = () => {
             {
               path: 'requests',
               element: <WithdrawRequests />,
+            },
+            {
+              path: 'achievements',
+              element: <Achievements />,
+            },
+            {
+              path: 'locations',
+              element: <Locations />,
+            },
+            {
+              path: 'equipment',
+              element: <Equipment />,
+            },
+            {
+              path: 'statistics',
+              element: <Statistics />,
             },
           ],
         },

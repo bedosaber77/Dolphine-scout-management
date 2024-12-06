@@ -1,67 +1,95 @@
 import { useState } from 'react';
-import { Button, TextField, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 
 const Announcements = () => {
-  const [message, setMessage] = useState('');
-  const [sendToScouts, setSendToScouts] = useState(false);
-  const [sendToParents, setSendToParents] = useState(false);
-  const [sendToLeaders, setSendToLeaders] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
+  const [recipients, setRecipients] = useState({
+    scout: false,
+    parent: false,
+    leader: false,
+  });
 
-  const handleAnnouncement = () => {
-    console.log('Announcement:', message);
-    console.log('Send to Scouts:', sendToScouts);
-    console.log('Send to Parents:', sendToParents);
-    console.log('Send to Leaders:', sendToLeaders);
-    alert('الإعلان تم إرساله');
+  const handleAnnouncementChange = (event) => {
+    setAnnouncement(event.target.value);
   };
 
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setRecipients((prevRecipients) => ({
+      ...prevRecipients,
+      [name]: checked,
+    }));
+  };
+
+  const handleSubmitAnnouncement = () => {
+    // Check if the announcement is empty
+    if (!announcement.trim()) {
+      alert('يرجى كتابة الإعلان قبل الإرسال');
+      return;
+    }
+
+    // Check if any recipient is selected
+    const selectedRecipients = Object.keys(recipients).filter((recipient) => recipients[recipient]);
+
+    if (selectedRecipients.length === 0) {
+      alert('يرجى تحديد المستلمين للإعلان');
+      return;
+    }
+
+    // Show a confirmation message
+    alert(`تم إرسال الإعلان: "${announcement}" إلى: ${selectedRecipients.join(', ')}`);
+
+    // Reset the form state
+    setAnnouncement('');
+    setRecipients({
+      scout: false,
+      parent: false,
+      leader: false,
+    });
+  };
+
+  const options = [
+    { name: 'scout', label: 'إرسال إلى الكشافة' },
+    { name: 'parent', label: 'إرسال إلى أولياء الأمور' },
+    { name: 'leader', label: 'إرسال إلى القادة' },
+  ];
+
   return (
-    <div>
-      <h1>إرسال إعلان</h1>
-      <TextField
-        label="الإعلان"
-        multiline
-        rows={4}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        fullWidth
+    <div className="p-4">
+      <textarea
+        value={announcement}
+        onChange={handleAnnouncementChange}
+        className="w-full p-2 border border-gray-300 rounded mb-4 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+        rows="6"
+        placeholder="اكتب إعلانك هنا..."
       />
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={sendToScouts}
-              onChange={(e) => setSendToScouts(e.target.checked)}
-            />
-          }
-          label="إرسال إلى الكشافين"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={sendToParents}
-              onChange={(e) => setSendToParents(e.target.checked)}
-            />
-          }
-          label="إرسال إلى أولياء الأمور"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={sendToLeaders}
-              onChange={(e) => setSendToLeaders(e.target.checked)}
-            />
-          }
-          label="إرسال إلى القادة"
-        />
-      </FormGroup>
-      <Button
-        variant="contained"
-        onClick={handleAnnouncement}
-        disabled={!message || (!sendToScouts && !sendToParents && !sendToLeaders)}
+      
+      {/* Recipients Checkboxes */}
+      <div className="mb-4">
+        <label className="block mb-2 font-medium">من سيرسل إليه الإعلان؟</label>
+        <div className="space-y-4">
+          {options.map((option) => (
+            <label key={option.name} className="inline-flex items-center gap-x-2">
+              <input
+                type="checkbox"
+                name={option.name}
+                checked={recipients[option.name]}
+                onChange={handleCheckboxChange}
+                className="form-checkbox"
+              />
+              <p className="ml-2">{option.label}</p>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <button
+        onClick={handleSubmitAnnouncement}
+        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                  style={{ background: 'var(--secondary-color)' }}
       >
         إرسال الإعلان
-      </Button>
+      </button>
     </div>
   );
 };

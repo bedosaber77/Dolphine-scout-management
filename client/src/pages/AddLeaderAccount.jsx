@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { TextField, Button, FormControlLabel, Checkbox, Box, Typography } from '@mui/material';
 
 const AddLeaderAccount = () => {
   const [name, setName] = useState('');
@@ -15,51 +14,72 @@ const AddLeaderAccount = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 600, margin: 'auto', padding: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        إضافة حساب قائد جديد
-      </Typography>
-      <TextField
-        label="الاسم"
-        fullWidth
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        sx={{ marginBottom: 2 }}
-      />
-      <TextField
-        label="رقم الهاتف"
-        fullWidth
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        sx={{ marginBottom: 2 }}
-      />
-      <TextField
-        label="الرقم التعريفي"
-        fullWidth
-        value={id}
-        onChange={(e) => setId(e.target.value)}
-        sx={{ marginBottom: 2 }}
-      />
-      <TextField
-        label="الفرقة التي يقودها"
-        fullWidth
-        value={troops}
-        onChange={(e) => setTroops(e.target.value)}
-        sx={{ marginBottom: 2 }}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={isAdmin}
-            onChange={(e) => setIsAdmin(e.target.checked)}
-          />
-        }
-        label="هل هو مدير؟"
-      />
-      <Button variant="contained" onClick={handleSubmit} sx={{ marginTop: 2 }}>
+    <div className="p-4 max-w-lg mx-auto">
+      <h2 className="text-2xl font-semibold mb-4 text-center" style={{ color: 'var(--secondary-color)' }}>إضافة حساب قائد جديد</h2>
+
+      <div className="mb-4">
+        <label htmlFor="name" className="block text-right text-lg mb-2">الاسم</label>
+        <input
+          id="name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="phone" className="block text-right text-lg mb-2">رقم الهاتف</label>
+        <input
+          id="phone"
+          type="text"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="id" className="block text-right text-lg mb-2">الرقم التعريفي</label>
+        <input
+          id="id"
+          type="text"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+          className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="troops" className="block text-right text-lg mb-2">الفرقة التي يقودها</label>
+        <input
+          id="troops"
+          type="text"
+          value={troops}
+          onChange={(e) => setTroops(e.target.value)}
+          className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+        />
+      </div>
+
+      <div className="flex items-center mb-4">
+        <input
+          id="isAdmin"
+          type="checkbox"
+          checked={isAdmin}
+          onChange={(e) => setIsAdmin(e.target.checked)}
+          className="mr-2"
+        />
+        <label htmlFor="isAdmin" className="text-right text-lg mr-2">هل هو مدير ؟</label>
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+        style={{ background: 'var(--secondary-color)' }}
+      >
         إضافة
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 };
 

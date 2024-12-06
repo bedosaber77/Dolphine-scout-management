@@ -711,6 +711,83 @@ const validateAddScoutleader = async (req, res, next) => {
   next();
 };
 
+const validateAddEvent = async (req, res, next) => {
+  const { Budget, Ename, Edate, Location_ID, ScoutLeader_ID } = req.body;
+  console.log(Budget, Ename, Edate, Location_ID, ScoutLeader_ID);
+  if (!Budget || !Ename || !Edate || !Location_ID || !ScoutLeader_ID) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+  if (!validate.isInt(Budget)) {
+    return res.status(400).json({ message: 'Invalid Budget' });
+  }
+  if (!validate.isDate(Edate)) {
+    return res.status(400).json({ message: 'Invalid Event Date' });
+  }
+  if (!validate.isInt(Location_ID)) {
+    return res.status(400).json({ message: 'Invalid Location ID' });
+  }
+  if (!validate.isInt(ScoutLeader_ID)) {
+    return res.status(400).json({ message: 'Invalid Scout Leader ID' });
+  }
+  try {
+    const query = `SELECT * FROM "Location" WHERE "Location_ID" = $1`;
+    const params = [Location_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Location not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  try {
+    const query = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
+    const params = [ScoutLeader_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Scout Leader not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  next();
+};
+
+const validateAddEventAttendace = async (req, res, next) => {
+  const { event_id } = req.params;
+  const { Scout_ID } = req.body;
+  if (!Scout_ID) {
+    return res.status(400).json({ message: 'Scout ID is required' });
+  }
+  if (!validate.isInt(Scout_ID)) {
+    return res.status(400).json({ message: 'Invalid Scout ID' });
+  }
+  try {
+    const query = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    const params = [Scout_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Scout not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  try {
+    const query = `SELECT * FROM "Event" WHERE "Event_ID" = $1`;
+    const params = [event_id];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'Event not found' });
+    }
+  } catch (err) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  next();
+};
+
 module.exports = {
   validateRegister,
   validateLogin,
@@ -734,4 +811,6 @@ module.exports = {
   validateUpdateTroop,
   validateAddScouttoTroop,
   validateAddScoutleader,
+  validateAddEvent,
+  validateAddEventAttendace,
 };

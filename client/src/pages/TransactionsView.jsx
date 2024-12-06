@@ -1,53 +1,163 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box } from '@mui/material';
+import { useState } from 'react';
 
-const TransactionsView = () => {
-  const transactions = [
-    { id: 1, name: 'محمد', type: 'داخل', amount: 500, date: '2024-12-06' },
-    { id: 2, name: 'خالد', type: 'خارج', amount: 300, date: '2024-12-05' },
-    { id: 3, name: 'سارة', type: 'داخل', amount: 200, date: '2024-12-04' },
+const Transactions = () => {
+  const transactionsData = [
+    { name: 'سعيد محمود', type: 'وارد', amount: 500, date: '2024-01-01' },
+    { name: 'خالد سعيد', type: 'صادر', amount: 200, date: '2024-01-05' },
   ];
 
-  const totalBalance = transactions.reduce((total, transaction) => {
-    if (transaction.type === 'داخل') {
-      return total + transaction.amount;
-    } else if (transaction.type === 'خارج') {
-      return total - transaction.amount;
-    }
-    return total;
-  }, 0);
+  const totalBalance = 1000; // Example total balance
+
+  // State for controlling the modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [transaction, setTransaction] = useState({
+    name: '',
+    type: 'وارد', // default type
+    amount: '',
+    date: '',
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setTransaction((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Logic to handle form submission (e.g., adding the transaction to the data)
+    transactionsData.push(transaction);
+    setIsModalOpen(false); // Close the modal after submitting
+  };
 
   return (
-    <div>
-      <Box sx={{ marginBottom: 2 }}>
-        <Typography variant="h6">إجمالي الرصيد: {totalBalance} جنيه</Typography>
-      </Box>
+    <div className="p-4">
+      <h2 className="mb-4 text-lg font-bold" style={{ color: 'var(--secondary-color)' }}>
+        الرصيد الإجمالي: {totalBalance} جنيه
+      </h2>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>الرقم</TableCell>
-              <TableCell>اسم الراعي أو القائد</TableCell>
-              <TableCell>النوع</TableCell>
-              <TableCell>المبلغ</TableCell>
-              <TableCell>التاريخ</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell>{transaction.id}</TableCell>
-                <TableCell>{transaction.name}</TableCell>
-                <TableCell>{transaction.type}</TableCell>
-                <TableCell>{transaction.amount}</TableCell>
-                <TableCell>{transaction.date}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {/* Add Transaction Button */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+             className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                  style={{ background: 'var(--secondary-color)' }}
+      >
+        إضافة معاملة
+      </button>
+
+      {/* Transactions Table */}
+      <table className="min-w-full border-collapse border border-gray-200">
+        <thead>
+          <tr>
+            <th className="border px-4 py-2">اسم المتبرع/القائد</th>
+            <th className="border px-4 py-2">صادر/وارد</th>
+            <th className="border px-4 py-2">المبلغ</th>
+            <th className="border px-4 py-2">التاريخ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transactionsData.map((transaction, index) => (
+            <tr key={index} className='hover:bg-gray-100'>
+              <td className="border px-4 py-2">{transaction.name}</td>
+              <td className="border px-4 py-2">{transaction.type}</td>
+              <td className="border px-4 py-2">{transaction.amount}</td>
+              <td className="border px-4 py-2">{transaction.date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Modal for Adding Transaction */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">إضافة معاملة</h3>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  اسم المتبرع/القائد
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={transaction.name}
+                  onChange={handleInputChange}
+                  id="name"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                  نوع المعاملة
+                </label>
+                <select
+                  name="type"
+                  value={transaction.type}
+                  onChange={handleInputChange}
+                  id="type"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                >
+                  <option value="وارد">وارد</option>
+                  <option value="صادر">صادر</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+                  المبلغ
+                </label>
+                <input
+                  type="number"
+                  name="amount"
+                  value={transaction.amount}
+                  onChange={handleInputChange}
+                  id="amount"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+                  التاريخ
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  value={transaction.date}
+                  onChange={handleInputChange}
+                  id="date"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                  style={{ background: 'var(--secondary-color)' }}
+                >
+                  إضافة
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default TransactionsView;
+export default Transactions;
