@@ -46,6 +46,8 @@ exports.login = async (req, res) => {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true,
+      sameSite: 'None',
     });
     return res.status(200).json({
       message: 'User logged in successfully',
@@ -97,7 +99,7 @@ exports.refreshToken = async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
     const accessToken = jwtGenerator(decoded.user, '30 min');
-    return res.status(200).json({ accessToken });
+    return res.status(200).json({ accessToken, user: decoded.user });
   } catch (error) {
     console.error('Error verifying token', error);
     return res.status(401).json({ message: 'Unauthorized - Invalid token' });
