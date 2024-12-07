@@ -5,7 +5,10 @@ exports.getAllCamps = async (req, res) => {
   try {
     const query = `SELECT * FROM "Camp"`;
     const camps = await db.query(query);
-    res.json(camps.rows);
+    if (camps.rowCount === 0) {
+      return res.status(404).json({ message: "No camps found" });
+    }
+    return res.json(camps.rows);
   } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -18,6 +21,9 @@ exports.getCamp = async (req, res) => {
     const query = `SELECT * FROM "Camp" WHERE "Event_ID" = $1`;
     const params = [camp_id];
     const camp = await db.query(query, params);
+    if (camp.rowCount === 0) {
+      return res.status(404).json({ message: "Camp not found" });
+    }
     return res.json(camp.rows[0]);
   } catch (error) {
     console.log("Error executing query", error);
