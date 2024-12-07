@@ -4,6 +4,9 @@ exports.getEvents = async (req, res) => {
   try {
     const query = `select * from "Event"`;
     const events = await db.query(query);
+    if (events.rows.length === 0) {
+      return res.status(404).json({ message: "No events found" });
+    }
     return res.status(200).json(events.rows);
   } catch (error) {
     console.log("Error executing query", error);

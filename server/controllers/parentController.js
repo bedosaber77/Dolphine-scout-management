@@ -107,7 +107,9 @@ module.exports.addScout = async (req, res) => {
     const query = `INSERT INTO "ParentScout" ("Parent_ID", "Scout_ID", "Relationship") VALUES ($1, $2, $3) RETURNING *`;
     const params = [id, scout_id, relationship];
     const result = await db.query(query, params);
-    return res.status(201).json({ message: "Added Scout successfully", achievement: result[0] });
+    return res
+      .status(201)
+      .json({ message: "Added Scout successfully", achievement: result[0] });
   } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
