@@ -427,7 +427,6 @@ const ValidateAddUser = async (req, res, next) => {
   const { email, password, Fname, Lname, role, Phonenum } = req.body;
   if (!email || !password || !Fname || !Lname || !Phonenum) {
     return res.status(400).json({ message: "All fields are required" });
-    return res.status(400).json({ message: "All fields are required" });
   }
   if (!validate.isEmail(email)) {
     return res.status(400).json({ message: "Invalid email" });
@@ -722,7 +721,7 @@ const validateAddEvent = async (req, res, next) => {
     return res.status(400).json({ message: "Invalid Budget" });
   }
   if (!validate.isDate(Edate)) {
-    return res.status(400).json({ message: 'Invalid Event Date' });
+    return res.status(400).json({ message: "Invalid Event Date" });
   }
   if (!validate.isInt(Location_ID)) {
     return res.status(400).json({ message: "Invalid Location ID" });
