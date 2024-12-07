@@ -1,11 +1,10 @@
-import React from "react";
-import { DotButton, useDotButton } from "./EmblaCarouselDotButton";
+import { DotButton, useDotButton } from './EmblaCarouselDotButton';
 import {
   PrevButton,
   NextButton,
   usePrevNextButtons,
-} from "./EmblaCarouselArrowButtons";
-import useEmblaCarousel from "embla-carousel-react";
+} from './EmblaCarouselArrowButtons';
+import useEmblaCarousel from 'embla-carousel-react';
 
 const EmblaCarousel = (props) => {
   const { slides, options } = props;
@@ -48,8 +47,8 @@ const EmblaCarousel = (props) => {
             <DotButton
               key={index}
               onClick={() => onDotButtonClick(index)}
-              className={"embla__dot".concat(
-                index === selectedIndex ? " embla__dot--selected" : ""
+              className={'embla__dot'.concat(
+                index === selectedIndex ? ' embla__dot--selected' : ''
               )}
             />
           ))}

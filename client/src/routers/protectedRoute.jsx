@@ -1,12 +1,14 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthProvider';
+// import { useAuth } from '../hooks/AuthProvider';
+import useAuthStore from '../store/authStore';
 
 const ProtectedRoute = () => {
-  const auth = useAuth();
-  if (auth.isLoading) {
-    return <div>Loading...</div>; // Optional loading spinner
-  }
-  if (!auth.isAuthenticated) return <Navigate to="/" replace={true} />;
+  const accessToken = useAuthStore((state) => state.accessToken);
+  // if (auth.isLoading) {
+  //   return <div>Loading...</div>; // Optional loading spinner
+  // }
+  console.log(accessToken);
+  if (!accessToken) return <Navigate to="/" replace={true} />;
   return <Outlet />;
 };
 
