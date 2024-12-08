@@ -5,10 +5,10 @@ import AboutUs from '../pages/AboutUs';
 import ScoutDashboard from '../pages/ScoutDashboard';
 import ProtectedRoute from './protectedRoute';
 import Register from '../pages/Register';
-import Events from "../pages/Events";
-import Event from "../pages/Event";
+import Events from '../pages/Events';
+import Event from '../pages/Event';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthProvider';
+// import { useAuth } from '../hooks/AuthProvider';
 import AdminDashboard from '../components/AdminDashboardLayout';
 import ScoutsView from '../pages/ScoutsView';
 import ParentsView from '../pages/ParentsView';
@@ -23,30 +23,31 @@ import Locations from '../pages/Locations';
 import Equipment from '../pages/Equipment';
 import Troops from '../pages/Troops';
 import Statistics from '../pages/Statistics';
-
+import useAuthStore from '../store/authStore';
 
 const AppRoutes = () => {
-  const auth = useAuth();
+  // const auth = useAuth();
+  const accessToken = useAuthStore((state) => state.accessToken);
 
   const routes = [
     {
-      path: "/",
+      path: '/',
       element: <MainLayout />,
       children: [
         {
-          path: "",
+          path: '',
           element: <Home />,
         },
         {
-          path: "/login",
-          element: !auth.isAuthenticated ? (
+          path: '/login',
+          element: !accessToken ? (
             <Login />
           ) : (
             <Navigate to="/" replace={true} />
           ),
         },
         {
-          path: "/register",
+          path: '/register',
           // action: registerAction,
           // element: !auth.isAuthenticated ? (
           element: <Register />,
@@ -55,15 +56,15 @@ const AppRoutes = () => {
           // ),
         },
         {
-          path: "/aboutUs",
+          path: '/aboutUs',
           element: <AboutUs />,
         },
         {
-          path: "/scoutDashboard",
+          path: '/scoutDashboard',
           element: <ProtectedRoute />,
           children: [
             {
-              path: "",
+              path: '',
               element: <ScoutDashboard />,
             },
           ],
@@ -125,20 +126,19 @@ const AppRoutes = () => {
               element: <Statistics />,
             },
           ],
-          
         },
         {
-          path: "/events",
+          path: '/events',
           element: <Events />,
         },
         {
-          path: "events/:id",
+          path: 'events/:id',
           element: <Event />,
           loader: ({ params }) => {
             const { id } = params;
             return { id };
           },
-        }
+        },
       ],
     },
   ];

@@ -1,13 +1,22 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import AuthProvider from './hooks/AuthProvider';
+// import AuthProvider from './hooks/AuthProvider';
 import AppRoutes from './routers/routes';
+import { useEffect } from 'react';
+import useAuthStore from './store/authStore';
 
 function App() {
+  const refreshAccessToken = useAuthStore((state) => state.refreshAccessToken);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      await refreshAccessToken();
+    };
+
+    initializeAuth();
+  }, [refreshAccessToken]);
   return (
     <div className="App">
-      <AuthProvider>
-        <Routes />
-      </AuthProvider>
+      <Routes />
     </div>
   );
 }

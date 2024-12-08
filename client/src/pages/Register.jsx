@@ -1,8 +1,8 @@
 import '../styles/formInputs.css';
 import { useState } from 'react';
-import { useAuth } from '../hooks/AuthProvider';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import FormInput from '../components/FormInput';
+import useAuthStore from '../store/authStore';
 const Register = () => {
   const [values, setValues] = useState({
     Fname: '',
@@ -13,8 +13,8 @@ const Register = () => {
     confirmPassword: '',
   });
 
-  const auth = useAuth();
   const navigate = useNavigate();
+  const registerAction = useAuthStore((state) => state.register);
 
   const registerInputs = [
     {
@@ -87,45 +87,55 @@ const Register = () => {
       return;
     }
 
-    auth.registerAction(values, (path) => navigate(path));
+    registerAction(values, (path) => navigate(path));
   };
 
   return (
-    <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800">
-      <div className="mb-8 text-center">
-        <h1
-          className="my-3 text-4xl font-bold "
-          style={{ color: 'var(text-primary)' }}
-        >
-          Sign up
-        </h1>
-        <p className="text-sm text-gray-600">Create a new account</p>
-      </div>
-      <form noValidate="" onSubmit={handleSubmit} className="space-y-4">
-        {registerInputs.map((input) => (
-          <FormInput
-            key={input.id}
-            {...input}
-            value={values[input.name] || ''}
-            onChange={onChange}
-          />
-        ))}
-        <div className="space-y-2">
-          <button
-            type="submit"
-            className="w-full px-8 py-3 font-semibold rounded-md text-white"
-            style={{ backgroundColor: 'var(--secondary-color)' }}
+    <div
+      className="flex justify-center items-center"
+      style={{
+        height: '95%',
+        backgroundColor: 'var( --background-secondary)',
+      }}
+    >
+      <div className="flex flex-col max-w-md p-6 rounded-xl sm:p-10 dark:bg-gray-50 dark:text-gray-800 m-4">
+        <div className="mb-8 text-center">
+          <h1
+            className="my-3 text-4xl font-bold "
+            style={{ color: 'var(text-primary)' }}
           >
-            Sign up
-          </button>
-          <p className="text-sm text-center text-gray-600">
-            Already have an account?{' '}
-            <NavLink to="/login" className="text-primary hover:underline">
-              Sign in
-            </NavLink>
-          </p>
+            تسجيل حساب
+          </h1>
         </div>
-      </form>
+        <form noValidate="" onSubmit={handleSubmit} className="space-y-4">
+          {registerInputs.map((input) => (
+            <FormInput
+              key={input.id}
+              {...input}
+              value={values[input.name] || ''}
+              onChange={onChange}
+            />
+          ))}
+          <div className="space-y-2">
+            <button
+              type="submit"
+              className="w-full px-8 py-3 font-semibold rounded-md text-white"
+              style={{ backgroundColor: 'var(--secondary-color)' }}
+            >
+              تسجيل
+            </button>
+            <p className="text-sm text-center text-gray-600">
+              لديك حساب ؟
+              <NavLink
+                to="/login"
+                className="var(--secondary-color) hover:underline"
+              >
+                تسجيل دخول
+              </NavLink>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

@@ -1,16 +1,97 @@
+// import { NavLink, useNavigate } from 'react-router-dom';
+// import useAuthStore from '../store/authStore';
+// // import { useAuth } from '../hooks/AuthProvider';
+
+// const AppHeader = () => {
+//   // const auth = useAuth();
+//   const logout = useAuthStore((state) => state.logout);
+//   const accessToken = useAuthStore((state) => state.accessToken);
+//   const navigate = useNavigate();
+
+//   return (
+//     <div className="navbar bg-background shadow-md p-4 rtl">
+//       {/* Buttons Section */}
+//       <div className="navbar-start flex items-center">
+//         {!accessToken ? (
+//           <div className="flex gap-3">
+//             <NavLink
+//               to="/login"
+//               className="btn-primary px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+//             >
+//               تسجيل الدخول
+//             </NavLink>
+//             <NavLink
+//               to="/register"
+//               className="btn-outline px-4 py-2 rounded-lg transition-transform transform hover:scale-105"
+//             >
+//               انضم الينا
+//             </NavLink>
+//           </div>
+//         ) : (
+//           <div className="flex gap-3">
+//             <NavLink
+//               to="/scoutDashboard"
+//               className="btn-primary px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+//             >
+//               حسابي
+//             </NavLink>
+//             <button
+//               onClick={() => logout((path) => navigate(path))}
+//               className="btn-danger px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+//             >
+//               تسجيل الخروج
+//             </button>
+//           </div>
+//         )}
+//       </div>
+
+//       {/* Logo Section */}
+//       <div className="navbar-center">
+//         <NavLink to="/" className="flex items-center">
+//           <img
+//             src="./src/assets/logo-dolphins-png.png"
+//             alt="Logo"
+//             className="h-16 w-auto"
+//           />
+//         </NavLink>
+//       </div>
+
+//       {/* Navigation Links */}
+//       <div className="navbar-end flex justify-center gap-6">
+//         <NavLink to="/#events" className="nav-link">
+//           الاحداث
+//         </NavLink>
+//         <NavLink to="/#news" className="nav-link">
+//           الاخبار
+//         </NavLink>
+//         <NavLink to="/aboutUs" className="nav-link">
+//           من نحن
+//         </NavLink>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AppHeader;
+
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthProvider';
+import useAuthStore from '../store/authStore';
 
 const AppHeader = () => {
-  const auth = useAuth();
+  const logout = useAuthStore((state) => state.logout);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 
   return (
-    <div className="navbar bg-background shadow-md p-4 rtl">
-      {/* Buttons Section */}
+    <div
+      className="navbar flex justify-between  bg-base-100 shadow-lg p-4 rtl"
+      dir="ltr"
+    >
+      {/* Dropdown Menu */}
       <div className="navbar-start flex items-center">
-        {!auth.isAuthenticated ? (
-          <div className="flex gap-3">
+        {!accessToken ? (
+          <div className="flex gap-3 items-center ">
             <NavLink
               to="/login"
               className="btn-primary px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
@@ -25,36 +106,68 @@ const AppHeader = () => {
             </NavLink>
           </div>
         ) : (
-          <button
-            onClick={() => auth.logOut((path) => navigate(path))}
-            className="btn-danger px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-          >
-            تسجيل الخروج
-          </button>
+          <div className="dropdown">
+            <label tabIndex={0} className="btn btn-ghost btn-circle">
+              <div className="w-10 rounded-full">
+                <img src="https://via.placeholder.com/150" alt="User Avatar" />
+              </div>
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li className="font-bold">{user?.name}</li>
+              <li>
+                <NavLink to="/dashboard" className="nav-link">
+                  Dashboard
+                </NavLink>
+              </li>
+              <li>
+                <button
+                  onClick={() => logout((path) => navigate(path))}
+                  className="btn btn-danger"
+                >
+                  Logout
+                </button>
+              </li>
+            </ul>
+          </div>
         )}
       </div>
 
-      {/* Logo Section */}
-      <div className="navbar-center">
-        <NavLink to="/" className="flex items-center">
-          <img
-            src="./src/assets/logo-dolphins-png.png"
-            alt="Logo"
-            className="h-16 w-auto"
-          />
+      {/* Navigation Links */}
+      <div className="navbar-center flex items-center justify-center gap-6">
+        <NavLink
+          to="/#events"
+          className="nav-link transition-transform transform hover:scale-105"
+        >
+          الاحداث
+        </NavLink>
+        <NavLink
+          to="/#news"
+          className="nav-link transition-transform transform hover:scale-105"
+        >
+          الاخبار
+        </NavLink>
+        <NavLink
+          to="/aboutUs"
+          className="nav-link transition-transform transform hover:scale-105"
+        >
+          من نحن
         </NavLink>
       </div>
 
-      {/* Navigation Links */}
-      <div className="navbar-end flex justify-center gap-6">
-        <NavLink to="/#events" className="nav-link">
-          الاحداث
-        </NavLink>
-        <NavLink to="/#news" className="nav-link">
-          الاخبار
-        </NavLink>
-        <NavLink to="/aboutUs" className="nav-link">
-          من نحن
+      {/* Logo Section */}
+      <div className="navbar-end">
+        <NavLink
+          to="/"
+          className="flex items-center transition-transform transform hover:scale-105"
+        >
+          <img
+            src="./src/assets/logo-dolphins-png.png"
+            alt="Logo"
+            className="h-40 w-auto"
+          />
         </NavLink>
       </div>
     </div>
