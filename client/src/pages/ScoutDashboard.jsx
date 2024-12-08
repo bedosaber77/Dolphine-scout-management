@@ -92,17 +92,17 @@ const ScoutDashboard = () => {
   return (
     <div className="dashboard grid grid-cols-5 gap-4" dir="ltr">
       <div className="side-bar col-span-1"></div>
-      <div className="main-content col-span-4 grid grid-cols-3 gap-4">
-        <h1 className="col-start-4">الصفحة الشخصية</h1>
+      <div className="main-content col-span-4 grid grid-cols-[repeat(2,minmax(200px,1fr))] gap-4">
+        {/* <h1 className="col-start-4">الصفحة الشخصية</h1> */}
 
-        <div className="calendar col-start-4 border-2 rounded-xl p-10 ">
+        <div className="calendar col-start-1  col-span-1 border-2 rounded-xl p-10 ">
           <h2>التقويم</h2>
           <Calendar attendance={attendance} />
         </div>
-        <div className="upcoming-events col-start-4 border-2 rounded-xl p-10 ">
+        <div className="upcoming-events col-start-1 col-span-1 row-start-3 border-2 rounded-xl p-10 ">
           <UpcomingEvents events={upcomingEvents} />
         </div>
-        <div className="acheivements col-start-1 col-span-3 row-start-3 border-2 rounded-xl p-10 ">
+        <div className="acheivements col-start-2 col-span-1 row-start-3 border-2 rounded-xl p-10 ">
           <h2>انجازاتى</h2>
 
           <Achievements />
