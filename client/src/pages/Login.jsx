@@ -47,11 +47,8 @@ const Login = () => {
             className="my-3 text-4xl font-bold"
             style={{ color: 'var(--text-primary)' }}
           >
-            Sign in
+            تسجيل دخول
           </h1>
-          <p className="text-sm" style={{ color: 'var(--secondary-color)' }}>
-            Sign in to access your account
-          </p>
         </div>
         <form
           noValidate=""
@@ -62,7 +59,7 @@ const Login = () => {
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block mb-2 text-sm">
-                Email address
+                الحساب
               </label>
               <input
                 type="email"
@@ -77,14 +74,14 @@ const Login = () => {
             <div>
               <div className="flex justify-between mb-2">
                 <label htmlFor="password" className="text-sm">
-                  Password
+                  كلمة المرور
                 </label>
                 <NavLink
                   rel="noopener noreferrer"
                   href="#"
                   className="text-xs hover:underline dark:text-gray-600"
                 >
-                  Forgot password?
+                  نسيت كلمة المرور؟
                 </NavLink>
               </div>
               <input
@@ -105,12 +102,11 @@ const Login = () => {
                 className="w-full px-8 py-3 font-semibold rounded-md dark:text-gray-50"
                 style={{ backgroundColor: 'var(--secondary-color)' }}
               >
-                Sign in
+                تسجيل الدخول
               </button>
             </div>
             <p className="px-6 text-sm text-center dark:text-gray-600">
-              Don&apos;t have an account yet?
-              <NavLink to="/register">Register</NavLink>.
+              ليس لديك حساب؟ <NavLink to="/register">تسجيل حساب</NavLink>.
             </p>
           </div>
         </form>

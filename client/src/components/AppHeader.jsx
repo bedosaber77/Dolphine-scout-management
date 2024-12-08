@@ -18,7 +18,7 @@ const AppHeader = () => {
 
   return (
     <div
-      className="navbar flex justify-between  bg-base-100 shadow-lg"
+      className="navbar flex justify-between  bg-base-100 shadow-lg p-4 rtl"
       dir="ltr"
     >
       {/* Dropdown Menu */}
