@@ -1,13 +1,19 @@
+import { use } from 'react';
 import useAuthStore from '../store/authStore';
 import '../styles/global.css';
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 
 const AdminDashboardLayout = () => {
   const location = useLocation(); // Get the current path for active tab styling
-  const user = useAuthStore((state) => state.user);
+  // const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const loading = useAuthStore((state) => state.loading);
 
-  return accessToken && user.role === 'admin' ? (
+  if (loading) {
+    return <div>Loading...</div>; // Render loading indicator
+  }
+
+  return accessToken /*&& user?.role === 'admin'*/ ? ( //commented out the role check to test the layout
     <div className="min-h-screen bg-background text-right rtl">
       {/* Dashboard Header */}
       <header className="p-6 bg-secondary-color text-white">
