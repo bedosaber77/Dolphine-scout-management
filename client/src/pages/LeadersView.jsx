@@ -1,12 +1,26 @@
 import { useState } from 'react';
-
+import { useLocation } from 'react-router-dom';
 const ScoutLeaders = () => {
+  const location = useLocation();
+  console.log(location);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [currentLeader, setCurrentLeader] = useState(null);
   const [leadersData, setLeadersData] = useState([
-    { id: 1, name: 'خالد سعيد', phone: '0112233445', troops: 'الطائفة 1, الطائفة 2', isAdmin: false },
-    { id: 2, name: 'سعيد محمود', phone: '0109876543', troops: 'الطائفة 3', isAdmin: true },
+    {
+      id: 1,
+      name: 'خالد سعيد',
+      phone: '0112233445',
+      troops: 'الطائفة 1, الطائفة 2',
+      isAdmin: false,
+    },
+    {
+      id: 2,
+      name: 'سعيد محمود',
+      phone: '0109876543',
+      troops: 'الطائفة 3',
+      isAdmin: true,
+    },
   ]);
 
   const [newLeader, setNewLeader] = useState({
@@ -30,7 +44,9 @@ const ScoutLeaders = () => {
 
   const handleSave = () => {
     setLeadersData((prevData) =>
-      prevData.map((leader) => (leader.id === currentLeader.id ? currentLeader : leader))
+      prevData.map((leader) =>
+        leader.id === currentLeader.id ? currentLeader : leader
+      )
     );
     setIsDialogOpen(false);
   };
@@ -42,7 +58,10 @@ const ScoutLeaders = () => {
   };
 
   const handleAdd = () => {
-    setLeadersData((prevData) => [...prevData, { ...newLeader, id: leadersData.length + 1 }]);
+    setLeadersData((prevData) => [
+      ...prevData,
+      { ...newLeader, id: leadersData.length + 1 },
+    ]);
     setIsAddDialogOpen(false);
   };
 
@@ -53,7 +72,10 @@ const ScoutLeaders = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--secondary-color)' }}>
+      <h2
+        className="text-2xl font-semibold mb-4"
+        style={{ color: 'var(--secondary-color)' }}
+      >
         قادة الكشافة
       </h2>
 
@@ -86,7 +108,9 @@ const ScoutLeaders = () => {
               <td className="border px-4 py-2">{leader.phone}</td>
               <td className="border px-4 py-2">{leader.id}</td>
               <td className="border px-4 py-2">{leader.troops}</td>
-              <td className="border px-4 py-2">{leader.isAdmin ? 'نعم' : 'لا'}</td>
+              <td className="border px-4 py-2">
+                {leader.isAdmin ? 'نعم' : 'لا'}
+              </td>
               <td className="border px-4 py-2">
                 <button
                   onClick={() => handleEdit(leader)}
@@ -120,7 +144,9 @@ const ScoutLeaders = () => {
                 <input
                   type="text"
                   value={currentLeader.name}
-                  onChange={(e) => setCurrentLeader({ ...currentLeader, name: e.target.value })}
+                  onChange={(e) =>
+                    setCurrentLeader({ ...currentLeader, name: e.target.value })
+                  }
                   className="block w-full mt-1 p-2 border rounded-xl"
                 />
               </label>
@@ -129,7 +155,12 @@ const ScoutLeaders = () => {
                 <input
                   type="text"
                   value={currentLeader.phone}
-                  onChange={(e) => setCurrentLeader({ ...currentLeader, phone: e.target.value })}
+                  onChange={(e) =>
+                    setCurrentLeader({
+                      ...currentLeader,
+                      phone: e.target.value,
+                    })
+                  }
                   className="block w-full mt-1 p-2 border rounded-xl"
                 />
               </label>
@@ -138,7 +169,12 @@ const ScoutLeaders = () => {
                 <input
                   type="text"
                   value={currentLeader.troops}
-                  onChange={(e) => setCurrentLeader({ ...currentLeader, troops: e.target.value })}
+                  onChange={(e) =>
+                    setCurrentLeader({
+                      ...currentLeader,
+                      troops: e.target.value,
+                    })
+                  }
                   className="block w-full mt-1 p-2 border rounded-xl"
                 />
               </label>
@@ -146,7 +182,12 @@ const ScoutLeaders = () => {
                 <input
                   type="checkbox"
                   checked={currentLeader.isAdmin}
-                  onChange={(e) => setCurrentLeader({ ...currentLeader, isAdmin: e.target.checked })}
+                  onChange={(e) =>
+                    setCurrentLeader({
+                      ...currentLeader,
+                      isAdmin: e.target.checked,
+                    })
+                  }
                   className="mr-2"
                 />
                 <label className="text-right text-lg mr-2">هل هو مدير ؟</label>
@@ -184,7 +225,9 @@ const ScoutLeaders = () => {
                 <input
                   type="text"
                   value={newLeader.name}
-                  onChange={(e) => setNewLeader({ ...newLeader, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewLeader({ ...newLeader, name: e.target.value })
+                  }
                   className="block w-full mt-1 p-2 border rounded-xl"
                 />
               </label>
@@ -193,7 +236,9 @@ const ScoutLeaders = () => {
                 <input
                   type="text"
                   value={newLeader.phone}
-                  onChange={(e) => setNewLeader({ ...newLeader, phone: e.target.value })}
+                  onChange={(e) =>
+                    setNewLeader({ ...newLeader, phone: e.target.value })
+                  }
                   className="block w-full mt-1 p-2 border rounded-xl"
                 />
               </label>
@@ -202,7 +247,9 @@ const ScoutLeaders = () => {
                 <input
                   type="text"
                   value={newLeader.troops}
-                  onChange={(e) => setNewLeader({ ...newLeader, troops: e.target.value })}
+                  onChange={(e) =>
+                    setNewLeader({ ...newLeader, troops: e.target.value })
+                  }
                   className="block w-full mt-1 p-2 border rounded-xl"
                 />
               </label>
@@ -210,7 +257,9 @@ const ScoutLeaders = () => {
                 <input
                   type="checkbox"
                   checked={newLeader.isAdmin}
-                  onChange={(e) => setNewLeader({ ...newLeader, isAdmin: e.target.checked })}
+                  onChange={(e) =>
+                    setNewLeader({ ...newLeader, isAdmin: e.target.checked })
+                  }
                   className="mr-2"
                 />
                 <label className="text-right text-lg mr-2">هل هو مدير ؟</label>

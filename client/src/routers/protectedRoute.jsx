@@ -1,15 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom';
-// import { useAuth } from '../hooks/AuthProvider';
 import useAuthStore from '../store/authStore';
 
 const ProtectedRoute = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
-  // if (auth.isLoading) {
-  //   return <div>Loading...</div>; // Optional loading spinner
-  // }
-  console.log(accessToken);
-  if (!accessToken) return <Navigate to="/" replace={true} />;
-  return <Outlet />;
+  const user = useAuthStore((state) => state.user);
+  if (user.role === 'scout' && accessToken) return <Outlet />;
+  else return <Navigate to="/" replace={true} />;
 };
 
 export default ProtectedRoute;
