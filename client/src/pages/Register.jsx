@@ -94,19 +94,18 @@ const Register = () => {
     <div
       className="flex justify-center items-center"
       style={{
-        height: 'calc(95vh - 4rem)',
+        height: '95%',
         backgroundColor: 'var( --background-secondary)',
       }}
     >
-      <div className="flex flex-col max-w-md p-6 rounded-xl sm:p-10 dark:bg-gray-50 dark:text-gray-800">
+      <div className="flex flex-col max-w-md p-6 rounded-xl sm:p-10 dark:bg-gray-50 dark:text-gray-800 m-4">
         <div className="mb-8 text-center">
           <h1
             className="my-3 text-4xl font-bold "
             style={{ color: 'var(text-primary)' }}
           >
-            Sign up
+            تسجيل حساب
           </h1>
-          <p className="text-sm text-gray-600">Create a new account</p>
         </div>
         <form noValidate="" onSubmit={handleSubmit} className="space-y-4">
           {registerInputs.map((input) => (
@@ -123,12 +122,15 @@ const Register = () => {
               className="w-full px-8 py-3 font-semibold rounded-md text-white"
               style={{ backgroundColor: 'var(--secondary-color)' }}
             >
-              Sign up
+              تسجيل
             </button>
             <p className="text-sm text-center text-gray-600">
-              Already have an account?{' '}
-              <NavLink to="/login" className="text-primary hover:underline">
-                Sign in
+              لديك حساب ؟
+              <NavLink
+                to="/login"
+                className="var(--secondary-color) hover:underline"
+              >
+                تسجيل دخول
               </NavLink>
             </p>
           </div>

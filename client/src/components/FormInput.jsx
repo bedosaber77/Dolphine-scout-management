@@ -39,7 +39,8 @@ const FormInput = (props) => {
         }}
         onBlur={handleFocus}
         onFocus={() =>
-          inputProps.name === 'confirmPassword' && setFocused(true)
+          inputProps.name === ('confirmPassword' || 'password') &&
+          setFocused(true)
         }
         type={type}
         data-focused={focused.toString()}
@@ -53,7 +54,7 @@ const FormInput = (props) => {
           type="button"
           onClick={togglePasswordVisibility}
           aria-label={showPassword ? 'Hide Password' : 'Show Password'}
-          className="absolute inset-y-0 right-3 flex items-center"
+          className="absolute top-9 left-3 flex items-center"
           style={{
             color: 'var(--secondary-color)',
           }}
