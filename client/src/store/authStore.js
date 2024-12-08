@@ -44,6 +44,18 @@ const useAuthStore = create((set) => ({
     }
   },
   logout: (onLogout) => {
+    set({ user: null, isAuthenticated: false, accessToken: null }); //needs to be a fetch also
+    try {
+      axios.post(
+        'http://localhost:3000/api/auth/logout',
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
     set({ user: null, loading: false, accessToken: null }); //needs to be a fetch also
     onLogout('/login');
   },
