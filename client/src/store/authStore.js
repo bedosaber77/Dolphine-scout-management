@@ -4,6 +4,7 @@ import axios from 'axios';
 const useAuthStore = create((set) => ({
   user: null,
   accessToken: null,
+  loading: true,
   login: async (data, onLogin) => {
     try {
       const response = await axios.post(
@@ -43,10 +44,11 @@ const useAuthStore = create((set) => ({
     }
   },
   logout: (onLogout) => {
-    set({ user: null, isAuthenticated: false, accessToken: null }); //needs to be a fetch also
+    set({ user: null, loading: false, accessToken: null }); //needs to be a fetch also
     onLogout('/login');
   },
   refreshAccessToken: async () => {
+    set({ loading: true });
     try {
       const response = await axios.post(
         'http://localhost:3000/api/auth/refreshToken',
@@ -58,14 +60,15 @@ const useAuthStore = create((set) => ({
       console.log('Response from refresh token:', response);
       const result = response.data;
       if (response.status === 200) {
-        set({ accessToken: result.accessToken });
+        set({ accessToken: result.accessToken, loading: false });
+
         await fetchUserDetails(result.user.id);
       } else {
-        set({ user: null, accessToken: null });
+        set({ user: null, accessToken: null, loading: false });
       }
     } catch (err) {
       console.error(err);
-      set({ user: null, accessToken: null });
+      set({ user: null, accessToken: null, loading: false });
     }
   },
 }));

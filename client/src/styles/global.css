@@ -13,6 +13,10 @@
   /* --input-bg: #f9f9f9; or dark version */
 }
 
+.bg-background {
+  /* background-color: var(--background-secondary); */
+}
+
 a {
   text-decoration: none;
 }
