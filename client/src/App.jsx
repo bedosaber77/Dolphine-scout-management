@@ -6,6 +6,7 @@ import useAuthStore from './store/authStore';
 
 function App() {
   const refreshAccessToken = useAuthStore((state) => state.refreshAccessToken);
+  const loading = useAuthStore((state) => state.loading);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -14,6 +15,10 @@ function App() {
 
     initializeAuth();
   }, [refreshAccessToken]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="App">
       <Routes />

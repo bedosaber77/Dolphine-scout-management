@@ -1,59 +1,107 @@
+import { use } from 'react';
+import useAuthStore from '../store/authStore';
 import '../styles/global.css';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 
 const AdminDashboardLayout = () => {
   const location = useLocation(); // Get the current path for active tab styling
+  // const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const loading = useAuthStore((state) => state.loading);
 
-  return (
+  if (loading) {
+    return <div>Loading...</div>; // Render loading indicator
+  }
+
+  return accessToken /*&& user?.role === 'admin'*/ ? ( //commented out the role check to test the layout
     <div className="min-h-screen bg-background text-right rtl">
       {/* Dashboard Header */}
       <header className="p-6 bg-secondary-color text-white">
-  <h1
-    className="mb-4 text-4xl font-semibold"
-    style={{ color: "var(--secondary-color)"}} // Inline style to apply the CSS variable
-  >
-    لوحة تحكم المدير
-  </h1>
-</header>
-
+        <h1
+          className="mb-4 text-4xl font-semibold"
+          style={{ color: 'var(--secondary-color)' }} // Inline style to apply the CSS variable
+        >
+          لوحة تحكم المدير
+        </h1>
+      </header>
 
       {/* Tab Navigation */}
       <div className="flex justify-start space-x-4 p-4 bg-white shadow-md border-b border-gray-300 gap-x-1">
-        <Tab to="scouts" currentPath={location.pathname} color="var(--secondary-color)">
-        الكشافة
+        <Tab
+          to="scouts"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الكشافة
         </Tab>
-        <Tab to="parents" currentPath={location.pathname} color="var(--secondary-color)">
-        الأهالي
+        <Tab
+          to="parents"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الأهالي
         </Tab>
-        <Tab to="leaders" currentPath={location.pathname} color="var(--secondary-color)">
+        <Tab
+          to="leaders"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
           القادة
         </Tab>
-        <Tab to="troops" currentPath={location.pathname} color="var(--secondary-color)">
+        <Tab
+          to="troops"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
           المجموعات
         </Tab>
-        <Tab to="transactions" currentPath={location.pathname} color="var(--secondary-color)">
+        <Tab
+          to="transactions"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
           المعاملات
         </Tab>
         {/* <Tab to="sponsors" currentPath={location.pathname} color="var(--secondary-color)">
           تاريخ التبرعات
         </Tab> */}
-        <Tab to="requests" currentPath={location.pathname} color="var(--secondary-color)">
-        الطلبات
+        <Tab
+          to="requests"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الطلبات
         </Tab>
         {/* <Tab to="addLeader" currentPath={location.pathname} color="var(--secondary-color)">
           اضافة قائد
         </Tab> */}
-        <Tab to="announcements" currentPath={location.pathname} color="var(--secondary-color)">
+        <Tab
+          to="announcements"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
           اضافة اعلان
         </Tab>
-        <Tab to="achievements" currentPath={location.pathname} color="var(--secondary-color)">
-        الانجازات
+        <Tab
+          to="achievements"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الانجازات
         </Tab>
-        <Tab to="locations" currentPath={location.pathname} color="var(--secondary-color)">
-        المواقع
+        <Tab
+          to="locations"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          المواقع
         </Tab>
-        <Tab to="equipment" currentPath={location.pathname} color="var(--secondary-color)">
-        المعدات
+        <Tab
+          to="equipment"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          المعدات
         </Tab>
         {/* <Tab to="statistics" currentPath={location.pathname} color="var(--secondary-color)">
         الاحصائيات
@@ -65,6 +113,8 @@ const AdminDashboardLayout = () => {
         <Outlet />
       </div>
     </div>
+  ) : (
+    <Navigate to="/" replace={true} />
   );
 };
 
@@ -77,7 +127,11 @@ const Tab = ({ to, currentPath, color, children }) => {
       to={to}
       className={`text-lg px-4 py-2 rounded-lg transition-all duration-300
         ${isActive ? 'text-white shadow-md' : 'text-primary'}
-        ${isActive ? `bg-[${color}]` : 'hover:bg-gray-100 hover:text-secondary-hover'} 
+        ${
+          isActive
+            ? `bg-[${color}]`
+            : 'hover:bg-gray-100 hover:text-secondary-hover'
+        } 
         font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300`}
       style={{
         backgroundColor: isActive ? color : 'transparent',

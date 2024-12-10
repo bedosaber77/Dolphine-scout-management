@@ -8,7 +8,6 @@ import Register from '../pages/Register';
 import Events from '../pages/Events';
 import Event from '../pages/Event';
 import { Navigate } from 'react-router-dom';
-// import { useAuth } from '../hooks/AuthProvider';
 import AdminDashboard from '../components/AdminDashboardLayout';
 import ScoutsView from '../pages/ScoutsView';
 import ParentsView from '../pages/ParentsView';
@@ -24,15 +23,17 @@ import Equipment from '../pages/Equipment';
 import Troops from '../pages/Troops';
 import Statistics from '../pages/Statistics';
 import useAuthStore from '../store/authStore';
+import NotFound from '../pages/NotFound';
+import WaitVerify from '../pages/waitVerfiy';
 
 const AppRoutes = () => {
-  // const auth = useAuth();
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore((state) => state.user);
 
   const routes = [
     {
       path: '/',
       element: <MainLayout />,
+      errorElement: <NotFound />,
       children: [
         {
           path: '',
@@ -40,24 +41,19 @@ const AppRoutes = () => {
         },
         {
           path: '/login',
-          element: !accessToken ? (
-            <Login />
-          ) : (
-            <Navigate to="/" replace={true} />
-          ),
+          element: !user ? <Login /> : <Navigate to="/" replace={true} />,
         },
         {
           path: '/register',
-          // action: registerAction,
-          // element: !auth.isAuthenticated ? (
-          element: <Register />,
-          // ) : (
-          //   <Navigate to="/" replace={true} />
-          // ),
+          element: !user ? <Register /> : <Navigate to="/" replace={true} />,
         },
         {
           path: '/aboutUs',
           element: <AboutUs />,
+        },
+        {
+          path: '/verify',
+          element: <WaitVerify />,
         },
         {
           path: '/scoutDashboard',
@@ -127,6 +123,7 @@ const AppRoutes = () => {
             },
           ],
         },
+
         {
           path: '/events',
           element: <Events />,

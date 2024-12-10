@@ -107,6 +107,11 @@ exports.refreshToken = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  res.clearCookie('refreshToken');
-  return res.status(200).json({ message: 'User logged out successfully' });
+  try {
+    res.clearCookie('refreshToken');
+    return res.status(200).json({ message: 'User logged out successfully' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return res.status(500).json({ message: 'An error occurred during logout' });
+  }
 };
