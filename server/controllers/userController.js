@@ -1,5 +1,5 @@
-const db = require("../config/DBmanager");
-const bcrypt = require("bcrypt");
+const db = require('../config/DBmanager');
+const bcrypt = require('bcrypt');
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -8,13 +8,13 @@ exports.getAllUsers = async (req, res) => {
     const result = await db.query(query, params);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "no users found" });
+      return res.status(404).json({ message: 'no users found' });
     }
 
     return res.json(result.rows);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -26,12 +26,12 @@ exports.getUserById = async (req, res) => {
     const result = await db.query(query, params);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
     return res.json(result.rows[0]);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -52,10 +52,10 @@ exports.addUser = async (req, res) => {
     const { password, ...rest } = result.rows[0];
     return res
       .status(201)
-      .json({ message: "Added User successfully", User: rest });
+      .json({ message: 'Added User successfully', User: rest });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -99,16 +99,16 @@ exports.updateUser = async (req, res) => {
     const result = await db.query(query, params);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
     const { password, ...rest } = result.rows[0];
     return res.json({
-      message: "User updated successfully",
+      message: 'User updated successfully',
       User: rest,
     });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -120,15 +120,33 @@ exports.deleteUser = async (req, res) => {
     const result = await db.query(query, params);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
     const { password, ...rest } = result.rows[0];
     return res.json({
-      message: "User deleted successfully",
+      message: 'User deleted successfully',
       User: rest,
     });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getUserAttendanceCurrentMonth = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query = `SELECT "EventAttendance"."Event_ID", "Edate" FROM "EventAttendance"
+    FULL OUTER JOIN "Event" ON "EventAttendance"."Event_ID" = "Event"."Event_ID" 
+    WHERE "Scout_ID" = $1OR "Scout_ID" IS NULL
+    AND EXTRACT(MONTH FROM "Event"."Edate") = EXTRACT(MONTH FROM CURRENT_DATE)
+    AND EXTRACT(YEAR FROM "Event"."Edate") = EXTRACT(YEAR FROM CURRENT_DATE);`;
+    const params = [id];
+    const result = await db.query(query, params);
+    console.log(result.rows);
+    return res.json(result.rows);
+  } catch (error) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

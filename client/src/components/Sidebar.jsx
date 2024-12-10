@@ -51,7 +51,10 @@ import { FaTrophy } from 'react-icons/fa';
 
 const Sidebar = () => {
   return (
-    <div className="sidebar w-full md:w-64 bg-gray-800 text-white h-screen flex flex-col items-center p-4">
+    <div
+      className="sidebar w-full md:w-64 text-white h-screen flex flex-col items-center p-4"
+      style={{ backgroundColor: 'var(--secondary-hover)' }}
+    >
       <h1 className="text-2xl font-bold mb-10">Scout Dashboard</h1>
       <nav className="flex flex-col space-y-4 w-full">
         <NavLink
