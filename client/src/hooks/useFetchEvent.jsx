@@ -1,36 +1,38 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
+import useApi from './useApi';
 
-const getFetchEvent = (id) => {
+const useFetchEvent = (id) => {
   const [event, setEvent] = useState([]);
   const [leader, setLeader] = useState([]);
   const [location, setLocation] = useState([]);
+  const apiRequest = useApi();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3000/api/events/${id}`)
-      .then((response) => {
-        setEvent(response.data);
-        axios
-          .get(
-            `http://localhost:3000/api/scoutleaders/${response.data.ScoutLeader_ID}`
-          )
-          .then((response) => {
-            setLeader(response.data);
-          });
-        axios
-          .get(
-            `http://localhost:3000/api/locations/${response.data.Location_ID}`
-          )
-          .then((response) => {
-            setLocation(response.data);
-          });
-      })
-      .catch((error) => {
-        console.error('Error fetching event:', error);
-      });
-  }, []);
+    const fetchData = async () => {
+      try {
+        const eventFetch = await apiRequest({
+          url: `http://localhost:3000/api/events/${id}`,
+          method: 'GET',
+        });
+        const leaderFetch = await apiRequest({
+          url: `http://localhost:3000/api/scoutleaders/${eventFetch.data.ScoutLeader_ID}`,
+          method: 'GET',
+        });
+        const locationFetch = await apiRequest({
+          url: `http://localhost:3000/api/locations/${eventFetch.data.Location_ID}`,
+          method: 'GET',
+        });
+        setEvent(eventFetch.data);
+        setLeader(leaderFetch.data);
+        setLocation(locationFetch.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, [apiRequest]);
+
   return { ...event, ...leader, ...location };
 };
 
-export default getFetchEvent;
+export default useFetchEvent;

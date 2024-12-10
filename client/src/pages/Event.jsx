@@ -1,7 +1,8 @@
 import EmblaCarousel from '../components/ui/EmblaCarousel';
 import { useParams } from 'react-router-dom';
 import useFetchEvent from '../hooks/useFetchEvent';
-import useFetchLocation from '../hooks/useFetchLocation';
+import useFetchGathering from '../hooks/useFetchGathering';
+import useFetchCamp from '../hooks/useFetchCamp';
 import '../styles/base.css';
 import '../styles/embla.css';
 import '../styles/eventLayout.css';
@@ -31,7 +32,7 @@ const Event = () => {
             <ul>
               <li>{event.Ename}</li>
               <li>
-                التاريخ:
+                التاريخ:{' '}
                 {new Date(event.Edate).toLocaleDateString('ar-EG', {
                   year: 'numeric',
                   month: 'long',
@@ -45,9 +46,37 @@ const Event = () => {
             </ul>
             <button className="attendance-button">سجل الحضور</button>
           </div>
-          {/* <div className="event-info">
-            <h2>Camp/gathering data</h2>
-          </div> */}
+          {Object.keys(camp).length > 0 && (
+            <div className="event-info">
+              <p>تفاصيل المخيم</p>
+              <p>{camp.Season != '' && camp.Season}</p>
+              <p>
+                المدة: {camp.Duration.days !== undefined && camp.Duration.days}{' '}
+                ايام
+              </p>
+            </div>
+          )}
+          {Object.keys(gathering).length > 0 && (
+            <div className="event-info">
+              <p>نواتج الاجتماع</p>
+              <p>
+                {gathering.GeneralOutcome != '' && gathering.GeneralOutcome}
+              </p>
+              <p>
+                {gathering.EducationalOutcome != '' &&
+                  gathering.EducationalOutcome}
+              </p>
+              <p>
+                {gathering.PhysicalOutcome != '' && gathering.PhysicalOutcome}
+              </p>
+              <p>
+                {gathering.ScientificOutcome != '' &&
+                  gathering.ScientificOutcome}
+              </p>
+              <p>{gathering.ArtOutcome != '' && gathering.ArtOutcome}</p>
+              <p>{gathering.ExtraOutcome != '' && gathering.ExtraOutcome}</p>
+            </div>
+          )}
         </div>
       </>
     );
