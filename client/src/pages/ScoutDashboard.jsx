@@ -1,20 +1,106 @@
 import '../styles/souctDashboard.css';
-import { Container, Row, Col } from 'react-bootstrap';
 import '../styles/radialProgress.css';
-// import createTable from '../components/createTable';
 import Calendar from '../components/Calender';
 import UpcomingEvents from '../components/UpcomingEvents';
-// import { useAuth } from "../hooks/AuthProvider";
-// import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
+import useApi from '../hooks/useApi';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import axios from 'axios';
 
 const ScoutDashboard = () => {
-  const name = 'أحمد';
+  const apiRequest = useApi();
+
+  const navigate = useNavigate();
   const groupName = 'المجموعة الأولى';
   const groupLeader = 'محمد';
-  // const auth = useAuth();
-  // const navigate = useNavigate();
+  const [events, setEvents] = useState([]);
+  const [attendance, setAttendance] = useState([]);
 
-  const arr = ['Achievement 1', 'Achievement 2', 'Achievement 3'];
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  const arr = ['المهارات', 'الأنشطة', 'المهام', 'المشاريع'];
+
+  // const fetchData = useCallback(async () => {
+  //   try {
+  //     const eventsFetch = await apiRequest({
+  //       url: 'http://localhost:3000/api/events',
+  //       method: 'GET',
+  //     });
+  //     // const attendanceFetch = await apiRequest({
+  //     //   url: 'http://localhost:3000/api/events/1/attendance',
+  //     //   method: 'GET',
+  //     // });
+  //     console.log(eventsFetch.data);
+  //     //   console.log(attendanceFetch.data);
+  //     //   const eventsOnMonth = eventsFetch.data.filter((event) => {
+  //     //     const eventDate = new Date(event.Edate);
+  //     //     return (
+  //     //       eventDate.getMonth() === new Date().getMonth() &&
+  //     //       eventDate.getFullYear() === new Date().getFullYear()
+  //     //     );
+  //     //   });
+  //     //   setEvents(eventsOnMonth);
+  //     //   setAttendance(attendanceFetch.data);
+  //     // } catch (error) {
+  //     //   console.error(error);
+  // const attendanceFetch = await apiRequest({
+  //   url: 'http://localhost:3000/api/users/1/attendance',
+  //   method: 'GET',
+  // });
+  //     console.log(attendanceFetch.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   // }
+  // }, [apiRequest]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios('http://localhost:3000/api/events', {
+  //         method: 'GET',
+  //         headers: {
+  //           accessToken: accessToken,
+  //         },
+  //       });
+
+  //       console.log(response.data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [accessToken]);
+  // setEvents(data);
+
+  // const something = useMemo(()=>{
+  //   attendance.includes(user?.User_ID)
+  // })
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const eventsFetch = await apiRequest({
+          url: 'http://localhost:3000/api/events',
+          method: 'GET',
+        });
+        const attendanceFetch = await apiRequest({
+          url: 'http://localhost:3000/api/users/1/attendance',
+          method: 'GET',
+        });
+        console.log(eventsFetch);
+        console.log(attendanceFetch);
+        setEvents(eventsFetch.data);
+        setAttendance(attendanceFetch.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, [apiRequest]);
 
   const Achievements = () => {
     return (
@@ -39,17 +125,6 @@ const ScoutDashboard = () => {
               <p className="text-sm font-medium text-gray-700">Progress: 50%</p>
             </div>
           </li>
-        ))}
-      </ul>
-    );
-  };
-  const arr2 = ['Event 1', 'Event 2', 'Event 3'];
-
-  const Events = () => {
-    return (
-      <ul className="events-list">
-        {arr2.map((el) => (
-          <li key={el}>{el}</li>
         ))}
       </ul>
     );
@@ -82,29 +157,53 @@ const ScoutDashboard = () => {
     },
   ];
 
-  const attendance = [
-    { date: '2024-12-02', hasAttended: true },
-    { date: '2024-12-05', hasAttended: false },
-    { date: '2024-12-15', hasAttended: true },
-    { date: '2024-12-25', hasAttended: false },
-  ];
+  const attendanceFilter = attendance.map((event) => {
+    return {
+      date: new Date(event.Edate).toISOString().split('T')[0],
+      hasAttended: event.Event_ID != null,
+    };
+  });
 
   return (
-    <div className="dashboard grid grid-cols-5 gap-4" dir="ltr">
-      <div className="side-bar col-span-1"></div>
-      <div className="main-content col-span-4 grid grid-cols-[repeat(2,minmax(200px,1fr))] gap-4">
-        {/* <h1 className="col-start-4">الصفحة الشخصية</h1> */}
-
-        <div className="calendar col-start-1  col-span-1 border-2 rounded-xl p-10 ">
-          <h2>التقويم</h2>
-          <Calendar attendance={attendance} />
+    <div className="dashboard flex flex-col md:flex-row gap-4">
+      <Sidebar />
+      <div className="main-content col-span-4 grid grid-cols-1 md:grid-cols-[repeat(2,minmax(200px,1fr))] lg:grid-cols-[repeat(5,minmax(200px,1fr))] gap-4">
+        <div className="profile-details col-span-1  border-2  lg:col-start-5 lg:col-span-1 lg:row-span-2  rounded-xl p-4">
+          <h1>معلوماتي</h1>
+          <p>الاسم: {user?.Fname + ' ' + user?.Lname}</p>
+          <p>المجموعة: {groupName}</p>
+          <p>قائد المجموعة: {groupLeader}</p>
         </div>
-        <div className="upcoming-events col-start-1 col-span-1 row-start-3 border-2 rounded-xl p-10 ">
+
+        <div className="relative announcement border-2 rounded-xl p-4 lg:col-start-1 lg:col-span-2 row-start-1 ">
+          <h2>الإعلانات</h2>
+          <p>الأخبار الرئيسية هنا...</p>
+          Add button for full announcements
+          <button
+            className="absolute bottom-4 right-4 mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={() => navigate('/announcements')}
+          >
+            عرض المزيد
+          </button>
+        </div>
+
+        <div className="calendar border-2 rounded-xl p-4 lg:col-start-3  lg:col-span-2 lg:row-start-1">
+          <h2>التقويم</h2>
+          <Calendar attendance={attendanceFilter} />
+        </div>
+
+        <div className="upcoming-events border-2 rounded-xl p-4 lg:col-start-3 lg:col-span-2">
           <UpcomingEvents events={upcomingEvents} />
         </div>
-        <div className="acheivements col-start-2 col-span-1 row-start-3 border-2 rounded-xl p-10 ">
-          <h2>انجازاتى</h2>
 
+        <div className="relative achievements border-2 rounded-xl p-4 lg:col-start-1 lg:col-span-2 lg:row-start-2">
+          <h2>الإنجازات</h2>
+          <button
+            className="absolute bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+            onClick={() => navigate('/achievements')}
+          >
+            View All Achievements
+          </button>
           <Achievements />
         </div>
       </div>
