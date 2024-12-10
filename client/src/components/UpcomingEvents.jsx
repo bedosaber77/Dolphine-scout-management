@@ -25,7 +25,7 @@ const UpcomingEvents = ({ events }) => {
                   <time className="text-xs tracking-wide uppercase dark:text-gray-600">
                     {event.date}
                   </time>
-                  <p className="mt-3">{event.details}</p>
+                  {/* <p className="mt-3">{event.details}</p> */}
                 </div>
               );
             })}

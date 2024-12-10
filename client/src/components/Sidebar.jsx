@@ -61,7 +61,7 @@ const Sidebar = () => {
           to="/dashboard"
           className={({ isActive }) =>
             `flex items-center gap-4 px-4 py-2 rounded-md ${
-              isActive ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700'
+              isActive ? 'bg-blue-700 text-blue-400' : 'hover:bg-blue-700'
             }`
           }
         >
@@ -72,7 +72,7 @@ const Sidebar = () => {
           to="/announcements"
           className={({ isActive }) =>
             `flex items-center gap-4 px-4 py-2 rounded-md ${
-              isActive ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700'
+              isActive ? 'bg-gray-700 text-blue-400' : 'hover:bg-blue-700'
             }`
           }
         >
@@ -83,7 +83,7 @@ const Sidebar = () => {
           to="/achievements"
           className={({ isActive }) =>
             `flex items-center gap-4 px-4 py-2 rounded-md ${
-              isActive ? 'bg-gray-700 text-blue-400' : 'hover:bg-gray-700'
+              isActive ? 'bg-blue-700 text-blue-400' : 'hover:bg-blue-700'
             }`
           }
         >
