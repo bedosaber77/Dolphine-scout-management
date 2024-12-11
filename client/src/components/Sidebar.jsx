@@ -46,8 +46,8 @@
 // export default Sidebar;
 
 import { NavLink } from 'react-router-dom';
-import { HiOutlineHome, HiOutlineBell } from 'react-icons/hi';
-import { FaTrophy } from 'react-icons/fa';
+//import { HiOutlineHome, HiOutlineBell } from 'react-icons/hi';
+//import { FaTrophy } from 'react-icons/fa';
 
 const Sidebar = () => {
   return (

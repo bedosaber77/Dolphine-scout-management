@@ -25,6 +25,7 @@ import Statistics from '../pages/Statistics';
 import useAuthStore from '../store/authStore';
 import NotFound from '../pages/NotFound';
 import WaitVerify from '../pages/waitVerfiy';
+import LeaderDashboard from '../pages/LeaderDashboard';
 
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -54,6 +55,10 @@ const AppRoutes = () => {
         {
           path: '/verify',
           element: <WaitVerify />,
+        },
+        {
+          path: '/leaderDashboard',
+          element: <LeaderDashboard />,
         },
         {
           path: '/scoutDashboard',
