@@ -25,6 +25,8 @@ import Statistics from '../pages/Statistics';
 import useAuthStore from '../store/authStore';
 import NotFound from '../pages/NotFound';
 import WaitVerify from '../pages/waitVerfiy';
+import ParentDashboard from '../pages/ParentDashboard';
+import ParentProtectedRoute from './ParentProtectedRouter';
 
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -62,6 +64,19 @@ const AppRoutes = () => {
             {
               path: '',
               element: <ScoutDashboard />,
+            },
+          ],
+        },
+        {
+          path: '/parentDashboard',
+          element: <ParentProtectedRoute />,
+          children: [
+            {
+              path: '',
+              element: <ParentDashboard />,
+            },
+            {
+              path: 'child/:id',
             },
           ],
         },
