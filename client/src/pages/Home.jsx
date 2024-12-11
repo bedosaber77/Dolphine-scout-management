@@ -15,9 +15,6 @@ const Home = () => {
   return (
     <>
       <div className="mt-28 grid gap-10 grid-cols-2 mb-20">
-        <div className="flex justify-center items-center">
-          <EmblaCarousel slides={IMAGES} options={OPTIONS} />
-        </div>
         <div className="mx-24 text-center flex-col content-around items-center">
           <h1 className="text-7xl mb-10 px-32 font-bold">
             مرحبا بكم فى كشافة الدرفيل البحرية
@@ -41,6 +38,9 @@ const Home = () => {
             </NavLink>
           </div>
         </div>
+        <div className="flex justify-center items-center">
+          <EmblaCarousel slides={IMAGES} options={OPTIONS} />
+        </div>
       </div>
       <div className="my-20 grid gap-10 grid-cols-2 mb-20">
         <div className="my-8 flex justify-center items-center">
@@ -55,15 +55,15 @@ const Home = () => {
         </div>
       </div>
       <div className="my-20 grid gap-10 grid-cols-2 mb-20">
-        <div className="my-8 flex justify-center items-center">
-          <EmblaCarousel slides={IMAGES} options={OPTIONS} />
-        </div>
         <div className="flex-col content-around items-center mx-32 text-center">
           <h1 className="text-7xl mb-10 px-32 font-bold">الدروع و الجوائز</h1>
           <p className="text-3xl">
             مجموعة كشفية تأسست عام ٢٠٠٠ بهدف تنمية النشء مسترشدة بالتقاليد
             والطرق الكشفية لإعداد مواطن صالح يساعد الناس
           </p>
+        </div>
+        <div className="my-8 flex justify-center items-center">
+          <EmblaCarousel slides={IMAGES} options={OPTIONS} />
         </div>
       </div>
     </>
