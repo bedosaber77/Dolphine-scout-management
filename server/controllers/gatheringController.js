@@ -1,4 +1,4 @@
-const db = require("../config/DBmanager");
+const db = require('../config/DBmanager');
 
 exports.getAllGatherings = async (req, res) => {
   try {
@@ -6,8 +6,8 @@ exports.getAllGatherings = async (req, res) => {
     const gatherings = await db.query(query);
     res.json(gatherings.rows);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -17,10 +17,13 @@ exports.getGathering = async (req, res) => {
     const query = `SELECT * FROM "Gathering" WHERE "Event_ID" = $1`;
     const params = [gathering_id];
     const gathering = await db.query(query, params);
+    if (gathering.rowCount === 0) {
+      return res.status(404).json({ message: 'No gatherings found' });
+    }
     return res.json(gathering.rows[0]);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 exports.addGathering = async (req, res) => {
@@ -47,8 +50,8 @@ exports.addGathering = async (req, res) => {
     const result = await db.query(query, params);
     return res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -76,8 +79,8 @@ exports.updateGathering = async (req, res) => {
     const result = await db.query(query, params);
     return res.status(200).json(result.rows[0]);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -89,7 +92,7 @@ exports.deleteGathering = async (req, res) => {
     await db.query(query, params);
     return res.status(204).json();
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

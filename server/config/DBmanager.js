@@ -6,7 +6,7 @@ const pool = new Pool({
   //     rejectUnauthorized: false,
   //   },
   host: 'localhost',
-  port: 5432,
+  port: process.env.DBPORT || 5432,
   user: process.env.DBUSER || 'postgres',
   password: process.env.DBPASS || '1234',
   database: process.env.DBNAME || 'Db project',

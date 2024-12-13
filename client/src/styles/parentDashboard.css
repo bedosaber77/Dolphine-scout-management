@@ -1,0 +1,30 @@
+.children-container {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9; /* Light background for contrast */
+  border-radius: 8px;
+}
+
+.child-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.child-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.child-card h2 {
+  margin-bottom: 0.5rem;
+}
+
+.child-card p {
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  color: #555;
+}

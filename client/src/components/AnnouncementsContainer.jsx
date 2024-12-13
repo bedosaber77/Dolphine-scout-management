@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AnnouncementCard = ({ announcement }) => {
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 hover:shadow-xl transition-shadow duration-300 cursor-pointer">
+    <div className="bg-gray-100 w-full shadow-md rounded-lg p-4 hover:shadow-xl transition-shadow duration-300 cursor-pointer">
       <h3 className="text-lg font-semibold text-gray-800 mb-2">
         {announcement.Content}
       </h3>
@@ -26,7 +26,7 @@ const AnnouncementsContainer = ({ announcements }) => {
   );
 
   return (
-    <div className="flex flex-col gap-6 justify-center bg-gray-100 p-6 rounded-lg relative ">
+    <div className="flex flex-col gap-6 justify-center bg-white-100 p-6 rounded-lg relative ">
       <div className="flex flex-wrap gap-6 justify-center">
         {sortedAnnouncements.map((announcement) => (
           <AnnouncementCard
