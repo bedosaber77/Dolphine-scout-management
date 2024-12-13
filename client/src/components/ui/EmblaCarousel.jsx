@@ -36,7 +36,7 @@ const EmblaCarousel = (props) => {
         </div>
       </div>
 
-      <div className="embla__controls">
+      {/* <div className="embla__controls">
         <div className="embla__buttons">
           <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
           <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
@@ -53,7 +53,7 @@ const EmblaCarousel = (props) => {
             />
           ))}
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };
