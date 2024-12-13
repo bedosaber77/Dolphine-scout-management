@@ -29,6 +29,7 @@ import LeaderDashboard from '../pages/LeaderDashboard';
 import ParentDashboard from '../pages/ParentDashboard';
 import ParentProtectedRoute from './ParentProtectedRouter';
 import ScoutChild from '../pages/ScoutChild';
+import Troop from '../pages/Troop';
 
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -72,6 +73,10 @@ const AppRoutes = () => {
               element: <ScoutDashboard />,
             },
           ],
+        },
+        {
+          path: '/troops/:id',
+          element: <Troop />,
         },
         {
           path: '/parentDashboard',

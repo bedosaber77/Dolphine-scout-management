@@ -16,6 +16,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useAuthStore from '../store/authStore';
+import UpcomingEvents from '../components/UpcomingEvents';
+import AnnouncementsContainer from '../components/AnnouncementsContainer';
 
 const color = {
   High: 'red',
@@ -35,7 +37,7 @@ const ScoutLeaderDashboard = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const handleButtonClick = (id) => {
-    navigate(`/leader/troops/${id}`);
+    navigate(`/troops/${id}`);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -61,11 +63,9 @@ const ScoutLeaderDashboard = () => {
           url: 'http://localhost:3000/api/announcements',
           method: 'GET',
         });
-        console.log(troopsFetch.data);
         setEvents(eventsFetch.data);
         setTroops(troopsFetch.data);
         setAnnouncements(announcementsFetch.data);
-        console.log(eventsFetch.data);
       } catch (err) {
         console.error(err);
         // setError('Failed to fetch data');
@@ -92,42 +92,27 @@ const ScoutLeaderDashboard = () => {
       </Container>
     );
   }
+  const upcomingEvents = events.map((event) => {
+    return {
+      id: event.Event_ID,
+      name: event.Ename,
+      date: new Date(event.Edate).toISOString().split('T')[0],
+      details: event.Ename,
+    };
+  });
 
   return (
     <Container style={{ marginTop: '20px' }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Card>
-            <CardHeader
-              title={
-                <Typography
-                  variant="h6"
-                  align="center"
-                  style={{ fontWeight: 'bold' }}
-                >
-                  Events
-                </Typography>
-              }
-            />
-            <CardContent>
-              <List>
-                {events.map((event, index) => (
-                  <ListItem key={index}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      width="100%"
-                      justifyContent="space-around"
-                    >
-                      <Typography variant="h4">{event.Ename}</Typography>
-                      <Typography variant="body2" textAlign="center">
-                        {new Date(event.Edate).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
+            {events.length > 0 ? (
+              <UpcomingEvents events={upcomingEvents} />
+            ) : (
+              <CardContent>
+                <Typography align="center">No upcoming events</Typography>
+              </CardContent>
+            )}
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
@@ -135,7 +120,7 @@ const ScoutLeaderDashboard = () => {
             <CardHeader
               title={
                 <Typography
-                  variant="h6"
+                  variant="h4"
                   align="center"
                   style={{ fontWeight: 'bold' }}
                 >
@@ -144,35 +129,39 @@ const ScoutLeaderDashboard = () => {
               }
             />
             <CardContent>
-              <List>
-                {troops.map((troop, index) => (
-                  <ListItem key={index}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      width="100%"
-                      justifyContent="space-around"
-                    >
-                      {troop.Tname}
-                      <Button
-                        variant="outlined"
-                        sx={{
-                          color: 'white',
-                          backgroundColor: 'var(--footer-bg)',
-                          borderColor: 'var(--footer-bg)',
-                          '&:hover': {
-                            backgroundColor: 'var(--footer-bg)', // Define this variable in your CSS
-                            borderColor: 'var(--footer-bg)',
-                          },
-                        }}
-                        onClick={() => handleButtonClick(troop.Troop_ID)}
+              {troops.length > 0 ? (
+                <List>
+                  {troops.map((troop, index) => (
+                    <ListItem key={index}>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        width="100%"
+                        justifyContent="space-around"
                       >
-                        View
-                      </Button>
-                    </Box>
-                  </ListItem>
-                ))}
-              </List>
+                        {troop.Tname}
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: 'white',
+                            backgroundColor: 'var(--footer-bg)',
+                            borderColor: 'var(--footer-bg)',
+                            '&:hover': {
+                              backgroundColor: 'var(--footer-bg)',
+                              borderColor: 'var(--footer-bg)',
+                            },
+                          }}
+                          onClick={() => handleButtonClick(troop.Troop_ID)}
+                        >
+                          View
+                        </Button>
+                      </Box>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography align="center">No troops available</Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -181,36 +170,21 @@ const ScoutLeaderDashboard = () => {
             <CardHeader
               title={
                 <Typography
-                  variant="h6"
+                  variant="h4"
                   align="center"
                   style={{ fontWeight: 'bold' }}
                 >
-                  Announcements
+                  الإعلانات
                 </Typography>
               }
             />
-            <CardContent>
-              <List>
-                {announcements.map((announcement, index) => (
-                  <ListItem key={index}>
-                    {' '}
-                    <Typography
-                      variant="body1"
-                      color={color[announcement.Priority]}
-                    >
-                      {announcement.Content}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color={color[announcement.Priority]}
-                      style={{ margin: '20px' }}
-                    >
-                      {new Date(announcement.CreateDate).toLocaleDateString()}
-                    </Typography>
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
+            {announcements.length > 0 ? (
+              <AnnouncementsContainer announcements={announcements} />
+            ) : (
+              <CardContent>
+                <Typography align="center">No announcements</Typography>
+              </CardContent>
+            )}
           </Card>
         </Grid>
       </Grid>
