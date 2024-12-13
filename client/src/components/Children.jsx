@@ -13,7 +13,7 @@ const Children = ({ childrenData }) => {
       {childrenData.map((child) => (
         <div
           key={child.User_ID}
-          className="child-card h-36 p-4 bg-white shadow-md rounded-lg cursor-pointer "
+          className="child-card h-36 p-4 bg-gray-100 shadow-md rounded-lg cursor-pointer "
           onClick={() => handleChildClick(child.User_ID)}
         >
           <h2 className="text-lg font-bold text-gray-800">

@@ -1,104 +1,126 @@
-// import { useEffect, useRef } from 'react';
+// import , { useEffect, useRef } from 'react';
 // import ProgressBar from 'progressbar.js';
 
 // const ProgressCircle = ({
-//   progress = 0.0,
+//   progress = 0.0, // Progress value (0.0 to 1.0)
 //   duration = 1400,
-//   color = '#FFEA82',
+//   fromColor = '#aaa',
+//   toColor = '#00ff00',
+//   trailWidth = 10,
+//   strokeWidth = 10,
+//   size = '100px',
+//   fontSize = '2rem',
 // }) => {
 //   const containerRef = useRef(null);
 //   const progressBarRef = useRef(null);
 
 //   useEffect(() => {
-//     // Initialize ProgressBar.Circle only once
+//     // Initialize ProgressBar.Circle
 //     progressBarRef.current = new ProgressBar.Circle(containerRef.current, {
-//       strokeWidth: 6,
+//       color: fromColor,
+//       strokeWidth: strokeWidth,
+//       trailWidth: trailWidth,
 //       easing: 'easeInOut',
 //       duration: duration,
-//       color: color,
-//       trailColor: '#eee',
-//       trailWidth: 1,
-//       svgStyle: null,
+//       text: {
+//         autoStyleContainer: false,
+//       },
+//       from: { color: fromColor, width: strokeWidth },
+//       to: { color: toColor, width: strokeWidth },
+//       step: function (state, circle) {
+//         circle.path.setAttribute('stroke', state.color);
+//         circle.path.setAttribute('stroke-width', state.width);
+
+//         const value = Math.round(circle.value() * 100);
+
+//         if (value === 0) {
+//           circle.setText('');
+//         } else {
+//           circle.setText(value);
+//         }
+//       },
 //     });
 
+//     // Style the text
+//     const textStyle = progressBarRef.current.text.style;
+//     textStyle.fontFamily = '"Raleway", Helvetica, sans-serif';
+//     textStyle.fontSize = fontSize;
+
 //     return () => {
-//       // Cleanup on component unmount
+//       // Cleanup on unmount
 //       if (progressBarRef.current) {
 //         progressBarRef.current.destroy();
 //       }
 //     };
-//   }, [duration, color]);
+//   }, [fromColor, toColor, duration, strokeWidth, trailWidth, fontSize]);
 
 //   useEffect(() => {
 //     // Animate progress whenever `progress` changes
 //     if (progressBarRef.current) {
-//       progressBarRef.current.animate(progress); // Progress: 0.0 to 1.0
+//       progressBarRef.current.animate(progress);
 //     }
 //   }, [progress]);
 
-//   return <div ref={containerRef}></div>;
+//   return (
+//     <div
+//       className="relative"
+//       style={{ width: `${size}`, height: `${size}` }}
+//       ref={containerRef}
+//     ></div>
+//   );
 // };
 
 // export default ProgressCircle;
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import ProgressBar from 'progressbar.js';
 
 const ProgressCircle = ({
-  progress = 0.0, // Progress value (0.0 to 1.0)
+  progress = 0.0,
   duration = 1400,
-  fromColor = '#aaa',
-  toColor = '#00ff00',
-  trailWidth = 10,
-  strokeWidth = 10,
-  size = '100px',
-  fontSize = '2rem',
+  fromColor = '#ff0000',
+  toColor = '#ff0000',
+  trailWidth = 15,
+  strokeWidth = 15,
+  size = '70px',
+  fontSize = '1rem',
 }) => {
   const containerRef = useRef(null);
   const progressBarRef = useRef(null);
 
   useEffect(() => {
-    // Initialize ProgressBar.Circle
     progressBarRef.current = new ProgressBar.Circle(containerRef.current, {
-      color: fromColor,
-      strokeWidth: strokeWidth,
-      trailWidth: trailWidth,
+      color: '#000',
+      strokeWidth,
+      trailWidth,
       easing: 'easeInOut',
-      duration: duration,
+      duration,
       text: {
         autoStyleContainer: false,
       },
       from: { color: fromColor, width: strokeWidth },
       to: { color: toColor, width: strokeWidth },
-      step: function (state, circle) {
+      step: (state, circle) => {
         circle.path.setAttribute('stroke', state.color);
         circle.path.setAttribute('stroke-width', state.width);
 
         const value = Math.round(circle.value() * 100);
-
-        if (value === 0) {
-          circle.setText('');
-        } else {
-          circle.setText(value);
-        }
+        circle.setText(value ? `${value}%` : '');
       },
     });
 
-    // Style the text
     const textStyle = progressBarRef.current.text.style;
     textStyle.fontFamily = '"Raleway", Helvetica, sans-serif';
     textStyle.fontSize = fontSize;
 
     return () => {
-      // Cleanup on unmount
       if (progressBarRef.current) {
         progressBarRef.current.destroy();
       }
     };
-  }, [fromColor, toColor, duration, strokeWidth, trailWidth, fontSize]);
+  }, [duration, strokeWidth, trailWidth, fontSize, fromColor, toColor]);
 
   useEffect(() => {
-    // Animate progress whenever `progress` changes
     if (progressBarRef.current) {
       progressBarRef.current.animate(progress);
     }

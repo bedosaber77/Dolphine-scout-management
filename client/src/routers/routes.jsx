@@ -27,6 +27,7 @@ import NotFound from '../pages/NotFound';
 import WaitVerify from '../pages/waitVerfiy';
 import ParentDashboard from '../pages/ParentDashboard';
 import ParentProtectedRoute from './ParentProtectedRouter';
+import ScoutChild from '../pages/ScoutChild';
 
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -77,6 +78,7 @@ const AppRoutes = () => {
             },
             {
               path: 'child/:id',
+              element: <ScoutChild />,
             },
           ],
         },
