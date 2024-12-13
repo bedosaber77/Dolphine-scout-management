@@ -132,21 +132,3 @@ exports.deleteUser = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-exports.getUserAttendanceCurrentMonth = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const query = `SELECT "EventAttendance"."Event_ID", "Edate" FROM "EventAttendance"
-    FULL OUTER JOIN "Event" ON "EventAttendance"."Event_ID" = "Event"."Event_ID" 
-    WHERE "Scout_ID" = $1OR "Scout_ID" IS NULL
-    AND EXTRACT(MONTH FROM "Event"."Edate") = EXTRACT(MONTH FROM CURRENT_DATE)
-    AND EXTRACT(YEAR FROM "Event"."Edate") = EXTRACT(YEAR FROM CURRENT_DATE);`;
-    const params = [id];
-    const result = await db.query(query, params);
-    console.log(result.rows);
-    return res.json(result.rows);
-  } catch (error) {
-    console.log('Error executing query', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};

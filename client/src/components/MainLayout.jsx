@@ -4,7 +4,7 @@ import Footer from './Footer';
 
 const MainLayout = () => {
   return (
-    <div className="mainLayout">
+    <div className="mainLayout flex flex-col gap-4">
       <header>
         <AppHeader></AppHeader>
       </header>
