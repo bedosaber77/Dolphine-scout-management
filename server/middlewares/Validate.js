@@ -127,7 +127,8 @@ const validateAnnouncement = async (req, res, next) => {
 };
 
 const validateEquipment = async (req, res, next) => {
-  const { name, quantity, date, location_id } = req.body;
+  let { name, quantity, date, location_id } = req.body;
+  console.log("name",name,"quant",quantity,"date",date,"loc",location_id);
   if (!name || !date || !location_id) {
     return res
       .status(400)
@@ -135,18 +136,22 @@ const validateEquipment = async (req, res, next) => {
   }
   if (quantity) {
     if (!validate.isInt(quantity)) {
+      console.log('found1');
       return res.status(400).json({ message: 'Quantity must be a number' });
     }
     if (quantity < 0) {
+      console.log('found2');
       return res.status(400).json({ message: "Quantity can't be negative" });
     }
   }
 
   if (location_id) {
     if (!validate.isInt(location_id)) {
+      console.log('found3');
       return res.status(400).json({ message: 'Invalid location id' });
     }
     try {
+      
       const query = `SELECT * FROM "Location" WHERE "Location_ID" = $1`;
       const params = [location_id];
       const result = await db.query(query, params);
@@ -156,6 +161,7 @@ const validateEquipment = async (req, res, next) => {
           .json({ message: 'no location with that id was found' });
       }
     } catch (error) {
+
       console.log('Error executing query', error);
       return res.status(500).json({ message: 'Internal server error' });
     }

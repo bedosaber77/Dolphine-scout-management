@@ -1,4 +1,3 @@
-import { use } from 'react';
 import useAuthStore from '../store/authStore';
 import '../styles/global.css';
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';

@@ -2,7 +2,7 @@ const db = require("../config/DBmanager");
 
 exports.getAllScouts = async (req, res) => {
   try {
-    const query = `SELECT U.* S.*
+    const query = `SELECT U.*, S.*
                     FROM "User" U
                     INNER JOIN "Scout" S
                     ON U."User_ID" = S."User_ID"`;

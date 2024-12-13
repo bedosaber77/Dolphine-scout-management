@@ -36,10 +36,21 @@ module.exports.getEquipment = async (req, res) => {
 
 module.exports.addEquipment = async (req, res) => {
     const { name, quantity, date, location_id } = req.body;
+      console.log(
+        'name',
+        name,
+        'quant',
+        quantity,
+        'date',
+        date,
+        'loc',
+        location_id
+      );
     try {
         const query = `INSERT INTO "Equipment" ("Ename", "Quantity", "AddedDate", "Location_ID") VALUES ($1, $2, $3, $4) RETURNING *`; // return inserted Equipment
         const params = [name, quantity, date, location_id];
         const result = await db.query(query, params);
+        console.log(result.rows);
         return res.status(201).json({ message: "Added Equipment successfully", Equipment: result[0] });
     } catch (error) {
         console.log("Error executing query", error);

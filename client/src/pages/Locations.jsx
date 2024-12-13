@@ -1,40 +1,134 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useApi from '../hooks/useApi';
 
 const Locations = () => {
-  // State to hold the locations data
-  const [locationsData, setLocationsData] = useState([
-    { name: 'موقع 1', url: 'https://example.com/location1' },
-    { name: 'موقع 2', url: 'https://example.com/location2' },
-  ]);
+  const apiRequest = useApi();
 
-  // State for controlling the modal
+  const [locationsData, setLocationsData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [locationName, setLocationName] = useState('');
-  const [locationURL, setLocationURL] = useState('');
+  const [city, setCity] = useState('');
+  const [government, setGovernment] = useState('');
+  const [link, setLink] = useState('');
+  const [locationToEdit, setLocationToEdit] = useState(null); // For editing a location
 
-  // Add a new location
-  const handleSubmitLocation = (e) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const locationsFetch = await apiRequest({
+          url: 'http://localhost:3000/api/locations/',
+          method: 'GET',
+        });
+        console.log("location :",locationsFetch.data)
+        setLocationsData(locationsFetch.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, [apiRequest]);
+
+  // Handle adding a new location
+  const handleAddLocation = async (e) => {
     e.preventDefault();
-    setLocationsData([...locationsData, { name: locationName, url: locationURL }]);
-    setIsModalOpen(false);
-    setLocationName('');
-    setLocationURL('');
+    const newLocation = {
+      LocationName: locationName,
+      City: city,
+      Government: government,
+      Link: link,
+    };
+    try {
+      const response = await apiRequest({
+        url: 'http://localhost:3000/api/locations/',
+        method: 'POST',
+        data: newLocation,
+      });
+      setLocationsData([...locationsData, response.data]);
+      setIsModalOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // Delete a location
-  const handleDelete = (locationName) => {
-    setLocationsData(locationsData.filter((location) => location.name !== locationName));
+  // Handle editing an existing location
+  const handleEditLocation = async (e) => {
+    e.preventDefault();
+    const updatedLocation = {
+      LocationName: locationName,
+      City: city,
+      Government: government,
+      Link: link,
+    };
+    try {
+      const response = await apiRequest({
+        url: `http://localhost:3000/api/locations/${locationToEdit.Location_ID}`,
+        method: 'PUT',
+        data: updatedLocation,
+      });
+      setLocationsData(
+        locationsData.map((location) =>
+          location.Location_ID === locationToEdit.Location_ID
+            ? { ...location, ...updatedLocation }
+            : location
+        )
+      );
+      setIsModalOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Handle deleting a location
+  const handleDelete = async (Location_ID) => {
+    try {
+      await apiRequest({
+        url: `http://localhost:3000/api/locations/${Location_ID}`,
+        method: 'DELETE',
+      });
+      setLocationsData(
+        locationsData.filter((location) => location.Location_ID !== Location_ID)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Reset form fields
+  const resetForm = () => {
+    setLocationName('');
+    setCity('');
+    setGovernment('');
+    setLink('');
+    setLocationToEdit(null);
+  };
+
+  // Handle editing a location
+  const handleEdit = (location) => {
+    setLocationName(location.LocationName);
+    setCity(location.City);
+    setGovernment(location.Government);
+    setLink(location.Link);
+    setLocationToEdit(location);
+    setIsModalOpen(true);
   };
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--secondary-color)' }}>
+      <h2
+        className="text-2xl font-semibold mb-4"
+        style={{ color: 'var(--secondary-color)' }}
+      >
         قائمة المواقع
       </h2>
 
       {/* Add Location Button */}
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          setIsModalOpen(true);
+          resetForm(); // Ensure the form is reset when adding a new location
+        }}
         className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
       >
@@ -46,22 +140,41 @@ const Locations = () => {
         <thead>
           <tr>
             <th className="border px-4 py-2">اسم الموقع</th>
+            <th className="border px-4 py-2">المدينة</th>
+            <th className="border px-4 py-2">المحافظة</th>
             <th className="border px-4 py-2">رابط الموقع</th>
+            <th className="border px-4 py-2">تعديل</th>
             <th className="border px-4 py-2">حذف</th>
           </tr>
         </thead>
         <tbody>
-          {locationsData.map((location, index) => (
-            <tr key={index} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{location.name}</td>
+          {locationsData.map((location) => (
+            <tr key={location.Location_ID} className="hover:bg-gray-100">
+              <td className="border px-4 py-2">{location.LocationName}</td>
+              <td className="border px-4 py-2">{location.City}</td>
+              <td className="border px-4 py-2">{location.Government}</td>
               <td className="border px-4 py-2">
-                <a href={location.url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                  {location.url}
+                <a
+                  href={location.Link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500"
+                >
+                  {location.Link}
                 </a>
               </td>
               <td className="border px-4 py-2">
                 <button
-                  onClick={() => handleDelete(location.name)}
+                  onClick={() => handleEdit(location)}
+                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                  style={{ background: 'var(--secondary-color)' }}
+                >
+                  تعديل
+                </button>
+              </td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => handleDelete(location.Location_ID)}
                   className="bg-red-500 text-white px-4 py-2 rounded-lg"
                 >
                   حذف
@@ -72,14 +185,21 @@ const Locations = () => {
         </tbody>
       </table>
 
-      {/* Modal for Adding Location */}
+      {/* Modal for Adding/Editing Location */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">إضافة موقع</h3>
-            <form onSubmit={handleSubmitLocation}>
+            <h3 className="text-xl mb-4 font-bold">
+              {locationToEdit ? 'تعديل' : 'إضافة'} موقع
+            </h3>
+            <form
+              onSubmit={locationToEdit ? handleEditLocation : handleAddLocation}
+            >
               <div className="mb-4">
-                <label htmlFor="locationName" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="locationName"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   اسم الموقع
                 </label>
                 <input
@@ -94,15 +214,54 @@ const Locations = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="locationURL" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="city"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  المدينة
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  id="city"
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="government"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  المحافظة
+                </label>
+                <input
+                  type="text"
+                  name="government"
+                  value={government}
+                  onChange={(e) => setGovernment(e.target.value)}
+                  id="government"
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="link"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   رابط الموقع
                 </label>
                 <input
                   type="url"
-                  name="locationURL"
-                  value={locationURL}
-                  onChange={(e) => setLocationURL(e.target.value)}
-                  id="locationURL"
+                  name="link"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  id="link"
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
                   required
                 />
@@ -121,7 +280,7 @@ const Locations = () => {
                   className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
                   style={{ background: 'var(--secondary-color)' }}
                 >
-                  إضافة
+                  {locationToEdit ? 'تعديل' : 'إضافة'}
                 </button>
               </div>
             </form>

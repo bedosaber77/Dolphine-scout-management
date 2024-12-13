@@ -46,8 +46,8 @@
 // export default Sidebar;
 
 import { NavLink } from 'react-router-dom';
-import { HiOutlineHome, HiOutlineBell } from 'react-icons/hi';
-import { FaTrophy } from 'react-icons/fa';
+// import { HiOutlineHome, HiOutlineBell } from 'react-icons/hi';
+// import { FaTrophy } from 'react-icons/fa';
 
 const Sidebar = () => {
   return (
@@ -65,7 +65,7 @@ const Sidebar = () => {
             }`
           }
         >
-          <HiOutlineHome className="text-xl" />
+          {/* <HiOutlineHome className="text-xl" /> */}
           Dashboard
         </NavLink>
         <NavLink
@@ -76,7 +76,7 @@ const Sidebar = () => {
             }`
           }
         >
-          <HiOutlineBell className="text-xl" />
+          {/* <HiOutlineBell className="text-xl" /> */}
           Announcements
         </NavLink>
         <NavLink
@@ -87,7 +87,7 @@ const Sidebar = () => {
             }`
           }
         >
-          <FaTrophy className="text-xl" />
+          {/* <FaTrophy className="text-xl" /> */}
           Achievements
         </NavLink>
       </nav>
