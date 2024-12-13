@@ -1,8 +1,8 @@
-const db = require("../config/DBmanager");
+const db = require('../config/DBmanager');
 
 exports.getAllScouts = async (req, res) => {
   try {
-    const query = `SELECT U.* S.*
+    const query = `SELECT U.*, S.*
                     FROM "User" U
                     INNER JOIN "Scout" S
                     ON U."User_ID" = S."User_ID"`;
@@ -10,12 +10,12 @@ exports.getAllScouts = async (req, res) => {
     const params = [];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "no scouts found" });
+      return res.status(404).json({ message: 'no scouts found' });
     }
     return res.json(result.rows);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -30,12 +30,12 @@ exports.getScoutbyId = async (req, res) => {
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "scout not found" });
+      return res.status(404).json({ message: 'scout not found' });
     }
     return res.json(result.rows[0]);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -58,10 +58,10 @@ exports.addScout = async (req, res) => {
     await db.query(query2, params2);
     return res
       .status(201)
-      .json({ message: "Added Scout successfully", Scout: result.rows[0] });
+      .json({ message: 'Added Scout successfully', Scout: result.rows[0] });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -80,15 +80,15 @@ exports.updateScout = async (req, res) => {
     ];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Scout not found" });
+      return res.status(404).json({ message: 'Scout not found' });
     }
     return res.json({
-      message: "Scout updated successfully",
+      message: 'Scout updated successfully',
       Scout: result.rows[0],
     });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -99,12 +99,12 @@ exports.deleteScout = async (req, res) => {
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Scout not found" });
+      return res.status(404).json({ message: 'Scout not found' });
     }
-    return res.json({ message: "Scout deleted successfully" });
+    return res.json({ message: 'Scout deleted successfully' });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }; // needed to be revisit what to do here
 
@@ -122,13 +122,13 @@ module.exports.getScoutAchievements = async (req, res) => {
     const result = await db.query(query, params);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "no achievements found" });
+      return res.status(404).json({ message: 'no achievements found' });
     }
 
     return res.json(result.rows);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -139,10 +139,15 @@ module.exports.addScoutAchievement = async (req, res) => {
     const query = `INSERT INTO "AchievementTaken" ("Scout_ID", "Achievement_ID", "DateAwarded") VALUES ($1, $2, $3) RETURNING *`;
     const params = [id, achievement_id, date];
     const result = await db.query(query, params);
-    return res.status(201).json({ message: "Added Achievement successfully", achievement: result[0] });
+    return res
+      .status(201)
+      .json({
+        message: 'Added Achievement successfully',
+        achievement: result[0],
+      });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -154,11 +159,13 @@ module.exports.deleteScoutAchievement = async (req, res) => {
     const result = await db.query(query, params);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Achievement not found" });
+      return res.status(404).json({ message: 'Achievement not found' });
     }
-    return res.status(200).json({ message: "Deleted Achievement successfully" });
+    return res
+      .status(200)
+      .json({ message: 'Deleted Achievement successfully' });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

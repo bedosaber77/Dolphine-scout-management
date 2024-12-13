@@ -34,8 +34,8 @@ const ScoutLeaderDashboard = () => {
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  const handleButtonClick = () => {
-    navigate('/leader/troops/');
+  const handleButtonClick = (id) => {
+    navigate(`/leader/troops/${id}`);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -165,6 +165,7 @@ const ScoutLeaderDashboard = () => {
                             borderColor: 'var(--footer-bg)',
                           },
                         }}
+                        onClick={() => handleButtonClick(troop.Troop_ID)}
                       >
                         View
                       </Button>
