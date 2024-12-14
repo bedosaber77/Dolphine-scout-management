@@ -79,7 +79,7 @@ const AdminDashboardLayout = () => {
           currentPath={location.pathname}
           color="var(--secondary-color)"
         >
-        الاعلانات
+          الاعلانات
         </Tab>
         <Tab
           to="achievements"

@@ -38,7 +38,7 @@ const Equipment = () => {
             return {
               ...equ,
               locationName: location ? location.LocationName : 'غير متوفر',
-              locationLink: location ? location.Link:null,
+              locationLink: location ? location.Link : null,
             };
           } catch (err) {
             console.error(
@@ -123,7 +123,7 @@ const Equipment = () => {
       await apiRequest({
         url: `http://localhost:3000/api/equipment/${editingEquipmentId}`,
         method: 'PUT',
-        data: {...updatedEquipment},
+        data: { ...updatedEquipment },
       });
 
       setEquipmentData((prevData) =>
@@ -134,7 +134,7 @@ const Equipment = () => {
         )
       );
 
-    fetchEquipmentAndLocation();
+      fetchEquipmentAndLocation();
       setIsModalOpen(false);
       setEditingEquipmentId(null);
       setEquipmentName('');
