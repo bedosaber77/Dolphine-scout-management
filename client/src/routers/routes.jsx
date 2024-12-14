@@ -32,27 +32,6 @@ import Dashboard from './Dashboard';
 import ScoutChild from '../pages/ScoutChild';
 import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
 
-const announcements = [
-  {
-    Announcement_ID: 1,
-    Content: 'System Maintenance',
-    Priority: 'High',
-    CreateDate: '2024-12-10T14:00:00',
-  },
-  {
-    Announcement_ID: 2,
-    Content: 'Holiday Schedule',
-    Priority: 'Medium',
-    CreateDate: '2024-12-05T08:30:00',
-  },
-  {
-    Announcement_ID: 3,
-    Content: 'New Features Released',
-    Priority: 'Low',
-    CreateDate: '2024-12-12T10:00:00',
-  },
-];
-
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
 
@@ -81,6 +60,10 @@ const AppRoutes = () => {
         {
           path: 'verify',
           element: <WaitVerify />,
+        },
+        {
+          path: '/announcements',
+          element: <AllAnnouncementsPage />,
         },
         {
           path: '/dashboard',
