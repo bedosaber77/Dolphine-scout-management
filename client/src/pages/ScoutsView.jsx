@@ -7,10 +7,10 @@ const ScoutsView = () => {
   const [loading, setLoading] = useState(true); // For loading state
 
   useEffect(() => {
-    const fetchScoutsAndUsers = async () => {
+    const fetchScouts = async () => {
       setLoading(true); // Start loading
       try {
-        // Fetch scouts
+        // Fetch scouts from the backend (already enriched with user data)
         const scoutsFetch = await apiRequest({
           url: 'http://localhost:3000/api/scouts/',
           method: 'GET',
@@ -19,48 +19,15 @@ const ScoutsView = () => {
 
         console.log('Fetched scouts:', scouts);
 
-        // Fetch user details for each scout
-        const enrichedScoutsData = await Promise.all(
-          scouts.map(async (scout) => {
-            try {
-              const userFetch = await apiRequest({
-                url: `http://localhost:3000/api/users/${scout.User_ID}`,
-                method: 'GET',
-              });
-              const user = userFetch.data;
-
-              console.log(`User data for Scout ID ${scout.User_ID}:`, user);
-
-              return {
-                ...scout,
-                userName: `${user.Fname} ${user.Lname}`, // Enriching scout data with user info
-                phone: user.Phonenum,
-                email: user.Email,
-              };
-            } catch (err) {
-              console.error(
-                `Error fetching user data for Scout ID ${scout.User_ID}:`,
-                err
-              );
-              return {
-                ...scout,
-                userName: 'غير متوفر',
-                phone: 'غير متوفر',
-                email: 'غير متوفر',
-              }; // Fallback for error
-            }
-          })
-        );
-
-        setScoutsData(enrichedScoutsData);
+        setScoutsData(scouts);
       } catch (error) {
-        console.error('Error fetching scouts and user data:', error);
+        console.error('Error fetching scouts data:', error);
       } finally {
         setLoading(false); // End loading
       }
     };
 
-    fetchScoutsAndUsers();
+    fetchScouts();
   }, [apiRequest]);
 
   return (
@@ -87,9 +54,17 @@ const ScoutsView = () => {
           <tbody>
             {scoutsData.map((scout) => (
               <tr key={scout.User_ID} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{scout.userName}</td>
-                <td className="border px-4 py-2">{scout.phone}</td>
-                <td className="border px-4 py-2">{scout.email}</td>
+                <td className="border px-4 py-2">
+                  {scout.Fname && scout.Lname
+                    ? `${scout.Lname} ${scout.Fname}`
+                    : 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {scout.Phonenum || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {scout.email || 'غير متوفر'}
+                </td>
                 <td className="border px-4 py-2">{scout.User_ID}</td>
               </tr>
             ))}

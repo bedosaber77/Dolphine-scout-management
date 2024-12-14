@@ -64,13 +64,13 @@ const AdminDashboardLayout = () => {
         {/* <Tab to="sponsors" currentPath={location.pathname} color="var(--secondary-color)">
           تاريخ التبرعات
         </Tab> */}
-        <Tab
+        {/* <Tab
           to="requests"
           currentPath={location.pathname}
           color="var(--secondary-color)"
         >
           الطلبات
-        </Tab>
+        </Tab> */}
         {/* <Tab to="addLeader" currentPath={location.pathname} color="var(--secondary-color)">
           اضافة قائد
         </Tab> */}
@@ -79,7 +79,7 @@ const AdminDashboardLayout = () => {
           currentPath={location.pathname}
           color="var(--secondary-color)"
         >
-          اضافة اعلان
+        الاعلانات
         </Tab>
         <Tab
           to="achievements"

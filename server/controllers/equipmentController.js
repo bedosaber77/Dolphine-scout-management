@@ -61,6 +61,7 @@ module.exports.addEquipment = async (req, res) => {
 module.exports.updateEquipment = async (req, res) => {
     const { equipment_id } = req.params;
     const { name, quantity, date, location_id } = req.body;
+    console.log("in controller", name, quantity, location_id, date, equipment_id);
     try {
         const query = `UPDATE "Equipment" SET "Ename" = $1, "Quantity" = $2, "AddedDate" = $3, "Location_ID" = $4 WHERE "Equipment_ID" = $5 RETURNING *`;
         const params = [name, quantity, date, location_id, equipment_id];

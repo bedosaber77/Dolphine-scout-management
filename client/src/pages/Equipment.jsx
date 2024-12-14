@@ -12,50 +12,51 @@ const Equipment = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState(null);
 
+  const fetchEquipmentAndLocation = async () => {
+    try {
+      // Fetch locations
+      const locationsFetch = await apiRequest({
+        url: 'http://localhost:3000/api/locations/',
+        method: 'GET',
+      });
+      const locationData = locationsFetch.data;
+      setLocations(locationData);
+
+      // Fetch equipment
+      const equipmentFetch = await apiRequest({
+        url: 'http://localhost:3000/api/equipment/',
+        method: 'GET',
+      });
+      const equipment = equipmentFetch.data;
+
+      const EquipmentWithLocation = await Promise.all(
+        equipment.map(async (equ) => {
+          try {
+            const location = locationData.find(
+              (loc) => loc.Location_ID === equ.Location_ID
+            );
+            return {
+              ...equ,
+              locationName: location ? location.LocationName : 'غير متوفر',
+              locationLink: location ? location.Link:null,
+            };
+          } catch (err) {
+            console.error(
+              `Error fetching location for equipment ${equ.Ename}`,
+              err
+            );
+            return { ...equ, locationLink: 'غير متوفر' };
+          }
+        })
+      );
+
+      setEquipmentData(EquipmentWithLocation);
+    } catch (error) {
+      console.error('Error fetching equipment and locations:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchEquipmentAndLocation = async () => {
-      try {
-        // Fetch locations
-        const locationsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/locations/',
-          method: 'GET',
-        });
-        const locationData = locationsFetch.data;
-        setLocations(locationData);
-
-        // Fetch equipment
-        const equipmentFetch = await apiRequest({
-          url: 'http://localhost:3000/api/equipment/',
-          method: 'GET',
-        });
-        const equipment = equipmentFetch.data;
-
-        const EquipmentWithLocation = await Promise.all(
-          equipment.map(async (equ) => {
-            try {
-              const location = locationData.find(
-                (loc) => loc.Location_ID === equ.Location_ID
-              );
-              return {
-                ...equ,
-                locationLink: location ? location.LocationName : 'غير متوفر',
-              };
-            } catch (err) {
-              console.error(
-                `Error fetching location for equipment ${equ.Ename}`,
-                err
-              );
-              return { ...equ, locationLink: 'غير متوفر' };
-            }
-          })
-        );
-
-        setEquipmentData(EquipmentWithLocation);
-      } catch (error) {
-        console.error('Error fetching equipment and locations:', error);
-      }
-    };
-
     fetchEquipmentAndLocation();
   }, [apiRequest]);
 
@@ -73,7 +74,7 @@ const Equipment = () => {
         name: equipmentName,
         location_id: equipmentLocation, // Use selected location ID
         quantity: equipmentAmount,
-        date:new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0],
       };
 
       await apiRequest({
@@ -83,6 +84,7 @@ const Equipment = () => {
       });
 
       setEquipmentData([...equipmentData, newEquipment]);
+      fetchEquipmentAndLocation();
       setIsModalOpen(false);
       setEquipmentName('');
       setEquipmentLocation('');
@@ -101,7 +103,7 @@ const Equipment = () => {
       setEquipmentName(equipment.Ename);
       setEquipmentLocation(equipment.Location_ID); // Store the location ID
       setEquipmentAmount(equipment.Quantity.toString());
-      setEditingEquipmentId(equipmentId);
+      setEditingEquipmentId(equipmentId); // Set the ID to indicate editing mode
       setIsModalOpen(true);
     }
   };
@@ -113,14 +115,15 @@ const Equipment = () => {
     try {
       const updatedEquipment = {
         name: equipmentName,
-        location_id: equipmentLocation, // Use selected location ID
-        quantity: equipmentAmount
+        location_id: equipmentLocation.toString(), // Use selected location ID
+        quantity: equipmentAmount,
+        date: new Date().toISOString().split('T')[0],
       };
 
       await apiRequest({
         url: `http://localhost:3000/api/equipment/${editingEquipmentId}`,
         method: 'PUT',
-        data: updatedEquipment,
+        data: {...updatedEquipment},
       });
 
       setEquipmentData((prevData) =>
@@ -131,6 +134,7 @@ const Equipment = () => {
         )
       );
 
+    fetchEquipmentAndLocation();
       setIsModalOpen(false);
       setEditingEquipmentId(null);
       setEquipmentName('');
@@ -169,8 +173,7 @@ const Equipment = () => {
     setIsDeleteModalOpen(true);
   };
 
-
-console.log('equipmentData', equipmentData);
+  console.log('equipmentData', equipmentData);
   return (
     <div className="p-4">
       <h2
@@ -182,7 +185,14 @@ console.log('equipmentData', equipmentData);
 
       {/* Add Equipment Button */}
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          // Clear the form state for adding new equipment
+          setEquipmentName('');
+          setEquipmentLocation('');
+          setEquipmentAmount('');
+          setEditingEquipmentId(null); // Ensure editing ID is null
+          setIsModalOpen(true);
+        }}
         className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
       >
@@ -204,7 +214,16 @@ console.log('equipmentData', equipmentData);
           {equipmentData.map((equipment) => (
             <tr key={equipment?.Equipment_ID} className="hover:bg-gray-100">
               <td className="border px-4 py-2">{equipment.Ename}</td>
-              <td className="border px-4 py-2">{equipment.locationLink}</td>
+              <td className="border px-4 py-2">
+                <a
+                  href={equipment.locationLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-500"
+                >
+                  {equipment.locationName}
+                </a>
+              </td>
               <td className="border px-4 py-2">{equipment.Quantity}</td>
               <td className="border px-4 py-2">
                 <button

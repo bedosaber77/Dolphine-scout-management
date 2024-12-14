@@ -6,6 +6,8 @@ const Locations = () => {
 
   const [locationsData, setLocationsData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [locationToDelete, setLocationToDelete] = useState(null);
   const [locationName, setLocationName] = useState('');
   const [city, setCity] = useState('');
   const [government, setGovernment] = useState('');
@@ -76,17 +78,41 @@ const Locations = () => {
     }
   };
 
-  const handleDelete = async (Location_ID) => {
-    try {
-      await apiRequest({
-        url: `http://localhost:3000/api/locations/${Location_ID}`,
-        method: 'DELETE',
-      });
-      fetchData(); // Refresh data
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const handleDelete = async (Location_ID) => {
+  //   try {
+  //     await apiRequest({
+  //       url: `http://localhost:3000/api/locations/${Location_ID}`,
+  //       method: 'DELETE',
+  //     });
+  //     fetchData(); // Refresh data
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+   const handleDelete = (location) => {
+     setLocationToDelete(location);
+     setIsDeleteDialogOpen(true);
+   };
+
+   const confirmDelete = async () => {
+     try {
+       await apiRequest({
+         url: `http://localhost:3000/api/locations/${locationToDelete.Location_ID}`,
+         method: 'DELETE',
+       });
+       setLocationsData(
+         locationsData.filter(
+           (loc) => loc.Location_ID !== locationToDelete.Location_ID
+         )
+       );
+       fetchData();
+       setIsDeleteDialogOpen(false);
+       setLocationToDelete(null);
+     } catch (error) {
+       console.error(error);
+     }
+   };
 
   const resetForm = () => {
     setLocationName('');
@@ -121,8 +147,8 @@ const Locations = () => {
 
       <button
         onClick={() => {
-          setIsModalOpen(true);
           resetForm();
+          setIsModalOpen(true);
         }}
         className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
@@ -173,8 +199,8 @@ const Locations = () => {
                 </td>
                 <td className="border px-4 py-2">
                   <button
-                    onClick={() => handleDelete(location.Location_ID)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                    onClick={() => handleDelete(location)}
+                    className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
                   >
                     حذف
                   </button>
@@ -183,6 +209,28 @@ const Locations = () => {
             ))}
           </tbody>
         </table>
+      )}
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
+            <p>هل أنت متأكد من أنك تريد حذف هذا الموقع</p>
+            <div className="flex justify-between">
+              <button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              >
+                حذف
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {isModalOpen && (

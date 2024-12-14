@@ -94,6 +94,7 @@ const validateLocation = (req, res, next) => {
 
 const validateAnnouncement = async (req, res, next) => {
   const { content, date, priority, visibility, leader_id } = req.body;
+  console.log(content, date, priority, visibility, leader_id);
   if (!content || !date || !priority || !visibility || !leader_id) {
     return res.status(400).json({ message: 'All fields are required' });
   }

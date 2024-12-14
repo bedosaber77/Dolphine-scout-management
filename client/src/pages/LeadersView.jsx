@@ -1,184 +1,282 @@
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import useApi from '../hooks/useApi';
 const ScoutLeaders = () => {
-  const location = useLocation();
-  console.log(location);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [currentLeader, setCurrentLeader] = useState(null);
-  const [leadersData, setLeadersData] = useState([
-    {
-      id: 1,
-      name: 'خالد سعيد',
-      phone: '0112233445',
-      troops: 'الطائفة 1, الطائفة 2',
-      isAdmin: false,
-    },
-    {
-      id: 2,
-      name: 'سعيد محمود',
-      phone: '0109876543',
-      troops: 'الطائفة 3',
-      isAdmin: true,
-    },
-  ]);
+  const apiRequest = useApi();
 
-  const [newLeader, setNewLeader] = useState({
-    name: '',
-    phone: '',
-    id: '',
-    troops: '',
-    isAdmin: false,
-  });
+  const [leadersData, setLeadersData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  ////////////////////////////////////////////////////////////////////////
+  const [leaderToDelete, setleaderToDelete] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [leaderToEdit, setleaderToEdit] = useState(null);
+  const [loading, setLoading] = useState(true); // For loading state
 
-  // Handle editing a leader
-  const handleEdit = (leader) => {
-    setCurrentLeader({ ...leader });
-    setIsDialogOpen(true);
+  const fetchScoutLeaders = async () => {
+    setLoading(true); // Start loading
+    try {
+      // Fetch scouts from the backend (already enriched with user data)
+      const scoutLeadersFetch = await apiRequest({
+        url: 'http://localhost:3000/api/scoutleaders/',
+        method: 'GET',
+      });
+      const scoutLeaders = scoutLeadersFetch.data;
+
+      console.log('Fetched scoutLeadersFetch:', scoutLeaders);
+
+      setLeadersData(scoutLeaders);
+    } catch (error) {
+      console.error('Error fetching scouts data:', error);
+    } finally {
+      setLoading(false); // End loading
+    }
+  };
+  useEffect(() => {
+    fetchScoutLeaders();
+  }, [apiRequest]);
+
+  const handleSubmitLeaders = async (e) => {
+    e.preventDefault();
+    const newLeader = {
+      // name: achievement,
+      // level: level || null,
+      // description: description || null,
+      // criteria: criteria || null,
+    };
+
+    if (isEditMode && leaderToEdit) {
+      try {
+        await apiRequest({
+          url: `http://localhost:3000/api/achievements/${leaderToEdit.Achievement_ID}`,//////////////////////////
+          method: 'PUT',
+          data: newLeader,
+        });
+        setLeadersData((prevData) =>
+          prevData.map((lead) =>
+            lead.Achievement_ID === leaderToEdit.Achievement_ID
+              ? { ...lead, ...newLeader }
+              : lead
+          )
+        );
+      } catch (error) {
+        console.error('Error updating achievement:', error);
+      }
+    } else {
+      try {
+        const response = await apiRequest({
+          url: 'http://localhost:3000/api/achievements/',/////////////////////////
+          method: 'POST',
+          data: newLeader,
+        });
+        setLeadersData([...leadersData, response.data]);
+      } catch (error) {
+        console.error('Error adding achievement:', error);
+      }
+    }
+    fetchScoutLeaders();
+    // Reset form state and close modal
+    // setAchievement('');
+    // setLevel('');
+    // setDescription('');
+    // setCriteria('');
+    setIsModalOpen(false);
+    setIsEditMode(false);
   };
 
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    setCurrentLeader(null);
+  const handleDelete = (achievement) => {
+    setleaderToDelete(achievement);
+    setIsDeleteDialogOpen(true);
   };
 
-  const handleSave = () => {
-    setLeadersData((prevData) =>
-      prevData.map((leader) =>
-        leader.id === currentLeader.id ? currentLeader : leader
-      )
-    );
-    setIsDialogOpen(false);
+  // Confirm delete
+  const confirmDelete = async () => {
+    try {
+      await apiRequest({
+        url: `http://localhost:3000/api/achievements/${leaderToDelete.Achievement_ID}`,//////////////////////////////////
+        method: 'DELETE',
+      });
+      setLeadersData(
+        leadersData.filter(
+          (lead) => lead.Achievement_ID !== leaderToDelete.Achievement_ID
+        )
+      );
+      setIsDeleteDialogOpen(false);
+      setleaderToDelete(null);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // Handle adding a new leader
-  const handleAddDialogClose = () => {
-    setIsAddDialogOpen(false);
-    setNewLeader({ name: '', phone: '', id: '', troops: '', isAdmin: false });
-  };
-
-  const handleAdd = () => {
-    setLeadersData((prevData) => [
-      ...prevData,
-      { ...newLeader, id: leadersData.length + 1 },
-    ]);
-    setIsAddDialogOpen(false);
-  };
-
-  // Handle deleting a leader
-  const handleDelete = (id) => {
-    setLeadersData((prevData) => prevData.filter((leader) => leader.id !== id));
+  // Handle edit
+  const handleEdit = (achievement) => {
+    // setAchievement(achievement.Aname);
+    // setLevel(achievement.Level);
+    // setDescription(achievement.Description);
+    // setCriteria(achievement.Criteria);
+    setleaderToEdit(achievement);
+    setIsModalOpen(true);
+    setIsEditMode(true);
   };
 
   return (
     <div className="p-4">
       <h2
-        className="text-2xl font-semibold mb-4"
+        className="mb-4 text-lg font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
-        قادة الكشافة
+        قائمة القادة
       </h2>
 
       {/* Add Leader Button */}
       <button
-        onClick={() => setIsAddDialogOpen(true)}
-        className="bg-secondary-color text-white px-4 py-2 rounded-lg mb-4"
+        onClick={() => {
+          // Clear the form state for adding new equipment
+          // setAchievement('');
+          // setLevel('');
+          // setDescription('');
+          // setCriteria('');
+          setIsModalOpen(true);
+        }}
+        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
       >
         إضافة قائد جديد
       </button>
 
       {/* Leaders Table */}
-      <table className="min-w-full border-collapse border border-gray-200">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">الاسم</th>
-            <th className="border px-4 py-2">رقم الهاتف</th>
-            <th className="border px-4 py-2">الرقم التعريفي</th>
-            <th className="border px-4 py-2">المجموعات التي يقودها</th>
-            <th className="border px-4 py-2">مدير؟</th>
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leadersData.map((leader) => (
-            <tr key={leader.id} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{leader.name}</td>
-              <td className="border px-4 py-2">{leader.phone}</td>
-              <td className="border px-4 py-2">{leader.id}</td>
-              <td className="border px-4 py-2">{leader.troops}</td>
-              <td className="border px-4 py-2">
-                {leader.isAdmin ? 'نعم' : 'لا'}
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEdit(leader)}
-                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(leader.id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : leadersData.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا توجد مواقع لعرضها.</p>
+      ) : (
+        <table className="min-w-full border-collapse border border-gray-200">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2">الرقم التعريفي</th>
+              <th className="border px-4 py-2">الاسم</th>
+              <th className="border px-4 py-2">رقم الهاتف</th>
+              <th className="border px-4 py-2">المجموعات التي يقودها</th>
+              <th className="border px-4 py-2">مدير؟</th>
+              <th className="border px-4 py-2">تعديل</th>
+              <th className="border px-4 py-2">حذف</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {leadersData.map((leader) => (
+              <tr key={leader.User_ID} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">{leader.User_ID}</td>
+                <td className="border px-4 py-2">
+                  {leader.Fname && leader.Lname
+                    ? `${leader.Lname} ${leader.Fname}`
+                    : 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {leader.Phonenum || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {leader.email || 'غير متوفر'}
+                </td>
+                {/* <td className="border px-4 py-2">{leader.troops}</td> */}
+                <td className="border px-4 py-2">
+                  {leader.isAdmin ? 'نعم' : 'لا'}
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => handleEdit(leader)}
+                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                    style={{ background: 'var(--secondary-color)' }}
+                  >
+                    تعديل
+                  </button>
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => handleDelete(leader)}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                  >
+                    حذف
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {/* Edit Dialog */}
-      {isDialogOpen && (
+      {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-4">تعديل القائد</h3>
-            <form>
-              <label className="block mb-2">
-                الاسم:
+            <h3 className="text-xl mb-4 font-bold">
+              {isEditMode ? 'تعديل' : 'إضافة'} القائد
+            </h3>
+            <form onSubmit={handleSubmitLeaders}>
+              <div className="mb-4">
+                <label
+                  htmlFor="achievementName"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  اسم الإنجاز
+                </label>
                 <input
                   type="text"
-                  value={currentLeader.name}
-                  onChange={(e) =>
-                    setCurrentLeader({ ...currentLeader, name: e.target.value })
-                  }
-                  className="block w-full mt-1 p-2 border rounded-xl"
+                  name="achievementName"
+                  // value={leadername}
+                  // onChange={(e) => setleader(e.target.value)}
+                  id="achievementName"
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  required
                 />
-              </label>
-              <label className="block mb-2">
-                رقم الهاتف:
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="level"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  المستوى
+                </label>
                 <input
                   type="text"
-                  value={currentLeader.phone}
-                  onChange={(e) =>
-                    setCurrentLeader({
-                      ...currentLeader,
-                      phone: e.target.value,
-                    })
-                  }
-                  className="block w-full mt-1 p-2 border rounded-xl"
+                  name="level"
+                  // value={level}
+                  // onChange={(e) => setLevel(e.target.value)}
+                  id="level"
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
                 />
-              </label>
-              <label className="block mb-2">
-                الفرق التي يقودها:
-                <input
-                  type="text"
-                  value={currentLeader.troops}
-                  onChange={(e) =>
-                    setCurrentLeader({
-                      ...currentLeader,
-                      troops: e.target.value,
-                    })
-                  }
-                  className="block w-full mt-1 p-2 border rounded-xl"
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  الوصف
+                </label>
+                <textarea
+                  name="description"
+                  // value={description}
+                  // onChange={(e) => setDescription(e.target.value)}
+                  id="description"
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
                 />
-              </label>
-              <div className="flex items-center mb-4">
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="criteria"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  المعايير
+                </label>
+                <textarea
+                  name="criteria"
+                  // value={criteria}
+                  // onChange={(e) => setCriteria(e.target.value)}
+                  id="criteria"
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                />
+              </div>
+              {/* <div className="flex items-center mb-4">
                 <input
                   type="checkbox"
                   checked={currentLeader.isAdmin}
@@ -191,22 +289,21 @@ const ScoutLeaders = () => {
                   className="mr-2"
                 />
                 <label className="text-right text-lg mr-2">هل هو مدير ؟</label>
-              </div>
+              </div> */}
               <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={handleDialogClose}
+                  onClick={() => setIsModalOpen(false)}
                   className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
                 </button>
                 <button
-                  type="button"
-                  onClick={handleSave}
-                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
+                  type="submit"
+                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
                   style={{ background: 'var(--secondary-color)' }}
                 >
-                  حفظ
+                  {isEditMode ? 'تعديل' : 'إضافة'}
                 </button>
               </div>
             </form>
@@ -214,74 +311,26 @@ const ScoutLeaders = () => {
         </div>
       )}
 
-      {/* Add Leader Dialog */}
-      {isAddDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-4">إضافة قائد جديد</h3>
-            <form>
-              <label className="block mb-2">
-                الاسم:
-                <input
-                  type="text"
-                  value={newLeader.name}
-                  onChange={(e) =>
-                    setNewLeader({ ...newLeader, name: e.target.value })
-                  }
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <label className="block mb-2">
-                رقم الهاتف:
-                <input
-                  type="text"
-                  value={newLeader.phone}
-                  onChange={(e) =>
-                    setNewLeader({ ...newLeader, phone: e.target.value })
-                  }
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <label className="block mb-2">
-                الفرق التي يقودها:
-                <input
-                  type="text"
-                  value={newLeader.troops}
-                  onChange={(e) =>
-                    setNewLeader({ ...newLeader, troops: e.target.value })
-                  }
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <div className="flex items-center mb-4">
-                <input
-                  type="checkbox"
-                  checked={newLeader.isAdmin}
-                  onChange={(e) =>
-                    setNewLeader({ ...newLeader, isAdmin: e.target.checked })
-                  }
-                  className="mr-2"
-                />
-                <label className="text-right text-lg mr-2">هل هو مدير ؟</label>
-              </div>
-              <div className="flex justify-between">
-                <button
-                  type="button"
-                  onClick={handleAddDialogClose}
-                  className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
-                >
-                  إلغاء
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAdd}
-                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  إضافة
-                </button>
-              </div>
-            </form>
+      {/* Delete Confirmation Dialog */}
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
+            <p>هل أنت متأكد أنك تريد حذف هذا القائد</p>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+              >
+                حذف
+              </button>
+            </div>
           </div>
         </div>
       )}
