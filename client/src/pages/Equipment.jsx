@@ -112,9 +112,9 @@ const Equipment = () => {
 
     try {
       const updatedEquipment = {
-        Ename: equipmentName,
-        Location_ID: equipmentLocation, // Use selected location ID
-        Quantity: parseInt(equipmentAmount, 10),
+        name: equipmentName,
+        location_id: equipmentLocation, // Use selected location ID
+        quantity: equipmentAmount
       };
 
       await apiRequest({
