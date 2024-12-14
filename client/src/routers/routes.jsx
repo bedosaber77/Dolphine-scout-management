@@ -30,29 +30,43 @@ import AdminProtectedRoute from './AdminProtectedRoute';
 import ScoutProtectedRoute from './ScoutProtectedRoute';
 import Dashboard from './Dashboard';
 import ScoutChild from '../pages/ScoutChild';
-import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
+// import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
+import AllAchievementsPage from '../pages/AllAchievementsPage';
 
-const announcements = [
+const achievements = [
   {
-    Announcement_ID: 1,
-    Content: 'System Maintenance',
-    Priority: 'High',
-    CreateDate: '2024-12-10T14:00:00',
+    Achievement_ID: 1,
+    Aname: 'Beginner',
+    Criteria: 'Complete Task 1',
+    Description: 'Awarded for starting',
+    Level: 1,
+    Acquired: true,
   },
   {
-    Announcement_ID: 2,
-    Content: 'Holiday Schedule',
-    Priority: 'Medium',
-    CreateDate: '2024-12-05T08:30:00',
+    Achievement_ID: 6,
+    Aname: 'Beginner',
+    Criteria: 'Complete Task 1',
+    Description: 'Awarded for starting',
+    Level: 2,
+    Acquired: true,
   },
   {
-    Announcement_ID: 3,
-    Content: 'New Features Released',
-    Priority: 'Low',
-    CreateDate: '2024-12-12T10:00:00',
+    Achievement_ID: 2,
+    Aname: 'Intermediate',
+    Criteria: 'Complete Task 2',
+    Description: 'Awarded for making progress',
+    Level: 3,
+    Acquired: false,
+  },
+  {
+    Achievement_ID: 3,
+    Aname: 'Advanced',
+    Criteria: 'Complete Task 3',
+    Description: 'Awarded for significant progress',
+    Level: 5,
+    Acquired: true,
   },
 ];
-
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
 
@@ -81,6 +95,10 @@ const AppRoutes = () => {
         {
           path: 'verify',
           element: <WaitVerify />,
+        },
+        {
+          path: 'achievements',
+          element: <AllAchievementsPage achievements={achievements} />,
         },
         {
           path: '/dashboard',
