@@ -21,9 +21,9 @@ const AnnouncementCard = ({ announcement }) => {
 const AnnouncementsContainer = ({ announcements }) => {
   const navigate = useNavigate();
   // Sort announcements by date, most recent first
-  const sortedAnnouncements = [...announcements].sort(
-    (a, b) => new Date(b.CreateDate) - new Date(a.CreateDate)
-  );
+  const sortedAnnouncements = [...announcements]
+    .sort((a, b) => new Date(b.CreateDate) - new Date(a.CreateDate))
+    .slice(0, 3);
 
   return (
     <div className="flex flex-col gap-6 justify-center bg-white-100 p-6 rounded-lg relative ">
@@ -35,7 +35,7 @@ const AnnouncementsContainer = ({ announcements }) => {
           />
         ))}
       </div>
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-start mt-6">
         <button
           className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
           onClick={() => navigate('/announcements')}

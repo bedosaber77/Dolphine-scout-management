@@ -2,12 +2,12 @@
   display: grid;
   gap: 1rem;
   padding: 1rem;
-  background-color: #f9f9f9; /* Light background for contrast */
+  /* background-color: #f9f9f9; Light background for contrast */
   border-radius: 8px;
 }
 
 .child-card {
-  background-color: white;
+  /* background-color: white; */
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 1rem;

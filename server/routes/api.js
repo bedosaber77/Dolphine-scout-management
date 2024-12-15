@@ -29,9 +29,12 @@ apiRouter.use('/gatherings', authorization, gatheringRouter);
 apiRouter.use('/camps', authorization, campRouter);
 apiRouter.use('/locations', authorization, locationRouter);
 apiRouter.use('/users', authorization, userRouter);
-apiRouter.use('/parents/:id/scouts', authorization, parentRouter);
 apiRouter.use('/scouts', authorization, scoutRouter);
 apiRouter.use('/troops', authorization, troopRouter);
 apiRouter.use('/scoutleaders', authorization, scoutLeaderRouter);
 apiRouter.use('/events', authorization, eventRouter);
+apiRouter.use('/gatherings', authorization, gatheringRouter);
+apiRouter.use('/camps', authorization, campRouter);
+apiRouter.use('/parents', parentRouter);
+
 module.exports = apiRouter;

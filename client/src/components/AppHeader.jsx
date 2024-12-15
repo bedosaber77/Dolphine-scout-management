@@ -8,11 +8,8 @@ const AppHeader = () => {
 
   const handleDashboardRoute = () => {
     if (accessToken) {
-      if (user.role === 'scout') navigate('/scoutDashboard');
-      // else if (user.role === 'leader') navigate('/leaderDashboard');
-      // else if (user.role === 'parent') navigate('/parentDashboard');
-      else if (user.role === 'admin') navigate('/adminDashboard');
-      else navigate('/verify');
+      if (user?.role) navigate(`/dashboard/${user?.role}`);
+      else navigate('verify');
     }
   };
 
