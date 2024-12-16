@@ -30,6 +30,7 @@ import ParentDashboard from '../pages/ParentDashboard';
 import ParentProtectedRoute from './ParentProtectedRouter';
 import ScoutChild from '../pages/ScoutChild';
 import Troop from '../pages/Troop';
+import TroopAttendance from '../pages/TroopAttendance';
 
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -77,6 +78,10 @@ const AppRoutes = () => {
         {
           path: '/troops/:id',
           element: <Troop />,
+        },
+        {
+          path: '/troops/:id/attendance',
+          element: <TroopAttendance />,
         },
         {
           path: '/parentDashboard',

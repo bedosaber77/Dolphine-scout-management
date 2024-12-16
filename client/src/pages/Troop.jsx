@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -18,6 +18,7 @@ import {
 
 const Troop = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [scouts, setScouts] = useState([]);
   const [troop, setTroop] = useState({});
   const [loading, setLoading] = useState(true);
@@ -93,6 +94,9 @@ const Troop = () => {
               backgroundColor: 'var(--footer-bg)',
               borderColor: 'var(--footer-bg)',
             },
+          }}
+          onClick={() => {
+            navigate(`/troops/${id}/attendance`);
           }}
         >
           الغياب
