@@ -30,7 +30,7 @@ import AdminProtectedRoute from './AdminProtectedRoute';
 import ScoutProtectedRoute from './ScoutProtectedRoute';
 import Dashboard from './Dashboard';
 import ScoutChild from '../pages/ScoutChild';
- import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
+import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
 import AllAchievementsPage from '../pages/AllAchievementsPage';
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -63,9 +63,9 @@ const AppRoutes = () => {
         },
         {
           path: 'achievements',
-          element: <AllAchievementsPage achievements={achievements} />,
-    },
-    {
+          element: <AllAchievementsPage />,
+        },
+        {
           path: '/announcements',
           element: <AllAnnouncementsPage />,
         },
