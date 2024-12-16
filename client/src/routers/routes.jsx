@@ -30,43 +30,8 @@ import AdminProtectedRoute from './AdminProtectedRoute';
 import ScoutProtectedRoute from './ScoutProtectedRoute';
 import Dashboard from './Dashboard';
 import ScoutChild from '../pages/ScoutChild';
-// import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
+ import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
 import AllAchievementsPage from '../pages/AllAchievementsPage';
-
-const achievements = [
-  {
-    Achievement_ID: 1,
-    Aname: 'Beginner',
-    Criteria: 'Complete Task 1',
-    Description: 'Awarded for starting',
-    Level: 1,
-    Acquired: true,
-  },
-  {
-    Achievement_ID: 6,
-    Aname: 'Beginner',
-    Criteria: 'Complete Task 1',
-    Description: 'Awarded for starting',
-    Level: 2,
-    Acquired: true,
-  },
-  {
-    Achievement_ID: 2,
-    Aname: 'Intermediate',
-    Criteria: 'Complete Task 2',
-    Description: 'Awarded for making progress',
-    Level: 3,
-    Acquired: false,
-  },
-  {
-    Achievement_ID: 3,
-    Aname: 'Advanced',
-    Criteria: 'Complete Task 3',
-    Description: 'Awarded for significant progress',
-    Level: 5,
-    Acquired: true,
-  },
-];
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
 
@@ -99,6 +64,10 @@ const AppRoutes = () => {
         {
           path: 'achievements',
           element: <AllAchievementsPage achievements={achievements} />,
+    },
+    {
+          path: '/announcements',
+          element: <AllAnnouncementsPage />,
         },
         {
           path: '/dashboard',

@@ -1,23 +1,28 @@
-const Router = require("express").Router();
-const eventController = require("../controllers/eventController");
+const Router = require('express').Router();
+const eventController = require('../controllers/eventController');
+const { storage } = require('../utils/cloudinary');
+const multer = require('multer');
+const upload = multer({ storage });
 const {
   validateAddEvent,
   validateAddEventAttendace,
-} = require("../middlewares/Validate");
+} = require('../middlewares/Validate');
 
-Router.get("/", eventController.getEvents);
-Router.get("/:event_id", eventController.getEvent);
-Router.post("/", validateAddEvent, eventController.addEvent);
-Router.delete("/:event_id", eventController.deleteEvent);
-Router.put("/:event_id", eventController.updateEvent);
-Router.get("/:event_id/attendance", eventController.getEventAttendees);
-Router.post(
-  "/:event_id/attendance",
-  validateAddEventAttendace,
-  eventController.addEventAttendee
-);
+Router.route('/')
+  .get(eventController.getEvents)
+  .post(validateAddEvent, upload.array('images'), eventController.addEvent);
+
+Router.route('/:event_id')
+  .get(eventController.getEvent)
+  .put(eventController.updateEvent)
+  .delete(eventController.deleteEvent);
+
+Router.route('/:event_id/attendance')
+  .get(eventController.getEventAttendees)
+  .post(validateAddEventAttendace, eventController.addEventAttendee);
+
 Router.delete(
-  "/:event_id/attendance/:scout_id",
+  '/:event_id/attendance/:scout_id',
   eventController.deleteEventAttendee
 );
 
