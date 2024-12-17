@@ -1,10 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useApi from '../hooks/useApi';
 
 const Transactions = () => {
-  const transactionsData = [
-    { name: 'سعيد محمود', type: 'وارد', amount: 500, date: '2024-01-01' },
-    { name: 'خالد سعيد', type: 'صادر', amount: 200, date: '2024-01-05' },
-  ];
+  const apiRequest = useApi();
+
+  const [transactionsData, setTransactionsData] = useState([]);
+  // const [achievements, setAchievements] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const transactionsFetch = await apiRequest({
+          url: 'http://localhost:3000/api/transactions/',
+          method: 'GET',
+        });
+        // const atchievementFetch = await apiRequest({
+        //   url: 'http://localhost:3000/api/achievements/',
+        //   method: 'GET',
+        // });
+        console.log('trans', transactionsFetch);
+        // console.log(atchievementFetch);
+        setTransactionsData(transactionsFetch.data);
+        // setAchievements(atchievementFetch.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, [apiRequest]);
+
 
   const totalBalance = 1000; // Example total balance
 

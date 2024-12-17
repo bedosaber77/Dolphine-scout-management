@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useState } from 'react';
 import useApi from '../hooks/useApi';
-import { BiUpArrowAlt } from 'react-icons/bi';
+// import { BiUpArrowAlt } from 'react-icons/bi';
 
 const AllAnnouncementsPage = () => {
   const apiRequest = useApi();
@@ -62,22 +62,22 @@ const AllAnnouncementsPage = () => {
           onClick={handleSortDate}
         >
           ترتيب حسب التاريخ
-          {dateAsc ? (
+          {/* {dateAsc ? (
             <BiUpArrowAlt className="inline-block" />
           ) : (
             <BiUpArrowAlt className="inline-block transform rotate-180" />
-          )}
+          )} */}
         </button>
         <button
           className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
           onClick={handleSortPriority}
         >
           ترتيب حسب الأولوية
-          {priorityAsc ? (
+          {/* {priorityAsc ? (
             <BiUpArrowAlt className="inline-block" />
           ) : (
             <BiUpArrowAlt className="inline-block transform rotate-180" />
-          )}
+          )} */}
         </button>
       </div>
       <h2 className="text-2xl font-bold text-gray-800">All Announcements</h2>
