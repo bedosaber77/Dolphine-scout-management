@@ -8,11 +8,8 @@ const AdminDashboardLayout = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const loading = useAuthStore((state) => state.loading);
 
-  if (loading) {
-    return <div>Loading...</div>; // Render loading indicator
-  }
-
-  return accessToken /*&& user?.role === 'admin'*/ ? ( //commented out the role check to test the layout
+  return (
+    //commented out the role check to test the layout
     <div className="min-h-screen bg-background text-right rtl">
       {/* Dashboard Header */}
       <header className="p-6 bg-secondary-color text-white">
@@ -112,8 +109,6 @@ const AdminDashboardLayout = () => {
         <Outlet />
       </div>
     </div>
-  ) : (
-    <Navigate to="/" replace={true} />
   );
 };
 

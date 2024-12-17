@@ -1,16 +1,16 @@
-const db = require("../config/DBmanager");
+const db = require('../config/DBmanager');
 
 exports.getEvents = async (req, res) => {
   try {
     const query = `select * from "Event"`;
     const events = await db.query(query);
     if (events.rows.length === 0) {
-      return res.status(404).json({ message: "No events found" });
+      return res.status(404).json({ message: 'No events found' });
     }
     return res.status(200).json(events.rows);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -22,27 +22,44 @@ exports.getEvent = async (req, res) => {
     const event = await db.query(query, params);
 
     if (event.rows.length === 0) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: 'Event not found' });
     }
     return res.status(200).json(event.rows[0]);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 exports.addEvent = async (req, res) => {
+  console.log(req.body);
   const { Budget, Ename, Edate, Location_ID, ScoutLeader_ID } = req.body;
   try {
     const query = `INSERT INTO "Event" ("Budget", "Ename", "Edate", "Location_ID", "ScoutLeader_ID") VALUES ($1, $2, $3, $4, $5) RETURNING *`;
     const params = [Budget, Ename, Edate, Location_ID, ScoutLeader_ID];
     const event = await db.query(query, params);
+    if (req.files) {
+      req.files.forEach(async (file) => {
+        const query = `INSERT INTO "Media" ("UploadDate", "Link", "Description", "Type", "Event_ID", "ScoutLeader_ID")
+               VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
+        const params = [
+          new Date(),
+          file.path,
+          file.filename,
+          'Image',
+          event.rows[0].Event_ID,
+          ScoutLeader_ID,
+        ];
+        const media = await db.query(query, params);
+        console.log(media);
+      });
+    }
     return res
       .status(201)
-      .json({ message: "Added Event successfully", Event: event.rows[0] });
+      .json({ message: 'Added Event successfully', Event: event.rows[0] });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -53,12 +70,12 @@ exports.deleteEvent = async (req, res) => {
     const params = [event_id];
     const event = await db.query(query, params);
     if (event.rows.length === 0) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: 'Event not found' });
     }
-    return res.status(200).json({ message: "Event deleted successfully" });
+    return res.status(200).json({ message: 'Event deleted successfully' });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 exports.updateEvent = async (req, res) => {
@@ -70,11 +87,11 @@ exports.updateEvent = async (req, res) => {
       const params = [ScoutLeader_ID];
       const scoutLeader = await db.query(query, params);
       if (scoutLeader.rows.length === 0) {
-        return res.status(404).json({ message: "ScoutLeader not found" });
+        return res.status(404).json({ message: 'ScoutLeader not found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   if (Location_ID) {
@@ -83,16 +100,16 @@ exports.updateEvent = async (req, res) => {
       const params = [Location_ID];
       const location = await db.query(query, params);
       if (location.rows.length === 0) {
-        return res.status(404).json({ message: "Location not found" });
+        return res.status(404).json({ message: 'Location not found' });
       }
     } catch (error) {
-      console.log("Error executing query", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.log('Error executing query', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   }
   try {
     if (!Budget && !Ename && !Edate && !Location_ID && !ScoutLeader_ID) {
-      return res.status(400).json({ message: "No fields to update" });
+      return res.status(400).json({ message: 'No fields to update' });
     }
     const updateFields = [];
     const params = [event_id];
@@ -117,18 +134,18 @@ exports.updateEvent = async (req, res) => {
       params.push(ScoutLeader_ID);
     }
     const query = `UPDATE "Event" SET ${updateFields.join(
-      ", "
+      ', '
     )} WHERE "Event_ID" = $1 RETURNING *`;
     const event = await db.query(query, params);
     if (event.rows.length === 0) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: 'Event not found' });
     }
     return res
       .status(200)
-      .json({ message: "Event updated successfully", Event: event.rows[0] });
+      .json({ message: 'Event updated successfully', Event: event.rows[0] });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -157,8 +174,8 @@ JOIN
     const eventAttendees = await db.query(query);
     return res.status(200).json(eventAttendees.rows);
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -170,12 +187,12 @@ exports.addEventAttendee = async (req, res) => {
     const params = [event_id, Scout_ID];
     const eventAttendance = await db.query(query, params);
     return res.status(201).json({
-      message: "Added Event Attendance successfully",
+      message: 'Added Event Attendance successfully',
       EventAttendance: eventAttendance.rows[0],
     });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -186,13 +203,13 @@ exports.deleteEventAttendee = async (req, res) => {
     const params = [event_id, scout_id];
     const eventAttendance = await db.query(query, params);
     if (eventAttendance.rows.length === 0) {
-      return res.status(404).json({ message: "Event Attendance not found" });
+      return res.status(404).json({ message: 'Event Attendance not found' });
     }
     return res
       .status(200)
-      .json({ message: "Event Attendance deleted successfully" });
+      .json({ message: 'Event Attendance deleted successfully' });
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

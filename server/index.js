@@ -11,7 +11,12 @@ const port = process.env.PORT || 3000;
 
 app.use(
   cors({
-    origin: ['http://127.0.0.1:5173', 'http://localhost:5173'], // Allowed origins
+    origin: [
+      'http://127.0.0.1:5174',
+      'http://localhost:5174',
+      'http://127.0.0.1:5173',
+      'http://localhost:5173',
+    ], // Allowed origins
     credentials: true, // Allow cookies
   })
 );
