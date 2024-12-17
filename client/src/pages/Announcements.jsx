@@ -10,7 +10,7 @@ const Announcements = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [announcementContent, setAnnouncementContent] = useState('');
-  const [priority, setPriority] = useState('');
+  const [priority, setPriority] = useState('High');
   const [visibility, setVisibility] = useState('');
   const [recipients, setRecipients] = useState({
     scout: false,
@@ -79,13 +79,14 @@ const Announcements = () => {
     const newAnnouncement = {
       content: announcementContent,
       date: new Date().toISOString(),
-      priority: priority,
-      leader_id: "3",
+      priority: priority ? priority : 'High',
+      leader_id: '1',
       // leader_id: user.User_ID.toString(),
       visibility: vis,
     };
 
     try {
+      console.log(newAnnouncement);
       const response = await apiRequest({
         url: announcementToEdit
           ? `http://localhost:3000/api/announcements/${announcementToEdit.Announcement_ID}`
@@ -316,7 +317,10 @@ const Announcements = () => {
               <select
                 name="priority"
                 value={priority}
-                onChange={(e) => setPriority(e.target.value)}
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setPriority(e.target.value);
+                }}
                 id="priority"
                 className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
               >
