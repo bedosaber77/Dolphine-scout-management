@@ -9,6 +9,7 @@ Router.get('/:id', userController.getUserById);
 
 Router.post('/', ValidateAddUser, userController.addUser);
 Router.put('/:id', userController.updateUser);
+Router.patch('/:id', userController.updateUserRole);
 Router.delete('/:id', userController.deleteUser);
 
 module.exports = Router;

@@ -20,7 +20,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUnverifiedUsers = async (req, res) => {
   try {
-    const query = `SELECT * FROM "User where "role" IS NULL"`;
+    const query = `SELECT * FROM "User" WHERE "role" IS NULL`;
     const params = [];
     const result = await db.query(query, params);
 
@@ -122,6 +122,27 @@ exports.updateUser = async (req, res) => {
     return res.json({
       message: 'User updated successfully',
       User: rest,
+    });
+  } catch (error) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.updateUserRole = async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+  try {
+    let query = `UPDATE "User" SET "role" = $1 WHERE "User_ID" = $2 RETURNING *`;
+    let params = [role, id];
+    const result = await db.query(query, params);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    return res.json({
+      message: 'User updated successfully',
+      result: result.rows[0],
     });
   } catch (error) {
     console.log('Error executing query', error);
