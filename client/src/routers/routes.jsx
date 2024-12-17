@@ -3,7 +3,6 @@ import Login from '../pages/Login';
 import MainLayout from '../components/MainLayout';
 import AboutUs from '../pages/AboutUs';
 import ScoutDashboard from '../pages/ScoutDashboard';
-import ProtectedRoute from './protectedRoute';
 import Register from '../pages/Register';
 import Events from '../pages/Events';
 import Event from '../pages/Event';
@@ -27,8 +26,12 @@ import NotFound from '../pages/NotFound';
 import WaitVerify from '../pages/waitVerfiy';
 import ParentDashboard from '../pages/ParentDashboard';
 import ParentProtectedRoute from './ParentProtectedRouter';
+import AdminProtectedRoute from './AdminProtectedRoute';
+import ScoutProtectedRoute from './ScoutProtectedRoute';
+import Dashboard from './Dashboard';
 import ScoutChild from '../pages/ScoutChild';
-
+import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
+import AllAchievementsPage from '../pages/AllAchievementsPage';
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
 
@@ -55,92 +58,112 @@ const AppRoutes = () => {
           element: <AboutUs />,
         },
         {
-          path: '/verify',
+          path: 'verify',
           element: <WaitVerify />,
         },
         {
-          path: '/scoutDashboard',
-          element: <ProtectedRoute />,
-          children: [
-            {
-              path: '',
-              element: <ScoutDashboard />,
-            },
-          ],
+          path: 'achievements',
+          element: <AllAchievementsPage />,
         },
         {
-          path: '/parentDashboard',
-          element: <ParentProtectedRoute />,
-          children: [
-            {
-              path: '',
-              element: <ParentDashboard />,
-            },
-            {
-              path: 'child/:id',
-              element: <ScoutChild />,
-            },
-          ],
+          path: '/announcements',
+          element: <AllAnnouncementsPage />,
         },
         {
-          path: '/adminDashboard',
-          element: <AdminDashboard />,
+          path: '/dashboard',
+          element: <Dashboard />,
           children: [
             {
-              path: 'scouts',
-              element: <ScoutsView />,
+              path: 'scout',
+              element: <ScoutProtectedRoute />,
+              children: [
+                {
+                  path: '',
+                  element: <ScoutDashboard />,
+                },
+              ],
             },
             {
-              path: 'parents',
-              element: <ParentsView />,
+              path: 'parent',
+              element: <ParentProtectedRoute />,
+              children: [
+                {
+                  path: '',
+                  element: <ParentDashboard />,
+                },
+                {
+                  path: 'child/:id',
+                  element: <ScoutChild />,
+                },
+              ],
             },
-            {
-              path: 'leaders',
-              element: <LeadersView />,
-            },
-            {
-              path: 'troops',
-              element: <Troops />,
-            },
-            {
-              path: 'transactions',
-              element: <TransactionsView />,
-            },
-            {
-              path: 'sponsors',
-              element: <SponsorHistory />,
-            },
-            {
-              path: 'announcements',
-              element: <Announcements />,
-            },
-            {
-              path: 'addLeader',
-              element: <AddLeaderAccount />,
-            },
-            {
-              path: 'requests',
-              element: <WithdrawRequests />,
-            },
-            {
-              path: 'achievements',
-              element: <Achievements />,
-            },
-            {
-              path: 'locations',
-              element: <Locations />,
-            },
-            {
-              path: 'equipment',
-              element: <Equipment />,
-            },
-            {
-              path: 'statistics',
-              element: <Statistics />,
-            },
-          ],
-        },
 
+            {
+              path: 'admin',
+              element: <AdminProtectedRoute />,
+              children: [
+                {
+                  path: '',
+                  element: <AdminDashboard />,
+                  children: [
+                    {
+                      path: 'scouts',
+                      element: <ScoutsView />,
+                    },
+                    {
+                      path: 'parents',
+                      element: <ParentsView />,
+                    },
+                    {
+                      path: 'leaders',
+                      element: <LeadersView />,
+                    },
+                    {
+                      path: 'troops',
+                      element: <Troops />,
+                    },
+                    {
+                      path: 'transactions',
+                      element: <TransactionsView />,
+                    },
+                    {
+                      path: 'sponsors',
+                      element: <SponsorHistory />,
+                    },
+                    {
+                      path: 'announcements',
+                      element: <Announcements />,
+                    },
+                    {
+                      path: 'addLeader',
+                      element: <AddLeaderAccount />,
+                    },
+                    {
+                      path: 'requests',
+                      element: <WithdrawRequests />,
+                    },
+                    {
+                      path: 'achievements',
+                      element: <Achievements />,
+                    },
+                    {
+                      path: 'locations',
+                      element: <Locations />,
+                    },
+                    {
+                      path: 'equipment',
+                      element: <Equipment />,
+                    },
+                    {
+                      path: 'statistics',
+                      element: <Statistics />,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
         {
           path: '/events',
           element: <Events />,

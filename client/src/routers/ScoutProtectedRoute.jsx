@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 
-const ProtectedRoute = () => {
+const ScoutProtectedRoute = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const loading = useAuthStore((state) => state.loading);
 
@@ -16,4 +16,4 @@ const ProtectedRoute = () => {
   else return <Navigate to="/" replace={true} />;
 };
 
-export default ProtectedRoute;
+export default ScoutProtectedRoute;
