@@ -1,4 +1,3 @@
-import { use } from 'react';
 import useAuthStore from '../store/authStore';
 import '../styles/global.css';
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
@@ -9,11 +8,8 @@ const AdminDashboardLayout = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const loading = useAuthStore((state) => state.loading);
 
-  if (loading) {
-    return <div>Loading...</div>; // Render loading indicator
-  }
-
-  return accessToken /*&& user?.role === 'admin'*/ ? ( //commented out the role check to test the layout
+  return (
+    //commented out the role check to test the layout
     <div className="min-h-screen bg-background text-right rtl">
       {/* Dashboard Header */}
       <header className="p-6 bg-secondary-color text-white">
@@ -65,13 +61,13 @@ const AdminDashboardLayout = () => {
         {/* <Tab to="sponsors" currentPath={location.pathname} color="var(--secondary-color)">
           تاريخ التبرعات
         </Tab> */}
-        <Tab
+        {/* <Tab
           to="requests"
           currentPath={location.pathname}
           color="var(--secondary-color)"
         >
           الطلبات
-        </Tab>
+        </Tab> */}
         {/* <Tab to="addLeader" currentPath={location.pathname} color="var(--secondary-color)">
           اضافة قائد
         </Tab> */}
@@ -80,7 +76,7 @@ const AdminDashboardLayout = () => {
           currentPath={location.pathname}
           color="var(--secondary-color)"
         >
-          اضافة اعلان
+          الاعلانات
         </Tab>
         <Tab
           to="achievements"
@@ -113,8 +109,6 @@ const AdminDashboardLayout = () => {
         <Outlet />
       </div>
     </div>
-  ) : (
-    <Navigate to="/" replace={true} />
   );
 };
 

@@ -94,11 +94,12 @@ const validateLocation = (req, res, next) => {
 
 const validateAnnouncement = async (req, res, next) => {
   const { content, date, priority, visibility, leader_id } = req.body;
-  const allowedPriority = ['Cash', 'Visa'];
-  if (!allowedPriority.includes(method)) {
+  console.log(content, date, priority, visibility, leader_id);
+  const allowedPriority = ['Low', 'Medium', 'High'];
+  if (!allowedPriority.includes(priority)) {
     return res
       .status(400)
-      .json({ message: `method must be one of "Cash", "Visa"` });
+      .json({ message: `priority must be one of 'Low', 'Medium', 'High'` });
   }
   if (!content || !date || !priority || !visibility || !leader_id) {
     return res.status(400).json({ message: 'All fields are required' });
@@ -133,7 +134,17 @@ const validateAnnouncement = async (req, res, next) => {
 };
 
 const validateEquipment = async (req, res, next) => {
-  const { name, quantity, date, location_id } = req.body;
+  let { name, quantity, date, location_id } = req.body;
+  console.log(
+    'name',
+    name,
+    'quant',
+    quantity,
+    'date',
+    date,
+    'loc',
+    location_id
+  );
   if (!name || !date || !location_id) {
     return res
       .status(400)
@@ -141,15 +152,18 @@ const validateEquipment = async (req, res, next) => {
   }
   if (quantity) {
     if (!validate.isInt(quantity)) {
+      console.log('found1');
       return res.status(400).json({ message: 'Quantity must be a number' });
     }
     if (quantity < 0) {
+      console.log('found2');
       return res.status(400).json({ message: "Quantity can't be negative" });
     }
   }
 
   if (location_id) {
     if (!validate.isInt(location_id)) {
+      console.log('found3');
       return res.status(400).json({ message: 'Invalid location id' });
     }
     try {
@@ -283,6 +297,7 @@ const validateSponsorUpdate = async (req, res, next) => {
 
 const validateTransaction = async (req, res, next) => {
   const { date, amount, method, sponsor_id, leader_id } = req.body;
+  console.log('date', date, 'amount', amount, 'method', method);
   if (!date || !amount || !method) {
     return res
       .status(400)
@@ -292,7 +307,7 @@ const validateTransaction = async (req, res, next) => {
     return res.status(400).json({ message: 'sponsor/leader ID required' });
   }
 
-  if (amount && !validate.isFloat(amount)) {
+  if (!validate.isFloat(amount)) {
     return res.status(400).json({ message: 'Invalid amount' });
   }
 
@@ -302,7 +317,7 @@ const validateTransaction = async (req, res, next) => {
       .status(400)
       .json({ message: `method must be one of "Cash", "Visa"` });
   }
-
+  console.log('sponsor_id', sponsor_id, 'leader_id', leader_id);
   if (leader_id) {
     if (!validate.isInt(leader_id)) {
       return res.status(400).json({ message: 'Invalid leader id' });
@@ -321,6 +336,7 @@ const validateTransaction = async (req, res, next) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
   }
+  console.log('id');
 
   if (sponsor_id) {
     if (!validate.isInt(sponsor_id)) {
@@ -340,6 +356,7 @@ const validateTransaction = async (req, res, next) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
   }
+  console.log('next');
   next();
 };
 

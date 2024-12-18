@@ -5,7 +5,7 @@ const Children = ({ childrenData }) => {
   const navigate = useNavigate();
 
   const handleChildClick = (childId) => {
-    navigate(`/parentDashboard/child/${childId}`);
+    navigate(`/dashboard/parent/child/${childId}`);
   };
 
   return (

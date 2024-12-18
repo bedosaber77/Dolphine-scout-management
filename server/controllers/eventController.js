@@ -32,11 +32,28 @@ exports.getEvent = async (req, res) => {
 };
 
 exports.addEvent = async (req, res) => {
+  console.log(req.body);
   const { Budget, Ename, Edate, Location_ID, ScoutLeader_ID } = req.body;
   try {
     const query = `INSERT INTO "Event" ("Budget", "Ename", "Edate", "Location_ID", "ScoutLeader_ID") VALUES ($1, $2, $3, $4, $5) RETURNING *`;
     const params = [Budget, Ename, Edate, Location_ID, ScoutLeader_ID];
     const event = await db.query(query, params);
+    if (req.files) {
+      req.files.forEach(async (file) => {
+        const query = `INSERT INTO "Media" ("UploadDate", "Link", "Description", "Type", "Event_ID", "ScoutLeader_ID")
+               VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
+        const params = [
+          new Date(),
+          file.path,
+          file.filename,
+          'Image',
+          event.rows[0].Event_ID,
+          ScoutLeader_ID,
+        ];
+        const media = await db.query(query, params);
+        console.log(media);
+      });
+    }
     return res
       .status(201)
       .json({ message: 'Added Event successfully', Event: event.rows[0] });
