@@ -754,7 +754,7 @@ const validateAddEvent = async (req, res, next) => {
       return res.status(409).json({ message: 'Scout Leader not found' });
     }
   } catch (err) {
-    console.log('Error executing query', error);
+    console.log('Error executing query', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
   next();
@@ -777,7 +777,7 @@ const validateAddEventAttendace = async (req, res, next) => {
       return res.status(409).json({ message: 'Scout not found' });
     }
   } catch (err) {
-    console.log('Error executing query', error);
+    console.log('Error executing query', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
   try {
@@ -788,7 +788,18 @@ const validateAddEventAttendace = async (req, res, next) => {
       return res.status(409).json({ message: 'Event not found' });
     }
   } catch (err) {
-    console.log('Error executing query', error);
+    console.log('Error executing query', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  try {
+    const query = `SELECT * FROM "EventAttendance" WHERE "Scout_ID" = $1 AND "Event_ID" = $2`;
+    const params = [Scout_ID, event_id];
+    const result = await db.query(query, params);
+    if (result.rows.length > 0) {
+      return res.status(409).json({ message: 'Scout already attended event' });
+    }
+  } catch (error) {
+    console.log('Error executing query', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
   next();
@@ -797,32 +808,32 @@ const validateAddEventAttendace = async (req, res, next) => {
 const validateAddCamp = async (req, res, next) => {
   const { Event_ID, Season, Duration } = req.body;
   if (!Event_ID || !Season || !Duration) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
   if (!validate.isInt(Event_ID)) {
-    return res.status(400).json({ message: "Invalid Event ID" });
+    return res.status(400).json({ message: 'Invalid Event ID' });
   }
   try {
     const query = `SELECT * FROM "Event" WHERE "Event_ID" = $1`;
     const params = [Event_ID];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "Event not found" });
+      return res.status(409).json({ message: 'Event not found' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   try {
     const query = `SELECT * FROM "Camp" WHERE "Event_ID" = $1`;
     const params = [Event_ID];
     const result = await db.query(query, params);
     if (result.rows.length > 0) {
-      return res.status(409).json({ message: "Camp already exists" });
+      return res.status(409).json({ message: 'Camp already exists' });
     }
   } catch (error) {
-    console.log("Error executing query", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
   next();
 };

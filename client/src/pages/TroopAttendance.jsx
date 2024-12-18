@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import useApi from '../hooks/useApi';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import {
   Container,
   Typography,
@@ -25,6 +28,12 @@ function TroopAttendance() {
   const [scouts, setScouts] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [loading, setLoading] = useState(true);
+  const [newAttendance, setNewAttendance] = useState({});
+  const [showSnackbar, setShowSnackbar] = useState(false);
+
+  const handleCloseSnackbar = () => {
+    setShowSnackbar(false);
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -32,13 +41,11 @@ function TroopAttendance() {
         const allEventsData = await fetch(
           'http://localhost:3000/api/events'
         ).then((res) => res.json());
-        console.log(allEventsData);
         const currentDate = new Date();
         const pastEvents = allEventsData.filter(
           (event) => new Date(event.Edate) <= currentDate
         );
         setEvents(pastEvents);
-        console.log(pastEvents);
       } catch (err) {
         console.error(err);
       } finally {
@@ -66,8 +73,8 @@ function TroopAttendance() {
             return acc;
           }, {});
           setAttendance(attendance);
+          setNewAttendance(attendance);
           setScouts(scoutsData);
-          console.log(scoutsData);
         } catch (err) {
           console.error(err);
         } finally {
@@ -79,29 +86,54 @@ function TroopAttendance() {
   }, [selectedEventId]);
 
   const handleAttendanceChange = (scoutId) => {
-    setAttendance((prevAttendance) => ({
-      ...prevAttendance,
-      [scoutId]: !prevAttendance[scoutId],
-    }));
+    setNewAttendance((prevAttendance) => {
+      const newAttendance = {
+        ...prevAttendance,
+        [scoutId]: !prevAttendance[scoutId],
+      };
+      return newAttendance;
+    });
   };
 
   const handleSaveAttendance = async () => {
-    // try {
-    //   await fetch(
-    //     `http://localhost:3000/api/events/${selectedEventId}/attendance`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //       body: JSON.stringify(attendance),
-    //     }
-    //   );
-    //   alert('Attendance saved successfully');
-    // } catch (err) {
-    //   console.error(err);
-    //   alert('Failed to save attendance');
-    // }
+    for (const scoutId of Object.keys(newAttendance)) {
+      if (newAttendance[scoutId] !== attendance[scoutId]) {
+        if (newAttendance[scoutId] === true) {
+          try {
+            await fetch(
+              `http://localhost:3000/api/events/${selectedEventId}/attendance`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  Scout_ID: scoutId,
+                }),
+              }
+            );
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          try {
+            await fetch(
+              `http://localhost:3000/api/events/${selectedEventId}/attendance/${scoutId}`,
+              {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      }
+    }
+    setAttendance(newAttendance);
+    setShowSnackbar(true);
   };
 
   if (loading) {
@@ -153,7 +185,7 @@ function TroopAttendance() {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={attendance[scout.User_ID]}
+                                checked={newAttendance[scout.User_ID]}
                                 onChange={() =>
                                   handleAttendanceChange(scout.User_ID)
                                 }
@@ -191,6 +223,15 @@ function TroopAttendance() {
           </Box>
         </>
       )}
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          Attendance saved successfully!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
