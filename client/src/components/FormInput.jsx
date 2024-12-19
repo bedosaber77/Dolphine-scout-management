@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 const FormInput = (props) => {
   const [focused, setFocused] = useState(false);
@@ -20,7 +21,7 @@ const FormInput = (props) => {
   else type = inputProps.type;
 
   return (
-    <div key={id} style={{ position: 'relative' }}>
+    <div key={id} className="relative">
       <label
         htmlFor={inputProps.name}
         className="block mb-2 text-sm"
@@ -54,10 +55,7 @@ const FormInput = (props) => {
           type="button"
           onClick={togglePasswordVisibility}
           aria-label={showPassword ? 'Hide Password' : 'Show Password'}
-          className="absolute top-9 left-3 flex items-center"
-          style={{
-            color: 'var(--secondary-color)',
-          }}
+          className="absolute top-9 left-3 flex items-center pt-2"
           onMouseEnter={(e) =>
             (e.target.style.color = 'var(--secondary-hover)')
           }
@@ -65,7 +63,11 @@ const FormInput = (props) => {
             (e.target.style.color = 'var(--secondary-color)')
           }
         >
-          {showPassword ? 'Hide' : 'Show'}
+          {showPassword ? (
+            <FaRegEyeSlash></FaRegEyeSlash>
+          ) : (
+            <FaRegEye></FaRegEye>
+          )}
         </button>
       )}
     </div>

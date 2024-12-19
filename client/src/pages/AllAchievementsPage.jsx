@@ -58,7 +58,7 @@ const AllAchievementsPage = () => {
       </header>
 
       {/* Sort Button */}
-      <div className="w-full max-w-4xl flex justify-end mb-6">
+      <div className="w-full max-w-4xl  flex justify-center mb-6">
         <button
           className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
           onClick={handleSortLevel}
@@ -73,7 +73,7 @@ const AllAchievementsPage = () => {
       </div>
 
       {/* Achievements List */}
-      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="w-full  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {achievements.map((achievement) => (
           <AchievementCard
             key={achievement.Achievement_ID}

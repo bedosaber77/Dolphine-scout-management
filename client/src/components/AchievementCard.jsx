@@ -23,16 +23,18 @@ const AchievementCard = ({ achievement }) => {
         backgroundColor: getBackgroundLevelColor(achievement.Level),
       }}
     >
-      <h3 className="text-lg font-bold text-gray-800">{achievement.Aname}</h3>
+      <h3 className="text-2xl pb-10 font-bold text-gray-800">
+        {achievement.Aname}
+      </h3>
       <ProgressCircle
         progress={achievement.Level / 5}
         fromColor={getLevelColor(achievement.Level)}
         toColor={getLevelColor(achievement.Level)}
-        size="70px"
+        size="150px"
         fontSize="1rem"
       />
-      <p className="text-sm text-gray-700 mt-2">{achievement.Criteria}</p>
-      <p className="text-xs text-gray-500">{achievement.Description}</p>
+      <p className="text-lg text-gray-700 mt-2">{achievement.Criteria}</p>
+      <p className="text-lg text-gray-500">{achievement.Description}</p>
     </div>
   );
 };

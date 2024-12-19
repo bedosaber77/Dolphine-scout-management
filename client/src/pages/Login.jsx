@@ -1,24 +1,51 @@
 // import Form from 'react-bootstrap/Form';
 // import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import '../styles/formInputs.css';
+// import '../styles/formInputs.css';
 // import { use } from 'react';
 import { useState } from 'react';
 // import { useAuth } from '../hooks/AuthProvider';
 import useAuthStore from '../store/authStore';
 import { NavLink, useNavigate } from 'react-router-dom';
-
+import FormInput from '../components/FormInput';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [values, setValues] = useState({
+    email: '',
+    password: '',
+  });
   const loginAction = useAuthStore((state) => state.login);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const navigate = useNavigate();
+
+  const loginInput = [
+    {
+      id: 0,
+      name: 'email',
+      type: 'email',
+      label: 'الحساب الالكتروني',
+      errorMessage: 'ادخل حساب الكتروني صحيح   ',
+      required: true,
+    },
+    {
+      id: 1,
+      name: 'password',
+      type: 'password',
+      label: 'كلمة المرور',
+      errorMessage: 'ادخل كلمة مرور صحيحة',
+      required: true,
+    },
+  ];
+
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
 
   // const auth = useAuth();
-  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email !== '' && password !== '') {
-      const input = { email, password };
+    if (values.email !== '' && values.password !== '') {
+      const input = values;
       loginAction(input, (path) => navigate(path));
       console.log(accessToken);
       // console.log(auth.isAuthenticated);
@@ -57,43 +84,21 @@ const Login = () => {
           className="space-y-12"
         >
           <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block mb-2 text-sm">
-                الحساب
-              </label>
-              <input
-                type="email"
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
-                name="email"
-                id="email"
-                placeholder="leroy@jenkins.com"
-                className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
+            {loginInput.map((input) => (
+              <FormInput
+                key={input.id}
+                {...input}
+                value={values[input.name] || ''}
+                onChange={onChange}
               />
-            </div>
-            <div>
-              <div className="flex justify-between mb-2">
-                <label htmlFor="password" className="text-sm">
-                  كلمة المرور
-                </label>
-                <NavLink
-                  rel="noopener noreferrer"
-                  href="#"
-                  className="text-xs hover:underline dark:text-gray-600"
-                >
-                  نسيت كلمة المرور؟
-                </NavLink>
-              </div>
-              <input
-                type="password"
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                name="password"
-                id="password"
-                placeholder="*****"
-                className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
-              />
-            </div>
+            ))}
+            <NavLink
+              rel="noopener noreferrer"
+              href="#"
+              className="text-xs hover:underline dark:text-gray-600"
+            >
+              نسيت كلمة المرور؟
+            </NavLink>
           </div>
           <div className="space-y-2">
             <div>

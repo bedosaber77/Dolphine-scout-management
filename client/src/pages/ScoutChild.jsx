@@ -47,7 +47,7 @@ const ScoutChild = () => {
           ]);
 
         if (scoutResponse.status === 403) {
-          navigate('/parentDashboard');
+          navigate('/dashboard/parent');
         } else if (scoutResponse.status === 404) {
           console.error('Scout not found');
         } else {
@@ -77,7 +77,7 @@ const ScoutChild = () => {
   });
 
   return (
-    <div className="main-content col-span-4 grid grid-cols-1 md:grid-cols-[repeat(2,minmax(200px,1fr))] lg:grid-cols-[repeat(5,minmax(200px,1fr))] gap-4">
+    <div className="main-content col-span-4 grid grid-cols-1 md:grid-cols-[repeat(2,minmax(200px,1fr))] lg:grid-cols-[repeat(5,minmax(200px,1fr))] gap-10">
       <div className="profile-details col-span-1 border-2 border-gray-200 lg:col-start-5 lg:col-span-1 lg:row-span-2 rounded-xl p-6 bg-white shadow-md">
         <h1 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-100 pb-2">
           معلومات الابن
@@ -94,12 +94,12 @@ const ScoutChild = () => {
         </p>
       </div>
 
-      <div className="calendar border-2 rounded-xl p-4 lg:col-start-1  lg:col-span-4 lg:row-start-1">
+      <div className="calendar border-2 rounded-xl p-4 lg:col-start-1  lg:col-span-4 lg:row-start-1 bg-white shadow-md">
         <h2>التقويم</h2>
         <Calendar attendance={attendanceFilter} />
       </div>
 
-      <div className="relative achievements border-2 rounded-xl p-4 lg:col-start-1 lg:col-span-4 lg:row-start-2">
+      <div className="relative achievements border-2 rounded-xl p-4 lg:col-start-1 lg:col-span-4 lg:row-start-2 bg-white shadow-md">
         <h2>الإنجازات</h2>
         <AchievementsComponent achievements={achievements} />
       </div>
