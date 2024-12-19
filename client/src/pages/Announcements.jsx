@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import useApi from '../hooks/useApi';
 import useAuthStore from '../store/authStore';
-import { useState, useEffect } from 'react';
-import useApi from '../hooks/useApi';
-import useAuthStore from '../store/authStore';
+
 
 const Announcements = () => {
   const apiRequest = useApi();
@@ -83,7 +81,7 @@ const Announcements = () => {
       content: announcementContent,
       date: new Date().toISOString(),
       priority: priority ? priority : 'High',
-      leader_id: '1',
+      leader_id: '3',
       // leader_id: user.User_ID.toString(),
       visibility: vis,
     };
