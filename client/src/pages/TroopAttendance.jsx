@@ -30,6 +30,7 @@ function TroopAttendance() {
   const [loading, setLoading] = useState(true);
   const [newAttendance, setNewAttendance] = useState({});
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const apiRequest = useApi();
 
   const handleCloseSnackbar = () => {
     setShowSnackbar(false);
@@ -38,18 +39,18 @@ function TroopAttendance() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const allEventsData = await fetch(
-          'http://localhost:3000/api/events'
-        ).then((res) => res.json());
+        const allEventsData = await apiRequest({
+          url: 'http://localhost:3000/api/events',
+          method: 'GET',
+        });
         const currentDate = new Date();
-        const pastEvents = allEventsData.filter(
+        const pastEvents = allEventsData.data.filter(
           (event) => new Date(event.Edate) <= currentDate
         );
         setEvents(pastEvents);
+        setLoading(false);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchEvents();
@@ -60,21 +61,23 @@ function TroopAttendance() {
       const fetchScouts = async () => {
         setLoading(true);
         try {
-          const scoutsData = await fetch(
-            `http://localhost:3000/api/troops/${id}/scouts`
-          ).then((res) => res.json());
-          const attendanceData = await fetch(
-            `http://localhost:3000/api/events/${selectedEventId}/attendance`
-          ).then((res) => res.json());
-          const attendance = scoutsData.reduce((acc, scout) => {
-            acc[scout.User_ID] = attendanceData.some(
+          const scoutsData = await apiRequest({
+            url: `http://localhost:3000/api/troops/${id}/scouts`,
+            method: 'GET',
+          });
+          const attendanceData = await apiRequest({
+            url: `http://localhost:3000/api/events/${selectedEventId}/attendance`,
+            method: 'GET',
+          });
+          const attendance = scoutsData.data.reduce((acc, scout) => {
+            acc[scout.User_ID] = attendanceData.data.some(
               (a) => a.User_ID === scout.User_ID
             );
             return acc;
           }, {});
           setAttendance(attendance);
           setNewAttendance(attendance);
-          setScouts(scoutsData);
+          setScouts(scoutsData.data);
         } catch (err) {
           console.error(err);
         } finally {
