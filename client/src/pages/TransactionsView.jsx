@@ -2,11 +2,17 @@ import { useState } from 'react';
 import useAuthStore from '../store/authStore';
 import { useEffect } from 'react';
 import axios from 'axios';
+import useApi from '../hooks/useApi';
 
 const Transactions = () => {
+  const apiRequest = useApi();
   const { accessToken } = useAuthStore();
   const [transactions, setTransactions] = useState([]);
+  const [leaders, setLeaders] = useState([]);
+  const [sponsors, setSponsors] = useState([]);
   const [totalBalance, setTotalBalance] = useState(0);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -24,8 +30,39 @@ const Transactions = () => {
     }
   };
 
+  const fetchLeaders = async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:3000/api/scoutleaders',
+        {
+          headers: {
+            accessToken: accessToken, // Ensure accessToken is defined
+          },
+        }
+      );
+      setLeaders(response.data); // Update the state with fetched data
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const fetchSponsors = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/sponsors', {
+        headers: {
+          accessToken: accessToken, // Ensure accessToken is defined
+        },
+      });
+      setSponsors(response.data); // Update the state with fetched data
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchLeaders();
+    fetchSponsors();
   }, []);
 
   useEffect(() => {
@@ -38,6 +75,25 @@ const Transactions = () => {
     );
     setTotalBalance(Balance);
   }, [transactions]);
+
+  const handleDelete = (transaction) => {
+    setTransactionToDelete(transaction);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await apiRequest({
+        url: `http://localhost:3000/api/transactions/${transactionToDelete.Transaction_ID}`,
+        method: 'DELETE',
+      });
+      setIsDeleteDialogOpen(false);
+      setTransactionToDelete(null);
+    } catch (error) {
+      console.error(error);
+    }
+    fetchData();
+  };
 
   // State for controlling the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,11 +116,11 @@ const Transactions = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(transaction);
     console.log('transaction');
-    axios.post(
+    await axios.post(
       'http://localhost:3000/api/transactions',
       JSON.stringify(transaction),
       {
@@ -105,6 +161,7 @@ const Transactions = () => {
             <th className="border px-4 py-2">صادر/وارد</th>
             <th className="border px-4 py-2">المبلغ</th>
             <th className="border px-4 py-2">التاريخ</th>
+            <th className="border px-4 py-2">حذف</th>
           </tr>
         </thead>
         <tbody>
@@ -122,10 +179,41 @@ const Transactions = () => {
                   day: 'numeric',
                 })}
               </td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => handleDelete(transaction)}
+                  className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
+                >
+                  حذف
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
+            <p>هل أنت متأكد من أنك تريد حذف هذه العملية؟</p>
+            <div className="flex justify-between">
+              <button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              >
+                حذف
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal for Adding Transaction */}
       {isModalOpen && (
@@ -214,14 +302,18 @@ const Transactions = () => {
                 >
                   كود القائد
                 </label>
-                <input
-                  type="number"
+                <select
                   name="leader_id"
-                  value={transaction.leader_id}
                   onChange={handleInputChange}
-                  id="leader_id"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-                />
+                >
+                  <option value="">اختر قائدًا</option>
+                  {leaders.map((leader) => (
+                    <option key={leader.User_ID} value={leader.User_ID}>
+                      {leader.Fname} {leader.Lname}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="mb-4">
@@ -231,14 +323,18 @@ const Transactions = () => {
                 >
                   كود الممول
                 </label>
-                <input
-                  type="number"
+                <select
                   name="sponsor_id"
-                  value={transaction.sponsor_id}
                   onChange={handleInputChange}
-                  id="sponsor_id"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-                />
+                >
+                  <option value="">اختر ممولًا</option>
+                  {sponsors.map((sponsor) => (
+                    <option key={sponsor.Sponsor_ID} value={sponsor.Sponsor_ID}>
+                      {sponsor.Fname} {sponsor.Lname}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="mb-4">
