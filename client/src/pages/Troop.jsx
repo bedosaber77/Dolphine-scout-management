@@ -15,6 +15,7 @@ import {
   Button,
   Box,
 } from '@mui/material';
+import useApi from '../hooks/useApi';
 
 const Troop = () => {
   const { id } = useParams();
@@ -22,23 +23,24 @@ const Troop = () => {
   const [scouts, setScouts] = useState([]);
   const [troop, setTroop] = useState({});
   const [loading, setLoading] = useState(true);
+  const apiRequest = useApi();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const scoutsData = await fetch(
-          `http://localhost:3000/api/troops/${id}/scouts`
-        ).then((res) => res.json());
-        const troopData = await fetch(
-          `http://localhost:3000/api/troops/${id}`
-        ).then((res) => res.json());
-        console.log(scoutsData);
-        setTroop(troopData);
-        setScouts(scoutsData);
+        const scoutsData = await apiRequest({
+          url: `http://localhost:3000/api/troops/${id}/scouts`,
+          method: 'GET',
+        });
+        const troopData = await apiRequest({
+          url: `http://localhost:3000/api/troops/${id}`,
+          method: 'GET',
+        });
+        setTroop(troopData.data);
+        setScouts(scoutsData.data);
+        setLoading(false);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();
