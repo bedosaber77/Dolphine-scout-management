@@ -66,20 +66,6 @@ const AppRoutes = () => {
           element: <WaitVerify />,
         },
         {
-          path: '/leaderDashboard',
-          element: <LeaderDashboard />,
-        },
-        {
-          path: '/scoutDashboard',
-          element: <ProtectedRoute />,
-          children: [
-            {
-              path: '',
-              element: <ScoutDashboard />,
-            },
-          ],
-        },
-        {
           path: '/troops/:id',
           element: <Troop />,
         },
@@ -87,25 +73,14 @@ const AppRoutes = () => {
           path: '/troops/:id/attendance',
           element: <TroopAttendance />,
         },
-        {
-          path: '/parentDashboard',
-          element: <ParentProtectedRoute />,
-          children: [
-            {
-              path: '',
-              element: <ParentDashboard />,
-            },
-            {
-              path: 'child/:id',
-              element: <ScoutChild />,
-            },
-          ],
-          path: 'achievements',
-          element: <AllAchievementsPage />,
-        },
+
         {
           path: '/announcements',
           element: <AllAnnouncementsPage />,
+        },
+        {
+          path: '/achievements',
+          element: <AllAchievementsPage />,
         },
         {
           path: '/dashboard',
@@ -134,6 +109,10 @@ const AppRoutes = () => {
                   element: <ScoutChild />,
                 },
               ],
+            },
+            {
+              path: 'leader',
+              element: <LeaderDashboard />,
             },
 
             {
