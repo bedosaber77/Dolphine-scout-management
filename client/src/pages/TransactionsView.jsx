@@ -139,10 +139,10 @@ const Transactions = () => {
   return (
     <div className="p-4">
       <h2
-        className="mb-4 text-lg font-bold"
+        className="mb-4 text-3x font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
-        الرصيد الإجمالي: {totalBalance} جنيه
+        الرصيد الإجمالي: {totalBalance.toLocaleString('ar-EG')} جنيه
       </h2>
 
       <button
@@ -160,6 +160,8 @@ const Transactions = () => {
             <th className="border px-4 py-2">وصف المعاملة</th>
             <th className="border px-4 py-2">صادر/وارد</th>
             <th className="border px-4 py-2">المبلغ</th>
+            <th className="border px-4 py-2">اسم صاحب العملية</th>
+            <th className="border px-4 py-2">طريفة الدفع</th>
             <th className="border px-4 py-2">التاريخ</th>
             <th className="border px-4 py-2">حذف</th>
           </tr>
@@ -171,7 +173,31 @@ const Transactions = () => {
               <td className="border px-4 py-2">
                 {transaction.TransactionType}
               </td>
-              <td className="border px-4 py-2">{transaction.Amount}</td>
+              <td className="border px-4 py-2">
+                {transaction.Amount.toLocaleString('ar-EG')}
+              </td>
+              {console.log(transaction)}
+              <td className="border px-4 py-2">
+                {transaction.ScoutLeader_ID
+                  ? leaders.find(
+                      (leader) => leader.User_ID === transaction.ScoutLeader_ID
+                    )?.Fname +
+                    ' ' +
+                    leaders.find(
+                      (leader) => leader.User_ID === transaction.ScoutLeader_ID
+                    )?.Lname
+                  : transaction.Sponsor_ID
+                  ? sponsors.find(
+                      (sponsor) => sponsor.Sponsor_ID === transaction.Sponsor_ID
+                    )?.Fname +
+                    ' ' +
+                    sponsors.find(
+                      (sponsor) => sponsor.Sponsor_ID === transaction.Sponsor_ID
+                    )?.Lname
+                  : 'N/A'}
+              </td>
+              <td className="border px-4 py-2">{transaction.PaymentMethod}</td>
+
               <td className="border px-4 py-2">
                 {new Date(transaction.Tdate).toLocaleDateString('ar-EG', {
                   year: 'numeric',
