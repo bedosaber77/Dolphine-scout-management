@@ -1,217 +1,269 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useApi from '../hooks/useApi';
 
-const Scouts = () => {
-  const [scoutsData, setScoutsData] = useState([
-    { id: 1, name: 'أحمد محمد', phone: '0123456789', leader: 'حسن علي', troop: 'الطائفة 1', achievements: ['مكافأة أفضل كشاف'] },
-    { id: 2, name: 'محمود جمال', phone: '0987654321', leader: 'خالد سعيد', troop: 'الطائفة 2', achievements: ['مكافأة الكشاف المثالي'] },
-    { id: 3, name: 'سارة علي', phone: '0112233445', leader: 'فاطمة حسين', troop: 'الطائفة 3', achievements: ['حصلت على المركز الأول في المسابقة'] },
-  ]);
-
-  const allAchievements = [
-    'مكافأة أفضل كشاف',
-    'مكافأة الكشاف المثالي',
-    'حصلت على المركز الأول في المسابقة',
-    'أفضل أداء في النشاطات',
-    'أفضل تطوع',
-    'كشاف متميز'
-  ];
-
+const ScoutsView = () => {
+  const apiRequest = useApi();
+  const [scoutsData, setScoutsData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentScout, setCurrentScout] = useState(null);
-  const [selectedAchievement, setSelectedAchievement] = useState('');
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedScout, setSelectedScout] = useState(null);
+  const [editAttributes, setEditAttributes] = useState({
+    rank: '',
+    Birthdate: '',
+    academicYear: '',
+    joinDate: '',
+    PaperSubmitted: 'false',
+  });
 
-  const handleEditClick = (scout) => {
-    setCurrentScout(scout);
-    setIsDialogOpen(true);
-    setSelectedAchievement(''); // Reset the selected achievement input
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    setCurrentScout(null);
-  };
-
-  const handleSave = () => {
-    // Add logic to save updated scout information
-    setIsDialogOpen(false);
-  };
-
-  const handleAddAchievement = () => {
-    if (selectedAchievement.trim() !== '') {
-      setCurrentScout({
-        ...currentScout,
-        achievements: [...currentScout.achievements, selectedAchievement],
+  const fetchScouts = async () => {
+    setLoading(true);
+    try {
+      const scoutsFetch = await apiRequest({
+        url: 'http://localhost:3000/api/scouts/',
+        method: 'GET',
       });
-      setSelectedAchievement(''); // Clear input after adding
+      const scouts = scoutsFetch.data;
+
+      console.log('Fetched scouts:', scouts);
+
+      setScoutsData(scouts);
+    } catch (error) {
+      console.error('Error fetching scouts data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleRemoveAchievement = (achievementToRemove) => {
-    setCurrentScout({
-      ...currentScout,
-      achievements: currentScout.achievements.filter((achievement) => achievement !== achievementToRemove),
+  useEffect(() => {
+    fetchScouts();
+  }, [apiRequest]);
+
+  const handleEdit = (scout) => {
+    setSelectedScout(scout);
+    setEditAttributes({
+      id: scout.User_ID.toString(),
+      rank: scout.rank || '',
+      Birthdate: scout.Birthdate || '',
+      academicYear: scout.academicYear || '',
+      joinDate: scout.joinDate || '',
+      PaperSubmitted: scout.PaperSubmitted || 'false',
     });
+    setIsDialogOpen(true);
   };
 
-  const handleDelete = (scoutId) => {
-    setScoutsData(scoutsData.filter((scout) => scout.id !== scoutId));
+  const confirmDelete = async () => {
+    try {
+      await apiRequest({
+        url: `http://localhost:3000/api/scouts/${selectedScout.User_ID}`,
+        method: 'DELETE',
+      });
+      setScoutsData((prev) =>
+        prev.filter((scout) => scout.User_ID !== selectedScout.User_ID)
+      );
+      setIsDeleteDialogOpen(false);
+      setSelectedScout(null);
+      fetchScouts();
+    } catch (error) {
+      console.error('Error deleting scout:', error);
+    }
+  };
+
+  const handleAttributeChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEditAttributes((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (checked ? 'true' : 'false') : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await apiRequest({
+        url: `http://localhost:3000/api/scouts/${selectedScout.User_ID}`,
+        method: 'PUT',
+        data: editAttributes,
+      });
+      setScoutsData((prevData) =>
+        prevData.map((scout) =>
+          scout.User_ID === selectedScout.User_ID
+            ? { ...scout, ...editAttributes }
+            : scout
+        )
+      );
+      setIsDialogOpen(false);
+      setSelectedScout(null);
+      fetchScouts();
+    } catch (error) {
+      console.error('Error updating scout:', error);
+    }
   };
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--secondary-color)' }}>قائمة الكشافة</h2>
-      <table className="min-w-full border-collapse border border-[#6fc0e5]">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">الاسم</th>
-            <th className="border px-4 py-2">رقم الهاتف</th>
-            <th className="border px-4 py-2">الرقم التعريفي</th>
-            <th className="border px-4 py-2">القائد</th>
-            <th className="border px-4 py-2">اسم المجموعة</th>
-            <th className="border px-4 py-2">الإنجازات</th> {/* New column */}
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th> {/* New column for Delete */}
-          </tr>
-        </thead>
-        <tbody>
-          {scoutsData.map((scout) => (
-            <tr key={scout.id} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{scout.name}</td>
-              <td className="border px-4 py-2">{scout.phone}</td>
-              <td className="border px-4 py-2">{scout.id}</td>
-              <td className="border px-4 py-2">{scout.leader}</td>
-              <td className="border px-4 py-2">{scout.troop}</td>
-              <td className="border px-4 py-2">
-                {scout.achievements.map((achievement, index) => (
-                  <p key={index} className="mb-1">{achievement}</p>
-                ))}
-              </td> {/* Display multiple achievements */}
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEditClick(scout)}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(scout.id)}
-                  className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td> {/* Delete button */}
+      <h2
+        className="text-2xl font-semibold mb-4"
+        style={{ color: 'var(--secondary-color)' }}
+      >
+        قائمة الكشافة
+      </h2>
+
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : scoutsData.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد كشافة للعرض</p>
+      ) : (
+        <table className="min-w-full border-collapse border border-gray-200 mt-4">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2">الرقم التعريفي</th>
+              <th className="border px-4 py-2">اسم الكشاف</th>
+              <th className="border px-4 py-2">رقم الهاتف</th>
+              <th className="border px-4 py-2">البريد الإلكتروني</th>
+              <th className="border px-4 py-2">الرتبة</th>
+              <th className="border px-4 py-2">تاريخ الميلاد</th>
+              <th className="border px-4 py-2">السنة الأكاديمية</th>
+              <th className="border px-4 py-2">تعديل</th>
+              <th className="border px-4 py-2">حذف</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Dialog */}
-      {isDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full rounded-2xl">
-            <h3 className="text-lg font-bold mb-4">تعديل الكشاف</h3>
-            <form>
-              <label className="block mb-2">
-                الاسم:
-                <input
-                  type="text"
-                  value={currentScout.name}
-                  onChange={(e) => setCurrentScout({ ...currentScout, name: e.target.value })}
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <label className="block mb-2">
-                رقم الهاتف:
-                <input
-                  type="text"
-                  value={currentScout.phone}
-                  onChange={(e) => setCurrentScout({ ...currentScout, phone: e.target.value })}
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <label className="block mb-2">
-                القائد:
-                <input
-                  type="text"
-                  value={currentScout.leader}
-                  onChange={(e) => setCurrentScout({ ...currentScout, leader: e.target.value })}
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <label className="block mb-4">
-                اسم المجموعة
-                <input
-                  type="text"
-                  value={currentScout.troop}
-                  onChange={(e) => setCurrentScout({ ...currentScout, troop: e.target.value })}
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-
-              {/* Achievements Combobox (Dropdown) */}
-              <label className="block mb-4">
-                الإنجازات:
-                <div className="flex gap-x-2">
-                  <select
-                    value={selectedAchievement}
-                    onChange={(e) => setSelectedAchievement(e.target.value)}
-                    className="block w-full mt-1 p-2 border rounded-xl"
-                  >
-                    <option value="">اختر إنجازًا</option>
-                    {allAchievements.map((achievement, index) => (
-                      <option key={index} value={achievement}>
-                        {achievement}
-                      </option>
-                    ))}
-                  </select>
+          </thead>
+          <tbody>
+            {scoutsData.map((scout) => (
+              <tr key={scout.User_ID} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">{scout.User_ID}</td>
+                <td className="border px-4 py-2">
+                  {scout.Fname && scout.Lname
+                    ? `${scout.Fname} ${scout.Lname}`
+                    : 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {scout.Phonenum || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {scout.email || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {scout.rank || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {scout.Birthdate || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {scout.academicYear || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
                   <button
-                    type="button"
-                    onClick={handleAddAchievement}
-                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg ml-2"
+                    onClick={() => handleEdit(scout)}
+                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
                     style={{ background: 'var(--secondary-color)' }}
                   >
-                    إضافة
+                    تعديل
                   </button>
-                </div>
-              </label>
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => {
+                      setSelectedScout(scout);
+                      setIsDeleteDialogOpen(true);
+                    }}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                  >
+                    حذف
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-              {/* Display the added achievements with remove button */}
-              <div className="mt-4">
-                <h4 className="font-semibold">الإنجازات الحالية:</h4>
-                {currentScout.achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-center mb-2">
-                    <p className="text-sm flex-grow">{achievement}</p>
-                    <button
-                      onClick={() => handleRemoveAchievement(achievement)}
-                      className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs"
-                    >
-                      حذف
-                    </button>
-                  </div>
-                ))}
+      {isDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">تعديل كشاف</h3>
+            <form onSubmit={handleSubmit}>
+              <label>الرتبة</label>
+              <input
+                name="rank"
+                value={editAttributes.rank}
+                onChange={handleAttributeChange}
+                className="border p-2 w-full mb-2"
+              />
+              <label>تاريخ الميلاد</label>
+              <input
+                name="Birthdate"
+                type="date"
+                value={editAttributes.Birthdate}
+                onChange={handleAttributeChange}
+                className="border p-2 w-full mb-2"
+              />
+              <label>السنة الأكاديمية</label>
+              <input
+                name="academicYear"
+                value={editAttributes.academicYear}
+                onChange={handleAttributeChange}
+                className="border p-2 w-full mb-2"
+              />
+              <label>تاريخ الانضمام</label>
+              <input
+                name="joinDate"
+                type="date"
+                value={editAttributes.joinDate}
+                onChange={handleAttributeChange}
+                className="border p-2 w-full mb-2"
+              />
+              <div className="flex items-center mb-2">
+                <input
+                  type="checkbox"
+                  name="PaperSubmitted"
+                  checked={editAttributes.PaperSubmitted === 'true'}
+                  onChange={handleAttributeChange}
+                  className="mr-2"
+                />
+                <label>تسليم الورق</label>
               </div>
 
-              <div className="flex justify-between mt-4">
+              <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={handleDialogClose}
+                  onClick={() => setIsDialogOpen(false)}
                   className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
                 </button>
                 <button
-                  type="button"
-                  onClick={handleSave}
+                  type="submit"
                   className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
                   style={{ background: 'var(--secondary-color)' }}
                 >
-                  حفظ
+                  تعديل
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
+            <p>هل أنت متأكد أنك تريد حذف هذا الكشاف؟</p>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+              >
+                حذف
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -219,4 +271,4 @@ const Scouts = () => {
   );
 };
 
-export default Scouts;
+export default ScoutsView;

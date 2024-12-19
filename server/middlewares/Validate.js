@@ -94,11 +94,12 @@ const validateLocation = (req, res, next) => {
 
 const validateAnnouncement = async (req, res, next) => {
   const { content, date, priority, visibility, leader_id } = req.body;
-  const allowedPriority = ['Cash', 'Visa'];
-  if (!allowedPriority.includes(method)) {
+  console.log(content, date, priority, visibility, leader_id);
+  const allowedPriority = ['Low', 'Medium', 'High'];
+  if (!allowedPriority.includes(priority)) {
     return res
       .status(400)
-      .json({ message: `method must be one of "Cash", "Visa"` });
+      .json({ message: `priority must be one of 'Low', 'Medium', 'High'` });
   }
   if (!content || !date || !priority || !visibility || !leader_id) {
     return res.status(400).json({ message: 'All fields are required' });
@@ -133,7 +134,17 @@ const validateAnnouncement = async (req, res, next) => {
 };
 
 const validateEquipment = async (req, res, next) => {
-  const { name, quantity, date, location_id } = req.body;
+  let { name, quantity, date, location_id } = req.body;
+  console.log(
+    'name',
+    name,
+    'quant',
+    quantity,
+    'date',
+    date,
+    'loc',
+    location_id
+  );
   if (!name || !date || !location_id) {
     return res
       .status(400)
@@ -141,18 +152,22 @@ const validateEquipment = async (req, res, next) => {
   }
   if (quantity) {
     if (!validate.isInt(quantity)) {
+      console.log('found1');
       return res.status(400).json({ message: 'Quantity must be a number' });
     }
     if (quantity < 0) {
+      console.log('found2');
       return res.status(400).json({ message: "Quantity can't be negative" });
     }
   }
 
   if (location_id) {
     if (!validate.isInt(location_id)) {
+      console.log('found3');
       return res.status(400).json({ message: 'Invalid location id' });
     }
     try {
+      
       const query = `SELECT * FROM "Location" WHERE "Location_ID" = $1`;
       const params = [location_id];
       const result = await db.query(query, params);
@@ -162,6 +177,7 @@ const validateEquipment = async (req, res, next) => {
           .json({ message: 'no location with that id was found' });
       }
     } catch (error) {
+
       console.log('Error executing query', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
@@ -283,6 +299,7 @@ const validateSponsorUpdate = async (req, res, next) => {
 
 const validateTransaction = async (req, res, next) => {
   const { date, amount, method, sponsor_id, leader_id } = req.body;
+  console.log('date', date, 'amount', amount, 'method', method);
   if (!date || !amount || !method) {
     return res
       .status(400)
@@ -292,7 +309,7 @@ const validateTransaction = async (req, res, next) => {
     return res.status(400).json({ message: 'sponsor/leader ID required' });
   }
 
-  if (amount && !validate.isFloat(amount)) {
+  if (!validate.isFloat(amount)) {
     return res.status(400).json({ message: 'Invalid amount' });
   }
 
@@ -302,7 +319,7 @@ const validateTransaction = async (req, res, next) => {
       .status(400)
       .json({ message: `method must be one of "Cash", "Visa"` });
   }
-
+  console.log('sponsor_id', sponsor_id, 'leader_id', leader_id);
   if (leader_id) {
     if (!validate.isInt(leader_id)) {
       return res.status(400).json({ message: 'Invalid leader id' });
@@ -321,6 +338,7 @@ const validateTransaction = async (req, res, next) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
   }
+  console.log('id');
 
   if (sponsor_id) {
     if (!validate.isInt(sponsor_id)) {
@@ -340,6 +358,7 @@ const validateTransaction = async (req, res, next) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
   }
+  console.log('next');
   next();
 };
 
@@ -467,6 +486,7 @@ const ValidateAddUser = async (req, res, next) => {
 const validateParentScout = async (req, res, next) => {
   const { id } = req.params;
   const { scout_id, relationship } = req.body;
+  console.log(id,scout_id,relationship);
 
   if (!id || !scout_id) {
     return res
@@ -547,6 +567,8 @@ const validateParentID = async (req, res, next) => {
 const validateAddScout = async (req, res, next) => {
   const { User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate } =
     req.body;
+    console.log(User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate);
+
   if (
     !User_ID ||
     !rank ||
@@ -596,6 +618,7 @@ const validateAddScout = async (req, res, next) => {
 
 const validateAddTroop = async (req, res, next) => {
   const { Troop_ID, Tname, type, max_Members, ScoutLeader_ID } = req.body;
+  console.log(Troop_ID, Tname, type, max_Members, ScoutLeader_ID);
   if (!Troop_ID || !Tname || !type || !max_Members || !ScoutLeader_ID) {
     return res.status(400).json({ message: 'All fields are required' });
   }
@@ -691,6 +714,7 @@ const validateAddScouttoTroop = async (req, res, next) => {
 
 const validateAddScoutleader = async (req, res, next) => {
   const { User_ID, isAdmin, startDate } = req.body;
+  console.log(User_ID, isAdmin, startDate);
   if (!User_ID || !isAdmin || !startDate) {
     return res.status(400).json({ message: 'All fields are required' });
   }
@@ -754,7 +778,7 @@ const validateAddEvent = async (req, res, next) => {
       return res.status(409).json({ message: 'Scout Leader not found' });
     }
   } catch (err) {
-    console.log('Error executing query', error);
+    console.log('Error executing query', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
   next();
@@ -777,7 +801,7 @@ const validateAddEventAttendace = async (req, res, next) => {
       return res.status(409).json({ message: 'Scout not found' });
     }
   } catch (err) {
-    console.log('Error executing query', error);
+    console.log('Error executing query', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
   try {
@@ -788,7 +812,18 @@ const validateAddEventAttendace = async (req, res, next) => {
       return res.status(409).json({ message: 'Event not found' });
     }
   } catch (err) {
-    console.log('Error executing query', error);
+    console.log('Error executing query', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+  try {
+    const query = `SELECT * FROM "EventAttendance" WHERE "Scout_ID" = $1 AND "Event_ID" = $2`;
+    const params = [Scout_ID, event_id];
+    const result = await db.query(query, params);
+    if (result.rows.length > 0) {
+      return res.status(409).json({ message: 'Scout already attended event' });
+    }
+  } catch (error) {
+    console.log('Error executing query', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
   next();

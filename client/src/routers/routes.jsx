@@ -12,7 +12,7 @@ import ScoutsView from '../pages/ScoutsView';
 import ParentsView from '../pages/ParentsView';
 import LeadersView from '../pages/LeadersView';
 import TransactionsView from '../pages/TransactionsView';
-import SponsorHistory from '../pages/SponsorHistory';
+import Verifications from '../pages/Verifications';
 import Announcements from '../pages/Announcements';
 import AddLeaderAccount from '../pages/AddLeaderAccount';
 import WithdrawRequests from '../pages/WithdrawRequests';
@@ -24,14 +24,18 @@ import Statistics from '../pages/Statistics';
 import useAuthStore from '../store/authStore';
 import NotFound from '../pages/NotFound';
 import WaitVerify from '../pages/waitVerfiy';
+import LeaderDashboard from '../pages/LeaderDashboard';
 import ParentDashboard from '../pages/ParentDashboard';
 import ParentProtectedRoute from './ParentProtectedRouter';
 import AdminProtectedRoute from './AdminProtectedRoute';
 import ScoutProtectedRoute from './ScoutProtectedRoute';
 import Dashboard from './Dashboard';
 import ScoutChild from '../pages/ScoutChild';
+import Troop from '../pages/Troop';
+import TroopAttendance from '../pages/TroopAttendance';
 import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
 import AllAchievementsPage from '../pages/AllAchievementsPage';
+
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
 
@@ -62,6 +66,40 @@ const AppRoutes = () => {
           element: <WaitVerify />,
         },
         {
+          path: '/leaderDashboard',
+          element: <LeaderDashboard />,
+        },
+        {
+          path: '/scoutDashboard',
+          element: <ProtectedRoute />,
+          children: [
+            {
+              path: '',
+              element: <ScoutDashboard />,
+            },
+          ],
+        },
+        {
+          path: '/troops/:id',
+          element: <Troop />,
+        },
+        {
+          path: '/troops/:id/attendance',
+          element: <TroopAttendance />,
+        },
+        {
+          path: '/parentDashboard',
+          element: <ParentProtectedRoute />,
+          children: [
+            {
+              path: '',
+              element: <ParentDashboard />,
+            },
+            {
+              path: 'child/:id',
+              element: <ScoutChild />,
+            },
+          ],
           path: 'achievements',
           element: <AllAchievementsPage />,
         },
@@ -127,8 +165,8 @@ const AppRoutes = () => {
                       element: <TransactionsView />,
                     },
                     {
-                      path: 'sponsors',
-                      element: <SponsorHistory />,
+                      path: 'verifications',
+                      element: <Verifications />,
                     },
                     {
                       path: 'announcements',
