@@ -364,7 +364,7 @@ const Troops = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
             <h3 className="text-lg font-bold mb-4">
-              هل تريد حذف المجموعة "{deletingTroop.Tname}"؟
+              هل تريد حذف المجموعة {deletingTroop.Tname}؟
             </h3>
             <div className="flex justify-between">
               <button

@@ -1,125 +1,222 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useApi from '../hooks/useApi';
 
 const Parents = () => {
+  const apiRequest = useApi();
+  const [parentsData, setParentsData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentParent, setCurrentParent] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedParent, setSelectedParent] = useState(null);
+  const [editAttributes, setEditAttributes] = useState({
+    relationship: '',
+    childCount: 0,
+    childrenIDs: [],
+  });
 
-  const [parentsData, setParentsData] = useState([
-    { id: 1, name: 'فاطمة أحمد', phone: '0123456789', children: 'أحمد محمد, سارة علي' },
-    { id: 2, name: 'خالد علي', phone: '0987654321', children: 'محمود جمال' },
-  ]);
+  const fetchParents = async () => {
+    setLoading(true);
+    try {
+      const parentsFetch = await apiRequest({
+        url: 'http://localhost:3000/api/parents/',
+        method: 'GET',
+      });
+      const parents = parentsFetch.data;
+
+      setParentsData(parents);
+    } catch (error) {
+      console.error('Error fetching parents data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchParents();
+  }, [apiRequest]);
 
   const handleEdit = (parent) => {
-    setCurrentParent(parent);
+    setSelectedParent(parent);
+    setEditAttributes({
+      relationship: parent.relationship || '',
+      childCount: parent.childrenIDs?.length || 0,
+      childrenIDs: parent.childrenIDs || [],
+    });
     setIsDialogOpen(true);
   };
 
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    setCurrentParent(null);
+  const handleAttributeChange = (e) => {
+    const { name, value } = e.target;
+    setEditAttributes((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSave = () => {
-    // Logic to save the edited parent details (e.g., update the state or call API)
-    console.log('Parent edited:', currentParent);
-    setIsDialogOpen(false);
+  const handleChildCountChange = (e) => {
+    const childCount = parseInt(e.target.value, 10) || 0;
+    const updatedChildrenIDs = [...editAttributes.childrenIDs];
+    while (updatedChildrenIDs.length < childCount) {
+      updatedChildrenIDs.push('');
+    }
+    while (updatedChildrenIDs.length > childCount) {
+      updatedChildrenIDs.pop();
+    }
+    setEditAttributes((prev) => ({
+      ...prev,
+      childCount,
+      childrenIDs: updatedChildrenIDs,
+    }));
   };
 
-  const handleDelete = (parentId) => {
-    setParentsData(parentsData.filter((parent) => parent.id !== parentId));
+  const handleChildIDChange = (index, value) => {
+    const updatedChildrenIDs = [...editAttributes.childrenIDs];
+    updatedChildrenIDs[index] = value;
+    setEditAttributes((prev) => ({
+      ...prev,
+      childrenIDs: updatedChildrenIDs,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await apiRequest({
+        url: `http://localhost:3000/api/parents/${selectedParent.Parent_ID}`,
+        method: 'PUT',
+        data: editAttributes,
+      });
+      setParentsData((prevData) =>
+        prevData.map((parent) =>
+          parent.Parent_ID === selectedParent.Parent_ID
+            ? { ...parent, ...editAttributes }
+            : parent
+        )
+      );
+      setIsDialogOpen(false);
+      setSelectedParent(null);
+      fetchParents();
+    } catch (error) {
+      console.error('Error updating parent:', error);
+    }
   };
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--secondary-color)' }}>قائمة الأهالي</h2>
-      <table className="min-w-full border-collapse border border-gray-200">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">الاسم</th>
-            <th className="border px-4 py-2">رقم الهاتف</th>
-            <th className="border px-4 py-2">الرقم التعريفي</th>
-            <th className="border px-4 py-2">الأبناء</th>
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th> {/* New column for Delete button */}
-          </tr>
-        </thead>
-        <tbody>
-          {parentsData.map((parent) => (
-            <tr key={parent.id} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{parent.name}</td>
-              <td className="border px-4 py-2">{parent.phone}</td>
-              <td className="border px-4 py-2">{parent.id}</td>
-              <td className="border px-4 py-2">{parent.children}</td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEdit(parent)}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(parent.id)}
-                  className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td> {/* Delete button */}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2
+        className="text-2xl font-semibold mb-4"
+        style={{ color: 'var(--secondary-color)' }}
+      >
+        قائمة أولياء الأمور
+      </h2>
 
-      {/* Edit Dialog */}
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : parentsData.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">
+          لا يوجد أولياء أمور للعرض
+        </p>
+      ) : (
+        <table className="min-w-full border-collapse border border-gray-200 mt-4">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2">الرقم التعريفي</th>
+              <th className="border px-4 py-2">الاسم</th>
+              <th className="border px-4 py-2">العلاقة</th>
+              <th className="border px-4 py-2">عدد الأطفال</th>
+              <th className="border px-4 py-2">تعديل</th>
+              <th className="border px-4 py-2">حذف</th>
+            </tr>
+          </thead>
+          <tbody>
+            {parentsData.map((parent) => (
+              <tr key={parent.Parent_ID} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">{parent.Parent_ID}</td>
+                <td className="border px-4 py-2">
+                  {parent.name || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {parent.relationship || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {parent.childrenIDs?.length || 0}
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => handleEdit(parent)}
+                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                  >
+                    تعديل
+                  </button>
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => {
+                      setSelectedParent(parent);
+                      setIsDeleteDialogOpen(true);
+                    }}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                  >
+                    حذف
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-4">تعديل الوالد</h3>
-            <form>
-              <label className="block mb-2">
-                الاسم:
-                <input
-                  type="text"
-                  value={currentParent.name}
-                  onChange={(e) => setCurrentParent({ ...currentParent, name: e.target.value })}
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <label className="block mb-2">
-                رقم الهاتف:
-                <input
-                  type="text"
-                  value={currentParent.phone}
-                  onChange={(e) => setCurrentParent({ ...currentParent, phone: e.target.value })}
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
-              <label className="block mb-4">
-                الأبناء:
-                <input
-                  type="text"
-                  value={currentParent.children}
-                  onChange={(e) => setCurrentParent({ ...currentParent, children: e.target.value })}
-                  className="block w-full mt-1 p-2 border rounded-xl"
-                />
-              </label>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">تعديل ولي أمر</h3>
+            <form onSubmit={handleSubmit}>
+              <label>العلاقة</label>
+              <select
+                name="relationship"
+                value={editAttributes.relationship}
+                onChange={handleAttributeChange}
+                className="border p-2 w-full mb-4"
+              >
+                <option value="">اختر العلاقة</option>
+                <option value="Father">الأب</option>
+                <option value="Mother">الأم</option>
+              </select>
+
+              <label>عدد الأطفال</label>
+              <input
+                type="number"
+                min="0"
+                value={editAttributes.childCount}
+                onChange={handleChildCountChange}
+                className="border p-2 w-full mb-4"
+              />
+
+              {editAttributes.childrenIDs.map((childID, index) => (
+                <div key={index}>
+                  <label>رقم المعرف للطفل {index + 1}</label>
+                  <input
+                    type="text"
+                    value={childID}
+                    onChange={(e) => handleChildIDChange(index, e.target.value)}
+                    className="border p-2 w-full mb-2"
+                  />
+                </div>
+              ))}
+
               <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={handleDialogClose}
-                  className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+                  onClick={() => setIsDialogOpen(false)}
+                  className="bg-gray-200 px-4 py-2 rounded-lg"
                 >
                   إلغاء
                 </button>
                 <button
-                  type="button"
-                  onClick={handleSave}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
+                  type="submit"
+                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
                 >
-                  حفظ
+                  تعديل
                 </button>
               </div>
             </form>
