@@ -59,6 +59,7 @@ exports.getScoutbyId = async (req, res) => {
 exports.addScout = async (req, res) => {
   const { User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate } =
     req.body;
+  console.log(User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate);
   try {
     const query = `INSERT INTO "Scout" ("User_ID", "rank", "PapersSubmitted","Birthdate","academicYear","joinDate") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`; // return inserted Scout
     const params = [
@@ -86,7 +87,8 @@ exports.updateScout = async (req, res) => {
   const { id } = req.params;
   const { rank, PaperSubmitted, Birthdate, academicYear, joinDate } = req.body;
   try {
-    const query = `UPDATE "Scout" SET "rank" = $1, "PaperSubmitted" = $2, "Birthdate" = $3, "academicYear" = $4, "joinDate" = $5 WHERE "id" = $6 RETURNING *`;
+    console.log(rank, PaperSubmitted, Birthdate, academicYear, joinDate, id);
+    const query = `UPDATE "Scout" SET "rank" = $1, "PapersSubmitted" = $2, "Birthdate" = $3, "academicYear" = $4, "joinDate" = $5 WHERE "User_ID" = $6 RETURNING *`;
     const params = [
       rank,
       PaperSubmitted,
@@ -112,7 +114,7 @@ exports.updateScout = async (req, res) => {
 exports.deleteScout = async (req, res) => {
   const { id } = req.params;
   try {
-    const query = `DELETE FROM "Scout" WHERE "id" = $1 RETURNING *`;
+    const query = `DELETE FROM "Scout" WHERE "User_ID" = $1 RETURNING *`;
     const params = [id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import AchievementCard from '../components/AchievementCard';
 import useApi from '../hooks/useApi';
-// import { BiUpArrowAlt } from 'react-icons/bi';
+import { BiUpArrowAlt } from 'react-icons/bi';
 
 const AllAchievementsPage = () => {
   const apiRequest = useApi();
@@ -64,11 +64,11 @@ const AllAchievementsPage = () => {
           onClick={handleSortLevel}
         >
           ترتيب حسب المستوى{' '}
-          {/* {levelAsc ? (
+          {levelAsc ? (
             <BiUpArrowAlt className="inline-block" />
           ) : (
             <BiUpArrowAlt className="inline-block transform rotate-180" />
-          )} */}
+          )}
         </button>
       </div>
 

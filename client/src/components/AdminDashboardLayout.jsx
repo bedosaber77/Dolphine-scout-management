@@ -58,19 +58,16 @@ const AdminDashboardLayout = () => {
         >
           المعاملات
         </Tab>
-        {/* <Tab to="sponsors" currentPath={location.pathname} color="var(--secondary-color)">
-          تاريخ التبرعات
-        </Tab> */}
         {/* <Tab
           to="requests"
           currentPath={location.pathname}
           color="var(--secondary-color)"
-        >
+          >
           الطلبات
-        </Tab> */}
+          </Tab> */}
         {/* <Tab to="addLeader" currentPath={location.pathname} color="var(--secondary-color)">
           اضافة قائد
-        </Tab> */}
+          </Tab> */}
         <Tab
           to="announcements"
           currentPath={location.pathname}
@@ -99,11 +96,19 @@ const AdminDashboardLayout = () => {
         >
           المعدات
         </Tab>
+        <Tab
+          to="verifications"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+        تفعيل الحساب 
+      </Tab>
         {/* <Tab to="statistics" currentPath={location.pathname} color="var(--secondary-color)">
         الاحصائيات
         </Tab> */}
       </div>
 
+      
       {/* Render the active route's component */}
       <div className="p-6">
         <Outlet />

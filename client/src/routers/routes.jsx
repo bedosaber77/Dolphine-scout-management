@@ -12,7 +12,7 @@ import ScoutsView from '../pages/ScoutsView';
 import ParentsView from '../pages/ParentsView';
 import LeadersView from '../pages/LeadersView';
 import TransactionsView from '../pages/TransactionsView';
-import SponsorHistory from '../pages/SponsorHistory';
+import Verifications from '../pages/Verifications';
 import Announcements from '../pages/Announcements';
 import AddLeaderAccount from '../pages/AddLeaderAccount';
 import WithdrawRequests from '../pages/WithdrawRequests';
@@ -165,8 +165,8 @@ const AppRoutes = () => {
                       element: <TransactionsView />,
                     },
                     {
-                      path: 'sponsors',
-                      element: <SponsorHistory />,
+                      path: 'verifications',
+                      element: <Verifications />,
                     },
                     {
                       path: 'announcements',

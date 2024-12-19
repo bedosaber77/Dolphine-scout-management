@@ -186,7 +186,7 @@ const Achievements = () => {
               <td className="border px-4 py-2">
                 <button
                   onClick={() => handleDelete(achievement)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
                 >
                   حذف
                 </button>
@@ -196,7 +196,6 @@ const Achievements = () => {
         </tbody>
       </table>
 
-      {/* Modal for Adding/Editing Achievement */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
@@ -306,7 +305,7 @@ const Achievements = () => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
               >
                 حذف
               </button>
