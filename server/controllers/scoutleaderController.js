@@ -31,6 +31,7 @@ exports.getScoutleaderbyId = async (req, res) => {
 
 exports.addScoutleader = async (req, res) => {
   const { User_ID, isAdmin, startDate } = req.body;
+  console.log(User_ID, isAdmin, startDate);
   try {
     const query = `INSERT INTO "ScoutLeader" ("User_ID","isAdmin","startDate") VALUES ($1,$2,$3) RETURNING *`;
     const params = [User_ID, isAdmin, startDate];

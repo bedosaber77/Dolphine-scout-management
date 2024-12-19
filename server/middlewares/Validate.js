@@ -473,6 +473,7 @@ const ValidateAddUser = async (req, res, next) => {
 const validateParentScout = async (req, res, next) => {
   const { id } = req.params;
   const { scout_id, relationship } = req.body;
+  console.log(id,scout_id,relationship);
 
   if (!id || !scout_id) {
     return res
@@ -553,6 +554,8 @@ const validateParentID = async (req, res, next) => {
 const validateAddScout = async (req, res, next) => {
   const { User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate } =
     req.body;
+    console.log(User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate);
+
   if (
     !User_ID ||
     !rank ||
@@ -602,6 +605,7 @@ const validateAddScout = async (req, res, next) => {
 
 const validateAddTroop = async (req, res, next) => {
   const { Troop_ID, Tname, type, max_Members, ScoutLeader_ID } = req.body;
+  console.log(Troop_ID, Tname, type, max_Members, ScoutLeader_ID);
   if (!Troop_ID || !Tname || !type || !max_Members || !ScoutLeader_ID) {
     return res.status(400).json({ message: 'All fields are required' });
   }
@@ -697,6 +701,7 @@ const validateAddScouttoTroop = async (req, res, next) => {
 
 const validateAddScoutleader = async (req, res, next) => {
   const { User_ID, isAdmin, startDate } = req.body;
+  console.log(User_ID, isAdmin, startDate);
   if (!User_ID || !isAdmin || !startDate) {
     return res.status(400).json({ message: 'All fields are required' });
   }
