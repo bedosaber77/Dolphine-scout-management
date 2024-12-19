@@ -24,14 +24,18 @@ import Statistics from '../pages/Statistics';
 import useAuthStore from '../store/authStore';
 import NotFound from '../pages/NotFound';
 import WaitVerify from '../pages/waitVerfiy';
+import LeaderDashboard from '../pages/LeaderDashboard';
 import ParentDashboard from '../pages/ParentDashboard';
 import ParentProtectedRoute from './ParentProtectedRouter';
 import AdminProtectedRoute from './AdminProtectedRoute';
 import ScoutProtectedRoute from './ScoutProtectedRoute';
 import Dashboard from './Dashboard';
 import ScoutChild from '../pages/ScoutChild';
+import Troop from '../pages/Troop';
+import TroopAttendance from '../pages/TroopAttendance';
 import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
 import AllAchievementsPage from '../pages/AllAchievementsPage';
+
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
 
@@ -62,6 +66,40 @@ const AppRoutes = () => {
           element: <WaitVerify />,
         },
         {
+          path: '/leaderDashboard',
+          element: <LeaderDashboard />,
+        },
+        {
+          path: '/scoutDashboard',
+          element: <ProtectedRoute />,
+          children: [
+            {
+              path: '',
+              element: <ScoutDashboard />,
+            },
+          ],
+        },
+        {
+          path: '/troops/:id',
+          element: <Troop />,
+        },
+        {
+          path: '/troops/:id/attendance',
+          element: <TroopAttendance />,
+        },
+        {
+          path: '/parentDashboard',
+          element: <ParentProtectedRoute />,
+          children: [
+            {
+              path: '',
+              element: <ParentDashboard />,
+            },
+            {
+              path: 'child/:id',
+              element: <ScoutChild />,
+            },
+          ],
           path: 'achievements',
           element: <AllAchievementsPage />,
         },

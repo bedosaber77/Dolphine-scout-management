@@ -21,6 +21,8 @@ exports.getAllScouts = async (req, res) => {
 
 exports.getScoutbyId = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user?.id; // Extracted from the JWT token
+  const userRole = req.user?.role; // Role from the token (e.g., 'parent' or 'scout')
   console.log(req.user);
   // const userId = req.user.id; // Extracted from the JWT token
   // const userRole = req.user.role; // Role from the token (e.g., 'parent' or 'scout')
