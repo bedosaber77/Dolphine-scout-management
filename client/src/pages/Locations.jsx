@@ -6,44 +6,49 @@ const Locations = () => {
 
   const [locationsData, setLocationsData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [locationToDelete, setLocationToDelete] = useState(null);
   const [locationName, setLocationName] = useState('');
   const [city, setCity] = useState('');
   const [government, setGovernment] = useState('');
   const [link, setLink] = useState('');
-  const [locationToEdit, setLocationToEdit] = useState(null); // For editing a location
+  const [locationToEdit, setLocationToEdit] = useState(null);
+  const [loading, setLoading] = useState(true); // For loading indicator
+
+  const fetchData = async () => {
+    setLoading(true); // Start loading
+    try {
+      const locationsFetch = await apiRequest({
+        url: 'http://localhost:3000/api/locations/',
+        method: 'GET',
+      });
+      setLocationsData(locationsFetch.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const locationsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/locations/',
-          method: 'GET',
-        });
-        console.log("location :",locationsFetch.data)
-        setLocationsData(locationsFetch.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
   }, [apiRequest]);
 
-  // Handle adding a new location
   const handleAddLocation = async (e) => {
     e.preventDefault();
     const newLocation = {
-      LocationName: locationName,
-      City: city,
-      Government: government,
-      Link: link,
+      name: locationName,
+      city: city,
+      government: government,
+      link: link,
     };
     try {
-      const response = await apiRequest({
+      await apiRequest({
         url: 'http://localhost:3000/api/locations/',
         method: 'POST',
         data: newLocation,
       });
-      setLocationsData([...locationsData, response.data]);
+      fetchData(); // Refresh data
       setIsModalOpen(false);
       resetForm();
     } catch (error) {
@@ -51,28 +56,21 @@ const Locations = () => {
     }
   };
 
-  // Handle editing an existing location
   const handleEditLocation = async (e) => {
     e.preventDefault();
     const updatedLocation = {
-      LocationName: locationName,
-      City: city,
-      Government: government,
-      Link: link,
+      name: locationName,
+      city: city,
+      government: government,
+      link: link,
     };
     try {
-      const response = await apiRequest({
+      await apiRequest({
         url: `http://localhost:3000/api/locations/${locationToEdit.Location_ID}`,
         method: 'PUT',
         data: updatedLocation,
       });
-      setLocationsData(
-        locationsData.map((location) =>
-          location.Location_ID === locationToEdit.Location_ID
-            ? { ...location, ...updatedLocation }
-            : location
-        )
-      );
+      fetchData(); // Refresh data
       setIsModalOpen(false);
       resetForm();
     } catch (error) {
@@ -80,22 +78,42 @@ const Locations = () => {
     }
   };
 
-  // Handle deleting a location
-  const handleDelete = async (Location_ID) => {
-    try {
-      await apiRequest({
-        url: `http://localhost:3000/api/locations/${Location_ID}`,
-        method: 'DELETE',
-      });
-      setLocationsData(
-        locationsData.filter((location) => location.Location_ID !== Location_ID)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const handleDelete = async (Location_ID) => {
+  //   try {
+  //     await apiRequest({
+  //       url: `http://localhost:3000/api/locations/${Location_ID}`,
+  //       method: 'DELETE',
+  //     });
+  //     fetchData(); // Refresh data
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  // Reset form fields
+   const handleDelete = (location) => {
+     setLocationToDelete(location);
+     setIsDeleteDialogOpen(true);
+   };
+
+   const confirmDelete = async () => {
+     try {
+       await apiRequest({
+         url: `http://localhost:3000/api/locations/${locationToDelete.Location_ID}`,
+         method: 'DELETE',
+       });
+       setLocationsData(
+         locationsData.filter(
+           (loc) => loc.Location_ID !== locationToDelete.Location_ID
+         )
+       );
+       fetchData();
+       setIsDeleteDialogOpen(false);
+       setLocationToDelete(null);
+     } catch (error) {
+       console.error(error);
+     }
+   };
+
   const resetForm = () => {
     setLocationName('');
     setCity('');
@@ -104,7 +122,6 @@ const Locations = () => {
     setLocationToEdit(null);
   };
 
-  // Handle editing a location
   const handleEdit = (location) => {
     setLocationName(location.LocationName);
     setCity(location.City);
@@ -112,6 +129,11 @@ const Locations = () => {
     setLink(location.Link);
     setLocationToEdit(location);
     setIsModalOpen(true);
+  };
+
+  const shortenLink = (url) => {
+    const maxLength = 20;
+    return url.length > maxLength ? `${url.slice(0, maxLength)}...` : url;
   };
 
   return (
@@ -123,11 +145,10 @@ const Locations = () => {
         قائمة المواقع
       </h2>
 
-      {/* Add Location Button */}
       <button
         onClick={() => {
+          resetForm();
           setIsModalOpen(true);
-          resetForm(); // Ensure the form is reset when adding a new location
         }}
         className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
@@ -135,57 +156,83 @@ const Locations = () => {
         إضافة موقع
       </button>
 
-      {/* Locations Table */}
-      <table className="min-w-full border-collapse border border-gray-200 mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">اسم الموقع</th>
-            <th className="border px-4 py-2">المدينة</th>
-            <th className="border px-4 py-2">المحافظة</th>
-            <th className="border px-4 py-2">رابط الموقع</th>
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {locationsData.map((location) => (
-            <tr key={location.Location_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{location.LocationName}</td>
-              <td className="border px-4 py-2">{location.City}</td>
-              <td className="border px-4 py-2">{location.Government}</td>
-              <td className="border px-4 py-2">
-                <a
-                  href={location.Link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500"
-                >
-                  {location.Link}
-                </a>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEdit(location)}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(location.Location_ID)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : locationsData.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا توجد مواقع لعرضها.</p>
+      ) : (
+        <table className="min-w-full border-collapse border border-gray-200 mt-4">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2">اسم الموقع</th>
+              <th className="border px-4 py-2">المدينة</th>
+              <th className="border px-4 py-2">المحافظة</th>
+              <th className="border px-4 py-2">رابط الموقع</th>
+              <th className="border px-4 py-2">تعديل</th>
+              <th className="border px-4 py-2">حذف</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {locationsData.map((location) => (
+              <tr key={location.Location_ID} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">{location.LocationName}</td>
+                <td className="border px-4 py-2">{location.City}</td>
+                <td className="border px-4 py-2">{location.Government}</td>
+                <td className="border px-4 py-2">
+                  <a
+                    href={location.Link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500"
+                  >
+                    {shortenLink(location.Link)}
+                  </a>
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => handleEdit(location)}
+                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                    style={{ background: 'var(--secondary-color)' }}
+                  >
+                    تعديل
+                  </button>
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => handleDelete(location)}
+                    className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
+                  >
+                    حذف
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
+            <p>هل أنت متأكد من أنك تريد حذف هذا الموقع</p>
+            <div className="flex justify-between">
+              <button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              >
+                حذف
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Modal for Adding/Editing Location */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
@@ -266,7 +313,6 @@ const Locations = () => {
                   required
                 />
               </div>
-
               <div className="flex justify-between">
                 <button
                   type="button"

@@ -1,72 +1,98 @@
-import { useState, useEffect } from 'react';
-import useApi from '../hooks/useApi';
+import { useState } from 'react';
+import useAuthStore from '../store/authStore';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 const Transactions = () => {
-  const apiRequest = useApi();
+  const { accessToken } = useAuthStore();
+  const [transactions, setTransactions] = useState([]);
+  const [totalBalance, setTotalBalance] = useState(0);
 
-  const [transactionsData, setTransactionsData] = useState([]);
-  // const [achievements, setAchievements] = useState([]);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:3000/api/transactions',
+        {
+          headers: {
+            accessToken: accessToken, // Ensure accessToken is defined
+          },
+        }
+      );
+      setTransactions(response.data); // Update the state with fetched data
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const transactionsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/transactions/',
-          method: 'GET',
-        });
-        // const atchievementFetch = await apiRequest({
-        //   url: 'http://localhost:3000/api/achievements/',
-        //   method: 'GET',
-        // });
-        console.log('trans', transactionsFetch);
-        // console.log(atchievementFetch);
-        setTransactionsData(transactionsFetch.data);
-        // setAchievements(atchievementFetch.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
-  }, [apiRequest]);
+  }, []);
 
-
-  const totalBalance = 1000; // Example total balance
+  useEffect(() => {
+    let Balance = transactions.reduce(
+      (acc, transaction) =>
+        transaction.TransactionType === 'Deposit'
+          ? acc + transaction.Amount
+          : acc - transaction.Amount,
+      0
+    );
+    setTotalBalance(Balance);
+  }, [transactions]);
 
   // State for controlling the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [transaction, setTransaction] = useState({
-    name: '',
-    type: 'وارد', // default type
+    purpose: '',
+    method: 'Cash', // default type
+    type: 'Deposit', // default type
     amount: '',
     date: '',
+    sponsor_id: null,
+    leader_id: null,
   });
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target; // Destructure name and value from the input event
     setTransaction((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value, // Dynamically set the state based on input name
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logic to handle form submission (e.g., adding the transaction to the data)
-    transactionsData.push(transaction);
+    console.log(transaction);
+    console.log('transaction');
+    axios.post(
+      'http://localhost:3000/api/transactions',
+      JSON.stringify(transaction),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          accessToken: accessToken,
+        },
+      }
+    );
+    // Add the new transaction to the transactions array
+    fetchData();
+    setTotalBalance(totalBalance + transaction.amount);
     setIsModalOpen(false); // Close the modal after submitting
   };
 
   return (
     <div className="p-4">
-      <h2 className="mb-4 text-lg font-bold" style={{ color: 'var(--secondary-color)' }}>
+      <h2
+        className="mb-4 text-lg font-bold"
+        style={{ color: 'var(--secondary-color)' }}
+      >
         الرصيد الإجمالي: {totalBalance} جنيه
       </h2>
 
-      {/* Add Transaction Button */}
       <button
         onClick={() => setIsModalOpen(true)}
-             className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
+        className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+        style={{ background: 'var(--secondary-color)' }}
       >
         إضافة معاملة
       </button>
@@ -75,19 +101,27 @@ const Transactions = () => {
       <table className="min-w-full border-collapse border border-gray-200">
         <thead>
           <tr>
-            <th className="border px-4 py-2">اسم المتبرع/القائد</th>
+            <th className="border px-4 py-2">وصف المعاملة</th>
             <th className="border px-4 py-2">صادر/وارد</th>
             <th className="border px-4 py-2">المبلغ</th>
             <th className="border px-4 py-2">التاريخ</th>
           </tr>
         </thead>
         <tbody>
-          {transactionsData.map((transaction, index) => (
-            <tr key={index} className='hover:bg-gray-100'>
-              <td className="border px-4 py-2">{transaction.name}</td>
-              <td className="border px-4 py-2">{transaction.type}</td>
-              <td className="border px-4 py-2">{transaction.amount}</td>
-              <td className="border px-4 py-2">{transaction.date}</td>
+          {transactions.map((transaction, index) => (
+            <tr key={index} className="hover:bg-gray-100">
+              <td className="border px-4 py-2">{transaction.Purpose}</td>
+              <td className="border px-4 py-2">
+                {transaction.TransactionType}
+              </td>
+              <td className="border px-4 py-2">{transaction.Amount}</td>
+              <td className="border px-4 py-2">
+                {new Date(transaction.Tdate).toLocaleDateString('ar-EG', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -100,22 +134,47 @@ const Transactions = () => {
             <h3 className="text-xl mb-4 font-bold">إضافة معاملة</h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  اسم المتبرع/القائد
+                <label
+                  htmlFor="purpose"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  الوصف
                 </label>
                 <input
                   type="text"
-                  name="name"
-                  value={transaction.name}
+                  name="purpose"
+                  value={transaction.purpose}
                   onChange={handleInputChange}
-                  id="name"
+                  id="purpose"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
                   required
                 />
               </div>
 
               <div className="mb-4">
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="method"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  طريقة الدفع
+                </label>
+                <select
+                  name="method"
+                  value={transaction.method}
+                  onChange={handleInputChange}
+                  id="method"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                >
+                  <option value="Cash">Cash</option>
+                  <option value="Visa">Visa</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="type"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   نوع المعاملة
                 </label>
                 <select
@@ -125,13 +184,16 @@ const Transactions = () => {
                   id="type"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
                 >
-                  <option value="وارد">وارد</option>
-                  <option value="صادر">صادر</option>
+                  <option value="Deposit">ايداع</option>
+                  <option value="Withdraw">سحب</option>
                 </select>
               </div>
 
               <div className="mb-4">
-                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="amount"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   المبلغ
                 </label>
                 <input
@@ -146,7 +208,44 @@ const Transactions = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="leader_id"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  كود القائد
+                </label>
+                <input
+                  type="number"
+                  name="leader_id"
+                  value={transaction.leader_id}
+                  onChange={handleInputChange}
+                  id="leader_id"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="sponsor_id"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  كود الممول
+                </label>
+                <input
+                  type="number"
+                  name="sponsor_id"
+                  value={transaction.sponsor_id}
+                  onChange={handleInputChange}
+                  id="sponsor_id"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="date"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   التاريخ
                 </label>
                 <input

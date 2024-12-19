@@ -50,6 +50,15 @@ module.exports.addAnnouncement = async (req, res) => {
 module.exports.updateAnnouncement = async (req, res) => {
     const { announcement_id } = req.params;
     const { content, date, priority, visibility, leader_id } = req.body;
+    console.log(
+      content,
+      date,
+      priority,
+      visibility,
+      leader_id,
+      announcement_id
+    );
+
     try {
         const query = `UPDATE "Announcement" SET "Content" = $1, "CreateDate" = $2, "Priority" = $3, "Visibility" = $4, "ScoutLeader_ID" = $5 WHERE "Announcement_ID" = $6 RETURNING *`;
         const params = [content, date, priority, visibility, leader_id, announcement_id];

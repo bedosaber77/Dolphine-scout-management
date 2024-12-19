@@ -10,22 +10,25 @@ const Achievements = () => {
   const [achievement, setAchievement] = useState('');
   const [level, setLevel] = useState('');
   const [description, setDescription] = useState('');
+  const [criteria, setCriteria] = useState('');
   const [achievementToDelete, setAchievementToDelete] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [achievementToEdit, setAchievementToEdit] = useState(null);
 
+  const fetchData = async () => {
+    try {
+      const achievementsFetch = await apiRequest({
+        url: 'http://localhost:3000/api/achievements/',
+        method: 'GET',
+      });
+      setAchievementsData(achievementsFetch.data);
+      console.log('ach fetch', achievementsFetch);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const achievementsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/achievements/',
-          method: 'GET',
-        });
-        setAchievementsData(achievementsFetch.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
   }, [apiRequest]);
 
@@ -33,31 +36,28 @@ const Achievements = () => {
   const handleSubmitAchievement = async (e) => {
     e.preventDefault();
     const newAchievement = {
-      Aname: achievement,
-      Level: level || null,
-      Description: description || null,
+      name: achievement,
+      level: level || null,
+      description: description || null,
+      criteria: criteria || null,
     };
+
     if (isEditMode && achievementToEdit) {
       try {
-        const response = await apiRequest({
+        await apiRequest({
           url: `http://localhost:3000/api/achievements/${achievementToEdit.Achievement_ID}`,
           method: 'PUT',
           data: newAchievement,
         });
-        setAchievementsData(
-          achievementsData.map((ach) =>
+        setAchievementsData((prevData) =>
+          prevData.map((ach) =>
             ach.Achievement_ID === achievementToEdit.Achievement_ID
               ? { ...ach, ...newAchievement }
               : ach
           )
         );
-        setIsModalOpen(false);
-        setAchievement('');
-        setLevel('');
-        setDescription('');
-        setIsEditMode(false);
       } catch (error) {
-        console.error(error);
+        console.error('Error updating achievement:', error);
       }
     } else {
       try {
@@ -67,15 +67,20 @@ const Achievements = () => {
           data: newAchievement,
         });
         setAchievementsData([...achievementsData, response.data]);
-        setIsModalOpen(false);
-        setAchievement('');
-        setLevel('');
-        setDescription('');
       } catch (error) {
-        console.error(error);
+        console.error('Error adding achievement:', error);
       }
     }
+    fetchData();
+    // Reset form state and close modal
+    setAchievement('');
+    setLevel('');
+    setDescription('');
+    setCriteria('');
+    setIsModalOpen(false);
+    setIsEditMode(false);
   };
+
 
   // Open delete confirmation dialog
   const handleDelete = (achievement) => {
@@ -107,6 +112,7 @@ const Achievements = () => {
     setAchievement(achievement.Aname);
     setLevel(achievement.Level);
     setDescription(achievement.Description);
+    setCriteria(achievement.Criteria);
     setAchievementToEdit(achievement);
     setIsModalOpen(true);
     setIsEditMode(true);
@@ -123,7 +129,14 @@ const Achievements = () => {
 
       {/* Add Achievement Button */}
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          // Clear the form state for adding new equipment
+          setAchievement('');
+          setLevel('');
+          setDescription('');
+          setCriteria('');
+          setIsModalOpen(true);
+        }}
         className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
       >
@@ -137,6 +150,7 @@ const Achievements = () => {
             <th className="border px-4 py-2">الإنجاز</th>
             <th className="border px-4 py-2">المستوى</th>
             <th className="border px-4 py-2">الوصف</th>
+            <th className="border px-4 py-2">المعايير</th>
             <th className="border px-4 py-2">عدد الأفراد</th>{' '}
             {/* Number of members */}
             <th className="border px-4 py-2">تعديل</th>
@@ -147,8 +161,15 @@ const Achievements = () => {
           {achievementsData.map((achievement) => (
             <tr key={achievement.Achievement_ID} className="hover:bg-gray-100">
               <td className="border px-4 py-2">{achievement.Aname}</td>
-              <td className="border px-4 py-2">{achievement.Level}</td>
-              <td className="border px-4 py-2">{achievement.Description}</td>
+              <td className="border px-4 py-2">
+                {achievement.Level || 'لا توجد'}
+              </td>
+              <td className="border px-4 py-2">
+                {achievement.Description || 'لا توجد'}
+              </td>
+              <td className="border px-4 py-2">
+                {achievement.Criteria || 'لا توجد'}
+              </td>
               <td className="border px-4 py-2">
                 {achievement.individuals ? achievement.individuals.length : 0}
               </td>{' '}
@@ -206,7 +227,7 @@ const Achievements = () => {
                   htmlFor="level"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  المستوى (اختياري)
+                  المستوى
                 </label>
                 <input
                   type="text"
@@ -223,13 +244,28 @@ const Achievements = () => {
                   htmlFor="description"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  الوصف (اختياري)
+                  الوصف
                 </label>
                 <textarea
                   name="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   id="description"
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="criteria"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  المعايير
+                </label>
+                <textarea
+                  name="criteria"
+                  value={criteria}
+                  onChange={(e) => setCriteria(e.target.value)}
+                  id="criteria"
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
                 />
               </div>

@@ -25,6 +25,7 @@ const Troops = () => {
           method: 'GET',
         });
         const troops = troopsFetch.data;
+        console.log("troops",troops);
 
         // Fetch leaders
         const leadersFetch = await apiRequest({
@@ -36,7 +37,7 @@ const Troops = () => {
         // Enrich troops with leader names
         const enrichedTroops = troops.map((troop) => {
           const leader = leaders.find(
-            (leader) => leader.ScoutLeader_ID === troop.ScoutLeader_ID
+            (leader) => leader.User_ID === troop.ScoutLeader_ID
           );
           return {
             ...troop,
@@ -185,7 +186,7 @@ const Troops = () => {
           <tr>
             <th className="border px-4 py-2">اسم المجموعة</th>
             <th className="border px-4 py-2">القائد</th>
-            <th className="border px-4 py-2">عدد الكشافة</th>
+            <th className="border px-4 py-2">الحد الاقصى</th>
             <th className="border px-4 py-2">تعديل</th>
             <th className="border px-4 py-2">حذف</th>
           </tr>
@@ -363,7 +364,7 @@ const Troops = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
             <h3 className="text-lg font-bold mb-4">
-              هل تريد حذف المجموعة "{deletingTroop.Tname}"؟
+              هل تريد حذف المجموعة {deletingTroop.Tname}؟
             </h3>
             <div className="flex justify-between">
               <button
