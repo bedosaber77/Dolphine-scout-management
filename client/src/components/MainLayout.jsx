@@ -8,7 +8,7 @@ const MainLayout = () => {
       <header>
         <AppHeader></AppHeader>
       </header>
-      <main>
+      <main className="p-5">
         <Outlet />
       </main>
       <Footer></Footer>

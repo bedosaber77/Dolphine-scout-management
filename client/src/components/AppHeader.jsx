@@ -282,7 +282,7 @@ const AppHeader = () => {
         <div className="flex items-center">
           <NavLink to="/" className="flex items-center">
             <img
-              src="./src/assets/logo-dolphins-png.png"
+              src="../src/assets/logo-dolphins-png.png"
               alt="Logo"
               className="h-40 w-auto"
             />

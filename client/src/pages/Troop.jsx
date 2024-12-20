@@ -16,6 +16,7 @@ import {
   Box,
 } from '@mui/material';
 import useApi from '../hooks/useApi';
+import useAuthStore from '../store/authStore';
 
 const Troop = () => {
   const { id } = useParams();
@@ -24,6 +25,7 @@ const Troop = () => {
   const [troop, setTroop] = useState({});
   const [loading, setLoading] = useState(true);
   const apiRequest = useApi();
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,27 +85,29 @@ const Troop = () => {
           </Grid>
         </Paper>
       </Container>
-      <Box display="flex" justifyContent="center" mt={4}>
-        <Button
-          variant="outlined"
-          sx={{
-            color: 'white',
-            backgroundColor: 'var(--footer-bg)',
-            borderColor: 'var(--footer-bg)',
-            fontSize: '1.5rem',
-            padding: '12px 24px',
-            '&:hover': {
+      {troop.ScoutLeader_ID === user.User_ID && (
+        <Box display="flex" justifyContent="center" mt={4}>
+          <Button
+            variant="outlined"
+            sx={{
+              color: 'white',
               backgroundColor: 'var(--footer-bg)',
               borderColor: 'var(--footer-bg)',
-            },
-          }}
-          onClick={() => {
-            navigate(`/troops/${id}/attendance`);
-          }}
-        >
-          الغياب
-        </Button>
-      </Box>
+              fontSize: '1.5rem',
+              padding: '12px 24px',
+              '&:hover': {
+                backgroundColor: 'var(--footer-bg)',
+                borderColor: 'var(--footer-bg)',
+              },
+            }}
+            onClick={() => {
+              navigate(`/troops/${id}/attendance`);
+            }}
+          >
+            الغياب
+          </Button>
+        </Box>
+      )}
     </Container>
   );
 };
