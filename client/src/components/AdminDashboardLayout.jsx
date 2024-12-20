@@ -58,6 +58,13 @@ const AdminDashboardLayout = () => {
         >
           المعاملات
         </Tab>
+        <Tab
+          to="sponsors"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الممولين
+        </Tab>
         {/* <Tab
           to="requests"
           currentPath={location.pathname}

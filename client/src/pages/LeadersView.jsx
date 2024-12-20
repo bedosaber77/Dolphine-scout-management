@@ -4,119 +4,120 @@ const ScoutLeaders = () => {
   const apiRequest = useApi();
 
   const [leadersData, setLeadersData] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  ////////////////////////////////////////////////////////////////////////
-  const [leaderToDelete, setleaderToDelete] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [leaderToEdit, setleaderToEdit] = useState(null);
+    const [selectedLeader, setSelectedLeader] = useState(null);
+
+const [editAttributes, setEditAttributes] = useState({
+    startDate: '',
+    isAdmin: 'false',
+});
   const [loading, setLoading] = useState(true); // For loading state
 
   const fetchScoutLeaders = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
-      // Fetch scouts from the backend (already enriched with user data)
       const scoutLeadersFetch = await apiRequest({
         url: 'http://localhost:3000/api/scoutleaders/',
         method: 'GET',
       });
       const scoutLeaders = scoutLeadersFetch.data;
 
-      console.log('Fetched scoutLeadersFetch:', scoutLeaders);
+      // Fetch troops for each leader
+      const leadersWithTroops = await Promise.all(
+        scoutLeaders.map(async (leader) => {
+          try {
+            const troopsFetch = await apiRequest({
+              url: `http://localhost:3000/api/troops/leader/${leader.User_ID}`,
+              method: 'GET',
+              data: { id: leader.User_ID },
+            });
+            return {
+              ...leader,
+              troops:
+                troopsFetch.data.map((t) => t.Tname).join(', ') ||
+                'لا توجد مجموعات',
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching troops for leader ${leader.User_ID}:`,
+              error
+            );
+            return { ...leader, troops: 'غير متوفر' };
+          }
+        })
+      );
 
-      setLeadersData(scoutLeaders);
+      setLeadersData(leadersWithTroops);
+      console.log(leadersWithTroops);
     } catch (error) {
-      console.error('Error fetching scouts data:', error);
+      console.error('Error fetching scout leaders:', error);
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
-  };
+  }; 
+
   useEffect(() => {
     fetchScoutLeaders();
   }, [apiRequest]);
 
-  const handleSubmitLeaders = async (e) => {
-    e.preventDefault();
-    const newLeader = {
-      // name: achievement,
-      // level: level || null,
-      // description: description || null,
-      // criteria: criteria || null,
-    };
-
-    if (isEditMode && leaderToEdit) {
-      try {
-        await apiRequest({
-          url: `http://localhost:3000/api/achievements/${leaderToEdit.Achievement_ID}`,//////////////////////////
-          method: 'PUT',
-          data: newLeader,
-        });
-        setLeadersData((prevData) =>
-          prevData.map((lead) =>
-            lead.Achievement_ID === leaderToEdit.Achievement_ID
-              ? { ...lead, ...newLeader }
-              : lead
-          )
-        );
-      } catch (error) {
-        console.error('Error updating achievement:', error);
-      }
-    } else {
-      try {
-        const response = await apiRequest({
-          url: 'http://localhost:3000/api/achievements/',/////////////////////////
-          method: 'POST',
-          data: newLeader,
-        });
-        setLeadersData([...leadersData, response.data]);
-      } catch (error) {
-        console.error('Error adding achievement:', error);
-      }
-    }
-    fetchScoutLeaders();
-    // Reset form state and close modal
-    // setAchievement('');
-    // setLevel('');
-    // setDescription('');
-    // setCriteria('');
-    setIsModalOpen(false);
-    setIsEditMode(false);
-  };
-
-  const handleDelete = (achievement) => {
-    setleaderToDelete(achievement);
-    setIsDeleteDialogOpen(true);
+  const handleEdit = (leader) => {
+    setSelectedLeader(leader);
+    setEditAttributes({
+      id: leader.User_ID.toString(),
+      startDate: leader.startDate || '',
+      isAdmin: leader.isAdmin || 'false',
+    });
+    setIsDialogOpen(true);
   };
 
   // Confirm delete
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/achievements/${leaderToDelete.Achievement_ID}`,//////////////////////////////////
+        url: `http://localhost:3000/api/scoutleaders/${selectedLeader.User_ID}`, //////////////////////////////////
         method: 'DELETE',
       });
-      setLeadersData(
-        leadersData.filter(
-          (lead) => lead.Achievement_ID !== leaderToDelete.Achievement_ID
-        )
+      setLeadersData((prev) =>
+        prev.filter((lead) => lead.User_ID !== selectedLeader.User_ID)
       );
       setIsDeleteDialogOpen(false);
-      setleaderToDelete(null);
+      setSelectedLeader(null);
+      fetchScoutLeaders();
     } catch (error) {
-      console.error(error);
+      console.error('Error deleting leader:', error);
     }
   };
 
-  // Handle edit
-  const handleEdit = (achievement) => {
-    // setAchievement(achievement.Aname);
-    // setLevel(achievement.Level);
-    // setDescription(achievement.Description);
-    // setCriteria(achievement.Criteria);
-    setleaderToEdit(achievement);
-    setIsModalOpen(true);
-    setIsEditMode(true);
+  const handleAttributeChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEditAttributes((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (checked ? 'true' : 'false') : value,
+    }));
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await apiRequest({
+      url: `http://localhost:3000/api/scoutleaders/${selectedLeader.User_ID}`,
+      method: 'PUT',
+      data: editAttributes,
+    });
+    setLeadersData((prevData) =>
+      prevData.map((lead) =>
+        lead.User_ID === selectedLeader.User_ID
+          ? { ...lead, ...editAttributes }
+          : lead
+      )
+    );
+    setIsDialogOpen(false);
+    setSelectedLeader(null);
+    fetchScoutLeaders();
+  } catch (error) {
+    console.error('Error updating leader:', error);
+  }
+};
 
   return (
     <div className="p-4">
@@ -127,27 +128,10 @@ const ScoutLeaders = () => {
         قائمة القادة
       </h2>
 
-      {/* Add Leader Button */}
-      <button
-        onClick={() => {
-          // Clear the form state for adding new equipment
-          // setAchievement('');
-          // setLevel('');
-          // setDescription('');
-          // setCriteria('');
-          setIsModalOpen(true);
-        }}
-        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة قائد جديد
-      </button>
-
-      {/* Leaders Table */}
       {loading ? (
         <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
       ) : leadersData.length === 0 ? (
-        <p className="mt-4 text-center text-gray-500">لا توجد مواقع لعرضها.</p>
+        <p className="mt-4 text-center text-gray-500">لا يوجد قادة للعرض</p>
       ) : (
         <table className="min-w-full border-collapse border border-gray-200">
           <thead>
@@ -155,8 +139,10 @@ const ScoutLeaders = () => {
               <th className="border px-4 py-2">الرقم التعريفي</th>
               <th className="border px-4 py-2">الاسم</th>
               <th className="border px-4 py-2">رقم الهاتف</th>
+              <th className="border px-4 py-2">البريد الإلكتروني</th>
               <th className="border px-4 py-2">المجموعات التي يقودها</th>
-              <th className="border px-4 py-2">مدير؟</th>
+              <th className="border px-4 py-2">تاريخ البدء</th>
+              <th className="border px-4 py-2">هل هو مدير ؟</th>
               <th className="border px-4 py-2">تعديل</th>
               <th className="border px-4 py-2">حذف</th>
             </tr>
@@ -167,7 +153,7 @@ const ScoutLeaders = () => {
                 <td className="border px-4 py-2">{leader.User_ID}</td>
                 <td className="border px-4 py-2">
                   {leader.Fname && leader.Lname
-                    ? `${leader.Lname} ${leader.Fname}`
+                    ? `${leader.Fname} ${leader.Lname}`
                     : 'غير متوفر'}
                 </td>
                 <td className="border px-4 py-2">
@@ -176,7 +162,14 @@ const ScoutLeaders = () => {
                 <td className="border px-4 py-2">
                   {leader.email || 'غير متوفر'}
                 </td>
-                {/* <td className="border px-4 py-2">{leader.troops}</td> */}
+                <td className="border px-4 py-2">{leader.troops}</td>
+                <td className="border px-4 py-2">
+                  {new Date(leader.startDate).toLocaleDateString('ar-EG', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }) || 'غير متوفر'}
+                </td>
                 <td className="border px-4 py-2">
                   {leader.isAdmin ? 'نعم' : 'لا'}
                 </td>
@@ -191,8 +184,11 @@ const ScoutLeaders = () => {
                 </td>
                 <td className="border px-4 py-2">
                   <button
-                    onClick={() => handleDelete(leader)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                    onClick={() => {
+                      setSelectedLeader(leader);
+                      setIsDeleteDialogOpen(true);
+                    }}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
                   >
                     حذف
                   </button>
@@ -204,96 +200,33 @@ const ScoutLeaders = () => {
       )}
 
       {/* Edit Dialog */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm w-full">
-            <h3 className="text-xl mb-4 font-bold">
-              {isEditMode ? 'تعديل' : 'إضافة'} القائد
-            </h3>
-            <form onSubmit={handleSubmitLeaders}>
-              <div className="mb-4">
-                <label
-                  htmlFor="achievementName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  اسم الإنجاز
-                </label>
-                <input
-                  type="text"
-                  name="achievementName"
-                  // value={leadername}
-                  // onChange={(e) => setleader(e.target.value)}
-                  id="achievementName"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="level"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  المستوى
-                </label>
-                <input
-                  type="text"
-                  name="level"
-                  // value={level}
-                  // onChange={(e) => setLevel(e.target.value)}
-                  id="level"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  الوصف
-                </label>
-                <textarea
-                  name="description"
-                  // value={description}
-                  // onChange={(e) => setDescription(e.target.value)}
-                  id="description"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="criteria"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  المعايير
-                </label>
-                <textarea
-                  name="criteria"
-                  // value={criteria}
-                  // onChange={(e) => setCriteria(e.target.value)}
-                  id="criteria"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
-                />
-              </div>
-              {/* <div className="flex items-center mb-4">
+      {isDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">تعديل قائد</h3>
+            <form onSubmit={handleSubmit}>
+              <label>تاريخ البدء</label>
+              <input
+                name="startDate"
+                type="date"
+                value={editAttributes.startDate}
+                onChange={handleAttributeChange}
+                className="border p-2 w-full mb-2"
+              />
+              <div className="flex items-center mb-2">
                 <input
                   type="checkbox"
-                  checked={currentLeader.isAdmin}
-                  onChange={(e) =>
-                    setCurrentLeader({
-                      ...currentLeader,
-                      isAdmin: e.target.checked,
-                    })
-                  }
+                  name="isAdmin"
+                  checked={editAttributes.isAdmin === 'true'}
+                  onChange={handleAttributeChange}
                   className="mr-2"
                 />
-                <label className="text-right text-lg mr-2">هل هو مدير ؟</label>
-              </div> */}
+                <label>هل هو مدير ؟</label>
+              </div>
               <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => setIsDialogOpen(false)}
                   className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
@@ -303,7 +236,7 @@ const ScoutLeaders = () => {
                   className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
                   style={{ background: 'var(--secondary-color)' }}
                 >
-                  {isEditMode ? 'تعديل' : 'إضافة'}
+                  تعديل
                 </button>
               </div>
             </form>
@@ -316,7 +249,7 @@ const ScoutLeaders = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
             <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
-            <p>هل أنت متأكد أنك تريد حذف هذا القائد</p>
+            <p>هل أنت متأكد أنك تريد حذف هذا القائد؟</p>
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -326,7 +259,7 @@ const ScoutLeaders = () => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
               >
                 حذف
               </button>

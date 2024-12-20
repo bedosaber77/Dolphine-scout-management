@@ -4,113 +4,85 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import useApi from '../hooks/useApi';
 
-const Transactions = () => {
+const SponsorsView = () => {
   const apiRequest = useApi();
   const { accessToken } = useAuthStore();
-  const [transactions, setTransactions] = useState([]);
-  const [leaders, setLeaders] = useState([]);
   const [sponsors, setSponsors] = useState([]);
-  const [totalBalance, setTotalBalance] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [transactionToDelete, setTransactionToDelete] = useState(null);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        'http://localhost:3000/api/transactions',
-        {
-          headers: {
-            accessToken: accessToken, // Ensure accessToken is defined
-          },
-        }
-      );
-      setTransactions(response.data); // Update the state with fetched data
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const fetchLeaders = async () => {
-    try {
-      const response = await axios.get(
-        'http://localhost:3000/api/scoutleaders',
-        {
-          headers: {
-            accessToken: accessToken, // Ensure accessToken is defined
-          },
-        }
-      );
-      setLeaders(response.data); // Update the state with fetched data
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [sponsorToDelete, setSponsorToDelete] = useState(null);
 
   const fetchSponsors = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/sponsors', {
         headers: {
-          accessToken: accessToken, // Ensure accessToken is defined
+          accessToken: accessToken,
         },
       });
-      setSponsors(response.data); // Update the state with fetched data
+      setSponsors(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
   useEffect(() => {
-    fetchData();
-    fetchLeaders();
     fetchSponsors();
   }, []);
 
-  useEffect(() => {
-    let Balance = transactions.reduce(
-      (acc, transaction) =>
-        transaction.TransactionType === 'Deposit'
-          ? acc + transaction.Amount
-          : acc - transaction.Amount,
-      0
-    );
-    setTotalBalance(Balance);
-  }, [transactions]);
-
-  const handleDelete = (transaction) => {
-    setTransactionToDelete(transaction);
+  const handleDelete = (sponsor) => {
+    setSponsorToDelete(sponsor);
     setIsDeleteDialogOpen(true);
   };
 
+  const handleEditClick = (sponsor) => {
+    console.log('Editing sponsor:', sponsor);
+    setEditingSponsor(sponsor);
+    setIsEditModalOpen(true);
+  };
+
   const confirmDelete = async () => {
+    console.log('Deleting sponsor:', sponsorToDelete);
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/transactions/${transactionToDelete.Transaction_ID}`,
+        url: `http://localhost:3000/api/sponsors/${sponsorToDelete.Sponsor_ID}`,
         method: 'DELETE',
       });
       setIsDeleteDialogOpen(false);
-      setTransactionToDelete(null);
+      setSponsorToDelete(null);
     } catch (error) {
       console.error(error);
     }
-    fetchData();
+    fetchSponsors();
   };
 
   // State for controlling the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [transaction, setTransaction] = useState({
-    purpose: '',
-    method: 'Cash', // default type
-    type: 'Deposit', // default type
-    amount: '',
-    date: '',
-    sponsor_id: null,
-    leader_id: null,
+  const [sponsor, setSponsor] = useState({
+    fName: '',
+    lName: '',
+    phoneNum: '',
+    email: '',
+  });
+
+  const [editingSponsor, setEditingSponsor] = useState({
+    Fname: '',
+    Lname: '',
+    PhoneNum: '',
+    Email: '',
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target; // Destructure name and value from the input event
-    setTransaction((prev) => ({
+    setSponsor((prev) => ({
+      ...prev,
+      [name]: value, // Dynamically set the state based on input name
+    }));
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target; // Destructure name and value from the input event
+    setEditingSponsor((prev) => ({
       ...prev,
       [name]: value, // Dynamically set the state based on input name
     }));
@@ -118,9 +90,10 @@ const Transactions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    sponsor.phoneNum = sponsor.phoneNum ? sponsor.phoneNum : 'N/A';
     await axios.post(
-      'http://localhost:3000/api/transactions',
-      JSON.stringify(transaction),
+      'http://localhost:3000/api/sponsors',
+      JSON.stringify(sponsor),
       {
         headers: {
           'Content-Type': 'application/json',
@@ -128,10 +101,35 @@ const Transactions = () => {
         },
       }
     );
-    // Add the new transaction to the transactions array
-    fetchData();
-    setTotalBalance(totalBalance + transaction.amount);
+    // Add the new sponsor to the SponsorsView array
+    fetchSponsors();
     setIsModalOpen(false); // Close the modal after submitting
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    editingSponsor.PhoneNum = editingSponsor.PhoneNum
+      ? editingSponsor.PhoneNum
+      : 'N/A';
+    const sponsor = {
+      fName: editingSponsor.Fname,
+      lName: editingSponsor.Lname,
+      phoneNum: editingSponsor.PhoneNum,
+      email: editingSponsor.Email,
+    };
+    await axios.put(
+      `http://localhost:3000/api/sponsors/${editingSponsor.Sponsor_ID}`,
+      JSON.stringify(sponsor),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          accessToken: accessToken,
+        },
+      }
+    );
+    // Add the new sponsor to the SponsorsView array
+    fetchSponsors();
+    setIsEditModalOpen(false); // Close the modal after submitting
   };
 
   return (
@@ -140,7 +138,7 @@ const Transactions = () => {
         className="mb-4 text-3x font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
-        الرصيد الإجمالي: {totalBalance.toLocaleString('ar-EG')} جنيه
+        الممولين
       </h2>
 
       <button
@@ -148,63 +146,44 @@ const Transactions = () => {
         className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
       >
-        إضافة معاملة
+        إضافة ممول
       </button>
 
-      {/* Transactions Table */}
+      {/* SponsorsView Table */}
       <table className="min-w-full border-collapse border border-gray-200">
         <thead>
           <tr>
-            <th className="border px-4 py-2">وصف المعاملة</th>
-            <th className="border px-4 py-2">صادر/وارد</th>
-            <th className="border px-4 py-2">المبلغ</th>
-            <th className="border px-4 py-2">اسم صاحب العملية</th>
-            <th className="border px-4 py-2">طريفة الدفع</th>
-            <th className="border px-4 py-2">التاريخ</th>
+            <th className="border px-4 py-2">اسم الممول</th>
+            <th className="border px-4 py-2">رقم الهاتف</th>
+            <th className="border px-4 py-2">البريد الالكتروني</th>
+            <th className="border px-4 py-2">تعديل</th>
             <th className="border px-4 py-2">حذف</th>
           </tr>
         </thead>
         <tbody>
-          {transactions.map((transaction, index) => (
+          {sponsors.map((sponsor, index) => (
             <tr key={index} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{transaction.Purpose}</td>
               <td className="border px-4 py-2">
-                {transaction.TransactionType}
+                {sponsor.Fname + ' ' + sponsor.Lname}
               </td>
               <td className="border px-4 py-2">
-                {transaction.Amount.toLocaleString('ar-EG')}
+                {sponsor.PhoneNum ? sponsor.PhoneNum : 'N/A'}
               </td>
               <td className="border px-4 py-2">
-                {transaction.ScoutLeader_ID
-                  ? leaders.find(
-                      (leader) => leader.User_ID === transaction.ScoutLeader_ID
-                    )?.Fname +
-                    ' ' +
-                    leaders.find(
-                      (leader) => leader.User_ID === transaction.ScoutLeader_ID
-                    )?.Lname
-                  : transaction.Sponsor_ID
-                  ? sponsors.find(
-                      (sponsor) => sponsor.Sponsor_ID === transaction.Sponsor_ID
-                    )?.Fname +
-                    ' ' +
-                    sponsors.find(
-                      (sponsor) => sponsor.Sponsor_ID === transaction.Sponsor_ID
-                    )?.Lname
-                  : 'N/A'}
-              </td>
-              <td className="border px-4 py-2">{transaction.PaymentMethod}</td>
-
-              <td className="border px-4 py-2">
-                {new Date(transaction.Tdate).toLocaleDateString('ar-EG', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {sponsor.Email ? sponsor.Email : 'N/A'}
               </td>
               <td className="border px-4 py-2">
                 <button
-                  onClick={() => handleDelete(transaction)}
+                  onClick={() => handleEditClick(sponsor)}
+                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
+                  style={{ background: 'var(--secondary-color)' }}
+                >
+                  تعديل
+                </button>
+              </td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => handleDelete(sponsor)}
                   className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
                 >
                   حذف
@@ -219,7 +198,7 @@ const Transactions = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
-            <p>هل أنت متأكد من أنك تريد حذف هذه العملية؟</p>
+            <p>هل أنت متأكد من أنك تريد حذف هذا الممول؟</p>
             <div className="flex justify-between">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -242,21 +221,21 @@ const Transactions = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">إضافة معاملة</h3>
+            <h3 className="text-xl mb-4 font-bold">إضافة ممول</h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label
-                  htmlFor="purpose"
+                  htmlFor="fName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  الوصف
+                  الاسم الأول
                 </label>
                 <input
                   type="text"
-                  name="purpose"
-                  value={transaction.purpose}
+                  name="fName"
+                  value={sponsor.fName}
                   onChange={handleInputChange}
-                  id="purpose"
+                  id="fName"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
                   required
                 />
@@ -264,55 +243,17 @@ const Transactions = () => {
 
               <div className="mb-4">
                 <label
-                  htmlFor="method"
+                  htmlFor="lName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  طريقة الدفع
-                </label>
-                <select
-                  name="method"
-                  value={transaction.method}
-                  onChange={handleInputChange}
-                  id="method"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-                >
-                  <option value="Cash">Cash</option>
-                  <option value="Visa">Visa</option>
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="type"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  نوع المعاملة
-                </label>
-                <select
-                  name="type"
-                  value={transaction.type}
-                  onChange={handleInputChange}
-                  id="type"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-                >
-                  <option value="Deposit">ايداع</option>
-                  <option value="Withdraw">سحب</option>
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="amount"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  المبلغ
+                  الاسم الأخير
                 </label>
                 <input
-                  type="number"
-                  name="amount"
-                  value={transaction.amount}
+                  type="text"
+                  name="lName"
+                  value={sponsor.lName}
                   onChange={handleInputChange}
-                  id="amount"
+                  id="lName"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
                   required
                 />
@@ -320,59 +261,34 @@ const Transactions = () => {
 
               <div className="mb-4">
                 <label
-                  htmlFor="leader_id"
+                  htmlFor="phoneNum"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  كود القائد
-                </label>
-                <select
-                  name="leader_id"
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-                >
-                  <option value="">اختر قائدًا</option>
-                  {leaders.map((leader) => (
-                    <option key={leader.User_ID} value={leader.User_ID}>
-                      {leader.Fname} {leader.Lname}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="sponsor_id"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  كود الممول
-                </label>
-                <select
-                  name="sponsor_id"
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-                >
-                  <option value="">اختر ممولًا</option>
-                  {sponsors.map((sponsor) => (
-                    <option key={sponsor.Sponsor_ID} value={sponsor.Sponsor_ID}>
-                      {sponsor.Fname} {sponsor.Lname}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="date"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  التاريخ
+                  رقم الهاتف
                 </label>
                 <input
-                  type="date"
-                  name="date"
-                  value={transaction.date}
+                  type="text"
+                  name="phoneNum"
+                  value={sponsor.phoneNum}
                   onChange={handleInputChange}
-                  id="date"
+                  id="phoneNum"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  البريد الالكتروني
+                </label>
+                <input
+                  type="text"
+                  name="email"
+                  value={sponsor.email}
+                  onChange={handleInputChange}
+                  id="email"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
                   required
                 />
@@ -398,8 +314,106 @@ const Transactions = () => {
           </div>
         </div>
       )}
+
+      {/* Edit Modal */}
+      {isEditModalOpen && editingSponsor && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">إضافة ممول</h3>
+            <form onSubmit={handleEdit}>
+              <div className="mb-4">
+                <label
+                  htmlFor="Fname"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  الاسم الأول
+                </label>
+                <input
+                  type="text"
+                  name="Fname"
+                  value={editingSponsor.Fname}
+                  onChange={handleEditChange}
+                  id="Fname"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="Lname"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  الاسم الأخير
+                </label>
+                <input
+                  type="text"
+                  name="Lname"
+                  value={editingSponsor.Lname}
+                  onChange={handleEditChange}
+                  id="Lname"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="PhoneNum"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  رقم الهاتف
+                </label>
+                <input
+                  type="text"
+                  name="PhoneNum"
+                  value={editingSponsor.PhoneNum}
+                  onChange={handleEditChange}
+                  id="PhoneNum"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="Email"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  البريد الالكتروني
+                </label>
+                <input
+                  type="text"
+                  name="Email"
+                  value={editingSponsor.Email}
+                  onChange={handleEditChange}
+                  id="Email"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                  style={{ background: 'var(--secondary-color)' }}
+                >
+                  تعديل
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Transactions;
+export default SponsorsView;
