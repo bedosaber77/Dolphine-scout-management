@@ -58,6 +58,13 @@ const AdminDashboardLayout = () => {
         >
           المعاملات
         </Tab>
+        <Tab
+          to="sponsors"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الممولين
+        </Tab>
         {/* <Tab
           to="requests"
           currentPath={location.pathname}
@@ -101,14 +108,13 @@ const AdminDashboardLayout = () => {
           currentPath={location.pathname}
           color="var(--secondary-color)"
         >
-        تفعيل الحساب 
-      </Tab>
+          تفعيل الحساب
+        </Tab>
         {/* <Tab to="statistics" currentPath={location.pathname} color="var(--secondary-color)">
         الاحصائيات
         </Tab> */}
       </div>
 
-      
       {/* Render the active route's component */}
       <div className="p-6">
         <Outlet />
