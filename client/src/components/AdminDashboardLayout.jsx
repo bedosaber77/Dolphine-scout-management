@@ -110,6 +110,13 @@ const AdminDashboardLayout = () => {
         >
           تفعيل الحساب
         </Tab>
+        <Tab
+          to="events"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الاحداث
+        </Tab>
         {/* <Tab to="statistics" currentPath={location.pathname} color="var(--secondary-color)">
         الاحصائيات
         </Tab> */}
