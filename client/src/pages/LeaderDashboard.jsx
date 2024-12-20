@@ -40,37 +40,57 @@ const ScoutLeaderDashboard = () => {
     navigate(`/troops/${id}`);
   };
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchEvents = async () => {
       try {
-        //setLoading(true);
-        //setLoading(false)
-        // const troopsData = await fetch('/api/troops').then((res) => res.json());
-        // const announcementsData = await fetch('/api/announcements').then(
-        //   (res) => res.json()
-        // );
-        // setEvents(eventsData);
-        // setTroops(troopsData);
-        // setAnnouncements(announcementsData);
         const eventsFetch = await apiRequest({
           url: 'http://localhost:3000/api/events',
           method: 'GET',
         });
-        const troopsFetch = await apiRequest({
+        setEvents(eventsFetch.data);
+      } catch (err) {
+        console.error(err);
+        // setError('Failed to fetch data');
+      }
+    };
+    /*const troopsFetch = await apiRequest({
           url: `http://localhost:3000/api/troops/leader/${user.User_ID}`,
           method: 'GET',
         });
         const announcementsFetch = await apiRequest({
           url: 'http://localhost:3000/api/announcements',
           method: 'GET',
+        }); */
+    const fetchTroops = async () => {
+      try {
+        const troopsFetch = await apiRequest({
+          url: `http://localhost:3000/api/troops/leader/${user.User_ID}`,
+          method: 'GET',
         });
-        setEvents(eventsFetch.data);
         setTroops(troopsFetch.data);
+      } catch (err) {
+        console.error(err);
+        // setError('Failed to fetch data');
+      }
+    };
+    const fetchAnnouncements = async () => {
+      try {
+        const announcementsFetch = await apiRequest({
+          url: 'http://localhost:3000/api/announcements',
+          method: 'GET',
+        });
         setAnnouncements(announcementsFetch.data);
       } catch (err) {
         console.error(err);
         // setError('Failed to fetch data');
-      } finally {
+      }
+    };
+    const fetchData = async () => {
+      try {
+        await Promise.all([fetchEvents(), fetchTroops(), fetchAnnouncements()]);
         setLoading(false);
+      } catch (err) {
+        console.error(err);
+        //setError('Failed to fetch data');
       }
     };
 
