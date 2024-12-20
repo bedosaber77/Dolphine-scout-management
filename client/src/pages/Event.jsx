@@ -51,7 +51,7 @@ const Event = () => {
                 <strong>القائد:</strong> {event.name}
               </li>
               <li>
-                <strong>حضرت:</strong> ×
+                <strong>حضرت:</strong> 
               </li>
               <li>
                 <strong>الميزانية:</strong> {event.Budget}

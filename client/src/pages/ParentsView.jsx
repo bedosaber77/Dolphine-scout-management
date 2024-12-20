@@ -22,15 +22,36 @@ const Parents = () => {
         method: 'GET',
       });
       const parents = parentsFetch.data;
+      console.log(parents);
+      // setParentsData(parents);
 
-      setParentsData(parents);
-      console.log(parents.data);
+      // Fetch each parent's children data
+      const parentsWithChildren = await Promise.all(
+        parents.map(async (parent) => {
+          const childrenFetch = await apiRequest({
+            url: `http://localhost:3000/api/parents/${parent.User_ID}/scouts`,
+            method: 'GET',
+            data: { id: parent.User_ID.toString() },
+          });
+          const firstRow = childrenFetch.data[0];
+    
+          return {
+            ...parent,
+            relationship: firstRow.Relationship,
+            children: childrenFetch.data, // Assuming children data is returned here
+          };
+        })
+      );
+
+      setParentsData(parentsWithChildren);
+      console.log(parentsWithChildren);
     } catch (error) {
-      console.error('Error fetching parents data:', error);
+      console.error('Error fetching parents and their children data:', error);
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchParents();
@@ -39,6 +60,7 @@ const Parents = () => {
   const handleEdit = (parent) => {
     setSelectedParent(parent);
     setEditAttributes({
+      id: parent.User_ID,
       relationship: parent.relationship || '',
       childCount: parent.childrenIDs?.length || 0,
       childrenIDs: parent.childrenIDs || [],
@@ -102,6 +124,24 @@ const Parents = () => {
     }
   };
 
+  const confirmDelete = async () => {
+    try {
+      await apiRequest({
+        url: `http://localhost:3000/api/parents/${selectedParent.User_ID}`, //////////////////////////////////
+        method: 'DELETE',
+        data: { id: selectedParent.User_ID.toString() },
+      });
+      setParentsData((prev) =>
+        prev.filter((parent) => parent.User_ID !== selectedParent.User_ID)
+      );
+      setIsDeleteDialogOpen(false);
+      setSelectedParent(null);
+      fetchParents();
+    } catch (error) {
+      console.error('Error deleting parent:', error);
+    }
+  };
+
   return (
     <div className="p-4">
       <h2
@@ -141,7 +181,7 @@ const Parents = () => {
                     : 'غير متوفر'}
                 </td>
                 <td className="border px-4 py-2">
-                  {parent.relationship || 'غير متوفر'}
+                  {parent.relationship ==="Father"?'أب':'أم' || 'غير متوفر'}
                 </td>
                 <td className="border px-4 py-2">
                   {parent.Phonenum || 'غير متوفر'}
@@ -156,6 +196,7 @@ const Parents = () => {
                   <button
                     onClick={() => handleEdit(parent)}
                     className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                    style={{ background: 'var(--secondary-color)' }}
                   >
                     تعديل
                   </button>
@@ -166,7 +207,7 @@ const Parents = () => {
                       setSelectedParent(parent);
                       setIsDeleteDialogOpen(true);
                     }}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
                   >
                     حذف
                   </button>
@@ -180,7 +221,7 @@ const Parents = () => {
       {isDialogOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تعديل ولي أمر</h3>
+            <h3 className="text-xl mb-4 font-bold">تعديل  {selectedParent.Fname}</h3>
             <form onSubmit={handleSubmit}>
               <label>العلاقة</label>
               <select
@@ -190,11 +231,11 @@ const Parents = () => {
                 className="border p-2 w-full mb-4"
               >
                 <option value="">اختر العلاقة</option>
-                <option value="Father">الأب</option>
-                <option value="Mother">الأم</option>
+                <option value="Father">أب</option>
+                <option value="Mother">أم</option>
               </select>
 
-              <label>عدد الأطفال</label>
+              <label>الأطفال</label>
               <input
                 type="number"
                 min="0"
@@ -231,6 +272,28 @@ const Parents = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
+            <p>هل أنت متأكد أنك تريد حذف {selectedParent.Fname} ؟</p>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+              >
+                حذف
+              </button>
+            </div>
           </div>
         </div>
       )}

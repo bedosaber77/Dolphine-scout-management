@@ -4,6 +4,7 @@ const { validateAddScoutleader } = require("../middlewares/Validate");
 
 Router.get("/", scoutleaderController.getAllScoutleaders);
 Router.get("/:id", scoutleaderController.getScoutleaderbyId);
+Router.put('/:id', scoutleaderController.updateScoutleader);
 Router.post("/", validateAddScoutleader, scoutleaderController.addScoutleader);
 Router.delete("/:id", scoutleaderController.deleteScoutleader);
 

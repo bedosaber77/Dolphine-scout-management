@@ -15,4 +15,6 @@ Router.route("/:id/scouts")
     .get(validateParentID, parentController.getScouts)
     .post(validateParentScout, parentController.addScout);
 
+Router.route('/:id/scouts/:scoutID').delete(parentController.deleteChild);
+
 module.exports = Router;

@@ -53,6 +53,7 @@ const Troops = () => {
         });
 
         setTroopsData(enrichedTroops);
+        console.log(enrichedTroops);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
