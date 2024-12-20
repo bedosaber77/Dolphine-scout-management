@@ -225,7 +225,11 @@ const Announcements = () => {
                   })}
                 </td>
                 <td className="border px-4 py-2">{announcement.Priority}</td>
-                <td className="border px-4 py-2">{announcement.CreateDate}</td>
+                <td className="border px-4 py-2">{new Date(announcement.CreateDate).toLocaleDateString('ar-EG', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}</td>
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => handleEdit(announcement)}

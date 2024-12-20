@@ -107,7 +107,7 @@ function TroopAttendance() {
               url: `http://localhost:3000/api/events/${selectedEventId}/attendance`,
               method: 'POST',
               data: {
-                User_ID: scoutId,
+                Scout_ID: scoutId,
               },
             });
           } catch (err) {
@@ -116,11 +116,8 @@ function TroopAttendance() {
         } else {
           try {
             await apiRequest({
-              url: `http://localhost:3000/api/events/${selectedEventId}/attendance`,
-              method: 'DELETE',
-              data: {
-                User_ID: scoutId,
-              },
+              url: `http://localhost:3000/api/events/${selectedEventId}/attendance/${scoutId}`,
+              method: 'DELETE'
             });
           } catch (err) {
             console.error(err);

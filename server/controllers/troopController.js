@@ -31,10 +31,11 @@ exports.getTroopById = async (req, res) => {
 };
 
 exports.addTroop = async (req, res) => {
-  const { Troop_ID, Tname, type, max_Members, ScoutLeader_ID } = req.body;
+  const { Tname, max_Members, ScoutLeader_ID } = req.body;
+  const type = 'Troop';
   try {
-    const query = `INSERT INTO "Troop" ("Troop_ID", "Tname", "type", "max_Members", "ScoutLeader_ID") VALUES ($1, $2, $3, $4, $5) RETURNING *`; // return inserted User
-    const params = [Troop_ID, Tname, type, max_Members, ScoutLeader_ID];
+    const query = `INSERT INTO "Troop" ("Tname", "type", "max_Members", "ScoutLeader_ID") VALUES ($1, $2, $3, $4) RETURNING *`; // return inserted User
+    const params = [Tname, type, max_Members, ScoutLeader_ID];
     const result = await db.query(query, params);
     return res
       .status(201)
@@ -47,7 +48,8 @@ exports.addTroop = async (req, res) => {
 
 exports.updateTroop = async (req, res) => {
   const { id } = req.params;
-  const { Tname, type, max_Members, ScoutLeader_ID } = req.body;
+  const { Tname, max_Members, ScoutLeader_ID } = req.body;
+  const type = 'Troop';
   try {
     const query = `UPDATE "Troop" SET "Tname" = $1, "type" = $2, "max_Members" = $3, "ScoutLeader_ID" = $4 WHERE "Troop_ID" = $5 RETURNING *`;
     const params = [Tname, type, max_Members, ScoutLeader_ID, id];
