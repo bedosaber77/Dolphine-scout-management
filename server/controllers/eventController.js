@@ -169,9 +169,10 @@ JOIN
 JOIN 
     "User" u ON s."User_ID" = u."User_ID"
 JOIN 
-    "Event" e ON e."Event_ID" = ea."Event_ID";
+    "Event" e ON e."Event_ID" = ea."Event_ID"
+WHERE e."Event_ID" = $1;
 `;
-    const eventAttendees = await db.query(query);
+    const eventAttendees = await db.query(query, [event_id]);
     return res.status(200).json(eventAttendees.rows);
   } catch (error) {
     console.log('Error executing query', error);
