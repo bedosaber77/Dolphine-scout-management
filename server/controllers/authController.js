@@ -36,11 +36,28 @@ exports.login = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const user = result.rows[0];
+    let user = result.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    let query2 = '';
+    if (user.role === 'Scout')
+      query2 = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    else if (user.role === 'Parent')
+      query2 = `SELECT * FROM "Parent" WHERE "User_ID" = $1`;
+    else if (user.role === 'Scoutleader')
+      query2 = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
+    const params2 = [user.User_ID];
+    const result2 = await db.query(query2, params2);
+
+    const user2 = result2.rows[0];
+
+    user = { ...user, isAdmin: user2.isAdmin };
+
+    console.log(user);
+
     const accessToken = jwtGenerator(user, '30 min');
     const refreshToken = jwtGenerator(user, '7d');
     res.cookie('refreshToken', refreshToken, {
@@ -52,11 +69,12 @@ exports.login = async (req, res) => {
     return res.status(200).json({
       message: 'User logged in successfully',
       user: {
-        id: user.User_ID,
+        User_ID: user.User_ID,
         email: user.email,
         Fname: user.Fname,
         Lname: user.Lname,
         role: user.role,
+        isAdmin: user2.isAdmin,
       },
       accessToken,
     });
@@ -98,6 +116,7 @@ exports.refreshToken = async (req, res) => {
   }
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    console.log('decoded', decoded.user);
     const accessToken = jwtGenerator(decoded.user, '30 min');
     return res.status(200).json({ accessToken, user: decoded.user });
   } catch (error) {

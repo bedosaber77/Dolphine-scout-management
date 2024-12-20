@@ -111,7 +111,7 @@ const AppRoutes = () => {
               ],
             },
             {
-              path: 'leader',
+              path: 'Scoutleader',
               element: <LeaderDashboard />,
             },
 
