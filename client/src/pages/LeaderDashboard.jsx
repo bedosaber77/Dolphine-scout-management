@@ -92,14 +92,16 @@ const ScoutLeaderDashboard = () => {
       </Container>
     );
   }
-  const upcomingEvents = events.map((event) => {
-    return {
-      id: event.Event_ID,
-      name: event.Ename,
-      date: new Date(event.Edate).toISOString().split('T')[0],
-      details: event.Ename,
-    };
-  });
+  const upcomingEvents = events
+    .filter((event) => new Date(event.Edate) > new Date())
+    .map((event) => {
+      return {
+        id: event.Event_ID,
+        name: event.Ename,
+        date: new Date(event.Edate).toISOString().split('T')[0],
+        details: event.Ename,
+      };
+    });
 
   return (
     <Container style={{ marginTop: '20px' }}>
