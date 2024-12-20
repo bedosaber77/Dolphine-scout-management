@@ -72,9 +72,13 @@ const useAuthStore = create((set) => ({
       console.log('Response from refresh token:', response);
       const result = response.data;
       if (response.status === 200) {
-        set({ accessToken: result.accessToken, loading: false });
+        set({
+          accessToken: result.accessToken,
+          user: result.user,
+          loading: false,
+        });
 
-        await fetchUserDetails(result.user.id);
+        //await fetchUserDetails(result.user.id);
       } else {
         set({ user: null, accessToken: null, loading: false });
       }

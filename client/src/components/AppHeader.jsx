@@ -330,13 +330,13 @@ const AppHeader = () => {
             <div className="flex gap-4">
               <NavLink
                 to="/login"
-                className="px-4 py-2 text-white bg-primary rounded-lg shadow-md hover:bg-primary-dark transition duration-200"
+                className="px-4 py-2 btn-primary rounded-lg shadow-md hover:bg-blue-900 transition duration-200"
               >
                 تسجيل الدخول
               </NavLink>
               <NavLink
                 to="/register"
-                className="px-4 py-2 border border-primary text-primary rounded-lg shadow-md hover:bg-primary hover:text-white transition duration-200"
+                className="px-4 py-2 border btn-primary border-primary text-primary rounded-lg shadow-md hover:bg-blue-900 hover:text-white transition duration-200"
               >
                 انضم الينا
               </NavLink>
@@ -353,7 +353,7 @@ const AppHeader = () => {
                     alt="User Avatar"
                   />
                 </div>
-                <span className="hidden lg:block font-medium text-gray-800">
+                <span className="md:block hidden font-medium text-gray-800">
                   {user?.Fname}
                 </span>
               </button>

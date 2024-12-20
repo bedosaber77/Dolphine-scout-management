@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const query = `SELECT * FROM "User" WHERE "email" = $1`;
-    const params = [email];
+    const params = [email.toLowerCase()];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
@@ -54,9 +54,7 @@ exports.login = async (req, res) => {
 
     const user2 = result2.rows[0];
 
-    user = { ...user, isAdmin: user2.isAdmin };
-
-    console.log(user);
+    user = { ...user, ...user2 };
 
     const accessToken = jwtGenerator(user, '30 min');
     const refreshToken = jwtGenerator(user, '7d');
@@ -74,7 +72,7 @@ exports.login = async (req, res) => {
         Fname: user.Fname,
         Lname: user.Lname,
         role: user.role,
-        isAdmin: user2.isAdmin,
+        ...user2,
       },
       accessToken,
     });
@@ -116,9 +114,9 @@ exports.refreshToken = async (req, res) => {
   }
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    console.log('decoded', decoded.user);
     const accessToken = jwtGenerator(decoded.user, '30 min');
-    return res.status(200).json({ accessToken, user: decoded.user });
+    const { password, ...user } = decoded.user;
+    return res.status(200).json({ accessToken, user });
   } catch (error) {
     console.error('Error verifying token', error);
     return res.status(401).json({ message: 'Unauthorized - Invalid token' });
