@@ -103,32 +103,22 @@ function TroopAttendance() {
       if (newAttendance[scoutId] !== attendance[scoutId]) {
         if (newAttendance[scoutId] === true) {
           try {
-            await fetch(
-              `http://localhost:3000/api/events/${selectedEventId}/attendance`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  Scout_ID: scoutId,
-                }),
-              }
-            );
+            await apiRequest({
+              url: `http://localhost:3000/api/events/${selectedEventId}/attendance`,
+              method: 'POST',
+              data: {
+                Scout_ID: scoutId,
+              },
+            });
           } catch (err) {
             console.error(err);
           }
         } else {
           try {
-            await fetch(
-              `http://localhost:3000/api/events/${selectedEventId}/attendance/${scoutId}`,
-              {
-                method: 'DELETE',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
+            await apiRequest({
+              url: `http://localhost:3000/api/events/${selectedEventId}/attendance/${scoutId}`,
+              method: 'DELETE'
+            });
           } catch (err) {
             console.error(err);
           }
