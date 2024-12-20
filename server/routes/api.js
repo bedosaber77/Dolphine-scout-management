@@ -15,6 +15,7 @@ const scoutLeaderRouter = require('./scoutleaderRoute');
 const eventRouter = require('./eventRoute');
 const gatheringRouter = require('./gatheringRoute');
 const campRouter = require('./campRoute');
+const statisticsRoute = require('./statisticsRoute');
 const authorization = require('../middlewares/authorization');
 
 apiRouter.use('/auth', authRouter);
@@ -36,5 +37,6 @@ apiRouter.use('/events', authorization, eventRouter);
 apiRouter.use('/gatherings', authorization, gatheringRouter);
 apiRouter.use('/camps', authorization, campRouter);
 apiRouter.use('/parents', authorization, parentRouter);
+apiRouter.use('/statistics', authorization, statisticsRoute);
 
 module.exports = apiRouter;
