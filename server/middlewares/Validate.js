@@ -167,7 +167,6 @@ const validateEquipment = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid location id' });
     }
     try {
-      
       const query = `SELECT * FROM "Location" WHERE "Location_ID" = $1`;
       const params = [location_id];
       const result = await db.query(query, params);
@@ -177,7 +176,6 @@ const validateEquipment = async (req, res, next) => {
           .json({ message: 'no location with that id was found' });
       }
     } catch (error) {
-
       console.log('Error executing query', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
@@ -486,7 +484,7 @@ const ValidateAddUser = async (req, res, next) => {
 const validateParentScout = async (req, res, next) => {
   const { id } = req.params;
   const { scout_id, relationship } = req.body;
-  console.log(id,scout_id,relationship);
+  console.log(id, scout_id, relationship);
 
   if (!id || !scout_id) {
     return res
@@ -567,7 +565,7 @@ const validateParentID = async (req, res, next) => {
 const validateAddScout = async (req, res, next) => {
   const { User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate } =
     req.body;
-    console.log(User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate);
+  console.log(User_ID, rank, PaperSubmitted, Birthdate, academicYear, joinDate);
 
   if (
     !User_ID ||
@@ -831,6 +829,7 @@ const validateAddEventAttendace = async (req, res, next) => {
 
 const validateAddCamp = async (req, res, next) => {
   const { Event_ID, Season, Duration } = req.body;
+  console.log(Event_ID, Season, Duration);
   if (!Event_ID || !Season || !Duration) {
     return res.status(400).json({ message: 'All fields are required' });
   }

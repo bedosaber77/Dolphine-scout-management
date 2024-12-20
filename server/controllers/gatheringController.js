@@ -2,7 +2,10 @@ const db = require('../config/DBmanager');
 
 exports.getAllGatherings = async (req, res) => {
   try {
-    const query = `SELECT * FROM "Gathering"`;
+    const query = `SELECT E.* , G.*
+     FROM "Gathering" G 
+     INNER JOIN "Event" E
+     ON E."Event_ID" = G."Event_ID"`;
     const gatherings = await db.query(query);
     res.json(gatherings.rows);
   } catch (error) {
