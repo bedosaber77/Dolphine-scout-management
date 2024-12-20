@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import useApi from '../hooks/useApi';
+import useAuthStore from '../store/authStore';
+import axios from 'axios';
 
 const Troops = () => {
   const apiRequest = useApi();
@@ -14,27 +16,30 @@ const Troops = () => {
   const [newTroopName, setNewTroopName] = useState('');
   const [newTroopLeader, setNewTroopLeader] = useState('');
   const [newTroopMaxMembers, setNewTroopMaxMembers] = useState('');
+  const { accessToken } = useAuthStore();
 
   // Fetch troops and leaders
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch troops
-        const troopsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/troops/',
-          method: 'GET',
-        });
-        const troops = troopsFetch.data;
-        console.log("troops",troops);
+        const leadersData = await axios.get(
+          'http://localhost:3000/api/scoutleaders',
+          {
+            headers: {
+              accessToken: accessToken, // Ensure accessToken is defined
+            },
+          }
+        );
+        const leaders = leadersData.data;
+        setLeadersData(leaders);
 
-        // Fetch leaders
-        const leadersFetch = await apiRequest({
-          url: 'http://localhost:3000/api/scoutleaders/',
-          method: 'GET',
+        const troopsData = await axios.get('http://localhost:3000/api/troops', {
+          headers: {
+            accessToken: accessToken, // Ensure accessToken is defined
+          },
         });
-        const leaders = leadersFetch.data;
+        const troops = troopsData.data;
 
-        // Enrich troops with leader names
         const enrichedTroops = troops.map((troop) => {
           const leader = leaders.find(
             (leader) => leader.User_ID === troop.ScoutLeader_ID
@@ -48,9 +53,8 @@ const Troops = () => {
         });
 
         setTroopsData(enrichedTroops);
-        setLeadersData(leaders);
       } catch (error) {
-        console.error('Error fetching troops or leaders:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
@@ -123,19 +127,41 @@ const Troops = () => {
         max_Members: parseInt(newTroopMaxMembers, 10),
       };
 
-      const response = await apiRequest({
-        url: 'http://localhost:3000/api/troops/',
-        method: 'POST',
-        data: newTroop,
+      console.log('newTroopLeader', newTroopLeader);
+      const response = await axios.post(
+        'http://localhost:3000/api/troops',
+        newTroop,
+        {
+          headers: {
+            accessToken: accessToken, // Ensure accessToken is defined
+          },
+        }
+      );
+
+      const troopsData = await axios.get('http://localhost:3000/api/troops', {
+        headers: {
+          accessToken: accessToken, // Ensure accessToken is defined
+        },
+      });
+      const troops = troopsData.data;
+
+      const enrichedTroops = troops.map((troop) => {
+        const leader = leadersData.find(
+          (leader) => leader.User_ID === troop.ScoutLeader_ID
+        );
+        return {
+          ...troop,
+          leaderName: leader ? `${leader.Fname} ${leader.Lname}` : 'غير متوفر',
+        };
       });
 
-      setTroopsData((prevData) => [...prevData, response.data]);
+      setTroopsData(enrichedTroops);
+
       setIsAddModalOpen(false);
     } catch (error) {
       console.error('Error adding new troop:', error);
     }
   };
-
 
   // Open Delete Dialog
   const handleDeleteClick = (troop) => {
@@ -236,29 +262,33 @@ const Troops = () => {
                   className="block w-full mt-1 p-2 border rounded"
                 />
               </label>
-              <label className="block mb-4">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="leader_id"
+              >
                 القائد:
-                <select
-                  value={editingTroop.ScoutLeader_ID}
-                  onChange={(e) =>
-                    setEditingTroop({
-                      ...editingTroop,
-                      ScoutLeader_ID: parseInt(e.target.value, 10),
-                    })
-                  }
-                  className="block w-full mt-1 p-2 border rounded"
-                >
-                  <option value="">اختر قائدًا</option>
-                  {leadersData.map((leader) => (
-                    <option
-                      key={leader.ScoutLeader_ID}
-                      value={leader.ScoutLeader_ID}
-                    >
-                      {leader.Fname} {leader.Lname}
-                    </option>
-                  ))}
-                </select>
               </label>
+              <select
+                name="leader_id"
+                value={editingTroop.ScoutLeader_ID}
+                onChange={(e) =>
+                  setEditingTroop({
+                    ...editingTroop,
+                    ScoutLeader_ID: parseInt(e.target.value, 10),
+                  })
+                }
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+              >
+                <option value="">اختر قائدًا</option>
+                {leadersData.map((leader) => (
+                  <option
+                    key={leader.ScoutLeader_ID}
+                    value={leader.ScoutLeader_ID}
+                  >
+                    {leader.Fname} {leader.Lname}
+                  </option>
+                ))}
+              </select>
               <label className="block mb-4">
                 الحد الأقصى لعدد الكشافة:
                 <input
@@ -301,42 +331,40 @@ const Troops = () => {
           <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
             <h3 className="text-lg font-bold mb-4">إضافة مجموعة جديدة</h3>
             <form>
-              <label className="block mb-4">
-                اسم المجموعة:
-                <input
-                  type="text"
-                  value={newTroopName}
-                  onChange={(e) => setNewTroopName(e.target.value)}
-                  className="block w-full mt-1 p-2 border rounded"
-                />
-              </label>
-              <label className="block mb-4">
+              <label className="block mb-4">اسم المجموعة:</label>
+              <input
+                type="text"
+                value={newTroopName}
+                onChange={(e) => setNewTroopName(e.target.value)}
+                className="block w-full mt-1 p-2 border rounded"
+              />
+              <label
+                htmlFor="leader_id"
+                className="block font-medium text-gray-700"
+              >
                 القائد:
-                <select
-                  value={newTroopLeader}
-                  onChange={(e) => setNewTroopLeader(e.target.value)}
-                  className="block w-full mt-1 p-2 border rounded"
-                >
-                  <option value="">اختر قائدًا</option>
-                  {leadersData.map((leader) => (
-                    <option
-                      key={leader.ScoutLeader_ID}
-                      value={leader.ScoutLeader_ID}
-                    >
-                      {leader.Fname} {leader.Lname}
-                    </option>
-                  ))}
-                </select>
               </label>
-              <label className="block mb-4">
-                الحد الأقصى لعدد الكشافة:
-                <input
-                  type="number"
-                  value={newTroopMaxMembers}
-                  onChange={(e) => setNewTroopMaxMembers(e.target.value)}
-                  className="block w-full mt-1 p-2 border rounded"
-                />
-              </label>
+              <select
+                name="leader_id"
+                value={newTroopLeader}
+                onChange={(e) => setNewTroopLeader(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+              >
+                {console.log('leader', leadersData)}
+                <option value="">اختر قائدًا</option>
+                {leadersData.map((leader) => (
+                  <option key={leader.User_ID} value={leader.User_ID}>
+                    {leader.Fname} {leader.Lname}
+                  </option>
+                ))}
+              </select>
+              <label className="block mb-4">الحد الأقصى لعدد الكشافة:</label>
+              <input
+                type="number"
+                value={newTroopMaxMembers}
+                onChange={(e) => setNewTroopMaxMembers(e.target.value)}
+                className="block w-full mt-1 p-2 border rounded"
+              />
               <div className="flex justify-between">
                 <button
                   type="button"

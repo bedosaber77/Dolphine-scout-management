@@ -31,16 +31,31 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const query = `SELECT * FROM "User" WHERE "email" = $1`;
-    const params = [email];
+    const params = [email.toLowerCase()];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const user = result.rows[0];
+    let user = result.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    let query2 = '';
+    if (user.role === 'Scout')
+      query2 = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    else if (user.role === 'Parent')
+      query2 = `SELECT * FROM "Parent" WHERE "User_ID" = $1`;
+    else if (user.role === 'Scoutleader')
+      query2 = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
+    const params2 = [user.User_ID];
+    const result2 = await db.query(query2, params2);
+
+    const user2 = result2.rows[0];
+
+    user = { ...user, ...user2 };
+
     const accessToken = jwtGenerator(user, '30 min');
     const refreshToken = jwtGenerator(user, '7d');
     res.cookie('refreshToken', refreshToken, {
@@ -52,11 +67,12 @@ exports.login = async (req, res) => {
     return res.status(200).json({
       message: 'User logged in successfully',
       user: {
-        id: user.User_ID,
+        User_ID: user.User_ID,
         email: user.email,
         Fname: user.Fname,
         Lname: user.Lname,
         role: user.role,
+        ...user2,
       },
       accessToken,
     });
@@ -99,7 +115,8 @@ exports.refreshToken = async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
     const accessToken = jwtGenerator(decoded.user, '30 min');
-    return res.status(200).json({ accessToken, user: decoded.user });
+    const { password, ...user } = decoded.user;
+    return res.status(200).json({ accessToken, user });
   } catch (error) {
     console.error('Error verifying token', error);
     return res.status(401).json({ message: 'Unauthorized - Invalid token' });

@@ -147,7 +147,12 @@ const ScoutsView = () => {
                   {scout.rank || 'غير متوفر'}
                 </td>
                 <td className="border px-4 py-2">
-                  {scout.Birthdate || 'غير متوفر'}
+                
+                  {new Date(scout.Birthdate).toLocaleDateString('ar-EG', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }) || 'غير متوفر'}
                 </td>
                 <td className="border px-4 py-2">
                   {scout.academicYear || 'غير متوفر'}
