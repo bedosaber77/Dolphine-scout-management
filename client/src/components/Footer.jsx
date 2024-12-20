@@ -2,7 +2,7 @@ const Footer = () => {
   return (
     <footer
       className="footer footer-center flex flex-col items-center p-10"
-      style={{ backgroundColor: 'var(--footer-bg)' }}
+      style={{ backgroundColor: 'var(--footer-bg)', color: 'white' }}
     >
       {/* <aside> */}
       <svg

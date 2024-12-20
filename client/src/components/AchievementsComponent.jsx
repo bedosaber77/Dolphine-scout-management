@@ -6,7 +6,7 @@ const AchievementsComponent = ({ achievements }) => {
 
   return (
     <div className="achievements-container container mx-auto flex flex-col gap-6 p-4">
-      <div className="cards-container grid grid-cols-2 gap-6">
+      <div className="cards-container grid grid-cols-1 lg:grid-cols-2 gap-6">
         {achievements.map((achievement) => (
           <AchievementCard
             key={achievement.Achievement_ID}
