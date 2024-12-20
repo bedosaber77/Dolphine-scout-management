@@ -60,7 +60,7 @@ exports.getParentById = async (req, res) => {
 exports.deleteParent = async (req, res) => {
   const { id } = req.params;
   try {
-    const query = `DELETE FROM "Parent" WHERE "Parent_ID" = $1`;
+    const query = `DELETE FROM "Parent" WHERE "User_ID" = $1`;
     const params = [id];
     const result = await db.query(query, params);
 
@@ -78,7 +78,7 @@ module.exports.getScouts = async (req, res) => {
   const { id } = req.params;
   try {
     const query = `
-          SELECT U.*, S.*
+          SELECT U.*, S.*,P."Relationship"
           FROM "User" U
           INNER JOIN "Scout" S
           ON U."User_ID" = S."User_ID"
@@ -113,5 +113,20 @@ module.exports.addScout = async (req, res) => {
   } catch (error) {
     console.log("Error executing query", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports.deleteChild = async (req, res) => {
+  const { id, scoutID } = req.params;
+  try {
+    const query = `DELETE FROM "ParentScout" WHERE "Parent_ID" = $1 AND "Scout_ID" = $2 RETURNING *`;
+    const params = [id, scoutID];
+    const result = await db.query(query, params);
+    return res
+      .status(201)
+      .json({ message: 'Deleted Scout successfully', achievement: result[0] });
+  } catch (error) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

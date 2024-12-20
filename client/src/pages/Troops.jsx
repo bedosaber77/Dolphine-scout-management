@@ -53,6 +53,7 @@ const Troops = () => {
         });
 
         setTroopsData(enrichedTroops);
+        console.log(enrichedTroops);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -83,13 +84,24 @@ const Troops = () => {
       });
 
       // Update UI
-      setTroopsData((prevData) =>
-        prevData.map((troop) =>
-          troop.Troop_ID === editingTroop.Troop_ID
-            ? { ...troop, ...updatedTroop }
-            : troop
-        )
-      );
+      const troopsData = await axios.get('http://localhost:3000/api/troops', {
+        headers: {
+          accessToken: accessToken, // Ensure accessToken is defined
+        },
+      });
+      const troops = troopsData.data;
+
+      const enrichedTroops = troops.map((troop) => {
+        const leader = leadersData.find(
+          (leader) => leader.User_ID === troop.ScoutLeader_ID
+        );
+        return {
+          ...troop,
+          leaderName: leader ? `${leader.Fname} ${leader.Lname}` : 'غير متوفر',
+        };
+      });
+
+      setTroopsData(enrichedTroops);
 
       setIsEditModalOpen(false);
       setEditingTroop(null);
@@ -127,7 +139,6 @@ const Troops = () => {
         max_Members: parseInt(newTroopMaxMembers, 10),
       };
 
-      console.log('newTroopLeader', newTroopLeader);
       const response = await axios.post(
         'http://localhost:3000/api/troops',
         newTroop,
@@ -251,25 +262,25 @@ const Troops = () => {
           <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
             <h3 className="text-lg font-bold mb-4">تعديل المجموعة</h3>
             <form>
-              <label className="block mb-4">
+              <label className="block font-medium text-gray-700">
                 اسم المجموعة:
-                <input
-                  type="text"
-                  value={editingTroop.Tname}
-                  onChange={(e) =>
-                    setEditingTroop({ ...editingTroop, Tname: e.target.value })
-                  }
-                  className="block w-full mt-1 p-2 border rounded"
-                />
               </label>
+              <input
+                type="text"
+                value={editingTroop.Tname}
+                onChange={(e) =>
+                  setEditingTroop({ ...editingTroop, Tname: e.target.value })
+                }
+                className="block w-full my-1 p-2 border rounded"
+              />
               <label
-                className="block text-sm font-medium text-gray-700"
-                htmlFor="leader_id"
+                className="block font-medium text-gray-700"
+                htmlFor="ScoutLeader_ID"
               >
                 القائد:
               </label>
               <select
-                name="leader_id"
+                name="ScoutLeader_ID"
                 value={editingTroop.ScoutLeader_ID}
                 onChange={(e) =>
                   setEditingTroop({
@@ -277,32 +288,29 @@ const Troops = () => {
                     ScoutLeader_ID: parseInt(e.target.value, 10),
                   })
                 }
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                className="my-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
               >
                 <option value="">اختر قائدًا</option>
                 {leadersData.map((leader) => (
-                  <option
-                    key={leader.ScoutLeader_ID}
-                    value={leader.ScoutLeader_ID}
-                  >
+                  <option key={leader.User_ID} value={leader.User_ID}>
                     {leader.Fname} {leader.Lname}
                   </option>
                 ))}
               </select>
-              <label className="block mb-4">
+              <label className="block font-medium text-gray-700">
                 الحد الأقصى لعدد الكشافة:
-                <input
-                  type="number"
-                  value={editingTroop.max_Members}
-                  onChange={(e) =>
-                    setEditingTroop({
-                      ...editingTroop,
-                      max_Members: parseInt(e.target.value, 10),
-                    })
-                  }
-                  className="block w-full mt-1 p-2 border rounded"
-                />
               </label>
+              <input
+                type="number"
+                value={editingTroop.max_Members}
+                onChange={(e) =>
+                  setEditingTroop({
+                    ...editingTroop,
+                    max_Members: parseInt(e.target.value, 10),
+                  })
+                }
+                className="block w-full my-1 p-2 border rounded"
+              />
               <div className="flex justify-between">
                 <button
                   type="button"
@@ -350,7 +358,6 @@ const Troops = () => {
                 onChange={(e) => setNewTroopLeader(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
               >
-                {console.log('leader', leadersData)}
                 <option value="">اختر قائدًا</option>
                 {leadersData.map((leader) => (
                   <option key={leader.User_ID} value={leader.User_ID}>

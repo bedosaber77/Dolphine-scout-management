@@ -35,6 +35,8 @@ import Troop from '../pages/Troop';
 import TroopAttendance from '../pages/TroopAttendance';
 import AllAnnouncementsPage from '../pages/AllAnnouncementsPage';
 import AllAchievementsPage from '../pages/AllAchievementsPage';
+import EventsAdmin from '../pages/EventsAdmin';
+import SponsorsView from '../pages/SponsorsView';
 
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -144,12 +146,20 @@ const AppRoutes = () => {
                       element: <TransactionsView />,
                     },
                     {
+                      path: 'sponsors',
+                      element: <SponsorsView />,
+                    },
+                    {
                       path: 'verifications',
                       element: <Verifications />,
                     },
                     {
                       path: 'announcements',
                       element: <Announcements />,
+                    },
+                    {
+                      path: 'events',
+                      element: <EventsAdmin />,
                     },
                     {
                       path: 'addLeader',
