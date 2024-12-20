@@ -19,7 +19,7 @@ const AchievementsComponent = ({ achievements }) => {
           className=" bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
           onClick={() => navigate('/achievements')}
         >
-          View All Achievements
+          عرض كل الانجازات
         </button>
       </div>
     </div>

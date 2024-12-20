@@ -251,7 +251,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 
 const AppHeader = () => {
@@ -261,6 +261,8 @@ const AppHeader = () => {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   const handleDashboardRoute = () => {
     if (accessToken) {
@@ -282,7 +284,7 @@ const AppHeader = () => {
         <div className="flex items-center">
           <NavLink to="/" className="flex items-center">
             <img
-              src="./src/assets/logo-dolphins-png.png"
+              src="/logo-dolphins-png.png"
               alt="Logo"
               className="h-40 w-auto"
             />
@@ -298,24 +300,28 @@ const AppHeader = () => {
             mobileMenuOpen ? 'block' : 'hidden'
           } lg:flex lg:space-x-6 gap-10 lg:items-center md:flex md:space-x-6 md:items-center`}
         >
-          <NavLink
-            to="/#events"
-            className="text-gray-600 hover:text-blue-600 font-medium transition duration-200 block lg:inline"
-          >
-            الاحداث
-          </NavLink>
-          <NavLink
-            to="/#news"
-            className="text-gray-600 hover:text-blue-600 font-medium transition duration-200 block lg:inline"
-          >
-            الاخبار
-          </NavLink>
-          <NavLink
-            to="/aboutUs"
-            className="text-gray-600 hover:text-blue-600 font-medium transition duration-200 block lg:inline"
-          >
-            من نحن
-          </NavLink>
+          {isHomePage && (
+            <>
+              <NavLink
+                to="/#events"
+                className="text-gray-600 hover:text-blue-600 font-medium transition duration-200 block lg:inline"
+              >
+                الاحداث
+              </NavLink>
+              <NavLink
+                to="/#news"
+                className="text-gray-600 hover:text-blue-600 font-medium transition duration-200 block lg:inline"
+              >
+                الاخبار
+              </NavLink>
+              <NavLink
+                to="/aboutUs"
+                className="text-gray-600 hover:text-blue-600 font-medium transition duration-200 block lg:inline"
+              >
+                من نحن
+              </NavLink>
+            </>
+          )}
         </nav>
 
         {/* User Actions */}
@@ -352,14 +358,14 @@ const AppHeader = () => {
                 </span>
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-48">
+                <div className="absolute left-0 mt-2 bg-white shadow-lg rounded-lg w-48">
                   <ul className="py-2">
                     <li>
                       <button
                         onClick={handleDashboardRoute}
                         className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 w-full text-left"
                       >
-                        Dashboard
+                        لوحة التحكم
                       </button>
                     </li>
                     <li>
@@ -367,7 +373,7 @@ const AppHeader = () => {
                         onClick={() => logout((path) => navigate(path))}
                         className="block px-4 py-2 text-red-600 hover:bg-red-100 w-full text-left"
                       >
-                        Logout
+                        تسجيل الخروج
                       </button>
                     </li>
                   </ul>
