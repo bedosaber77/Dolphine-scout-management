@@ -35,3 +35,23 @@ exports.getTransactionsStatistics = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+exports.getEventsAttendanceStatistics = async (req, res) => {
+  try {
+    const query = `select "Ename",Count("Ename") 
+        from "EventAttendance" ea
+        join 
+            "Event" e
+            on e."Event_ID" = ea."Event_ID"
+        group by e."Ename";`;
+    const params = [];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'no events found' });
+    }
+    return res.json(result.rows);
+  } catch (error) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
