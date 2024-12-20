@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useApi from '../hooks/useApi';
 
-const EventsAdmin = () => {
+const GatheringsAdmin = () => {
   const apiRequest = useApi();
 
   const [locations, setLocations] = useState([]);
@@ -15,13 +15,21 @@ const EventsAdmin = () => {
     Edate: '',
     Location_ID: '',
     ScoutLeader_ID: '',
+    GeneralOutcome: '',
+    EducationalOutcome: '',
+    PhysicalOutcome: '',
+    ScientificOutcome: '',
+    ArtOutcome: '',
+    ExtraOutcome: '',
   });
-  const [isEditMode, setIsEditMode] = useState(false);
-  //   const [eventToEdit, seteventToEdit] = useState(null);
-  //   const [eventToDelete, seteventToDelete] = useState(null);
-  //   const [eventToDeleteID, setEventToDeleteID] = useState(null);
-  // const [eventToEditID, setEventToEditID] = useState(null);
 
+  const [images, setImages] = useState([]);
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files); // Convert FileList to an array
+    setImages(files);
+  };
+
+  const [isEditMode, setIsEditMode] = useState(false);
   const [selectedEventID, setSelectedEventID] = useState(null);
   const [processedEvents, setProcessedEvents] = useState([]);
 
@@ -34,7 +42,11 @@ const EventsAdmin = () => {
         const leader = scoutLeaders.find(
           (leader) => leader.User_ID === event.ScoutLeader_ID
         );
-        const date = event.Edate.split('T')[0];
+        const date = new Date(event.Edate).toLocaleDateString('ar-EG', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
 
         return {
           ...event,
@@ -54,7 +66,7 @@ const EventsAdmin = () => {
   useEffect(() => {
     const fetchEventsData = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Events/',
+        url: 'http://localhost:3000/api/gatherings/',
         method: 'GET',
       });
     };
@@ -98,6 +110,11 @@ const EventsAdmin = () => {
         await apiRequest({
           url: `http://localhost:3000/api/events/${selectedEventID}`,
           method: 'PUT',
+          data: { ...event, images },
+        });
+        await apiRequest({
+          url: `http://localhost:3000/api/gatherings/${selectedEventID}`,
+          method: 'PUT',
           data: event,
         });
         setProcessedEvents((prevData) =>
@@ -113,9 +130,14 @@ const EventsAdmin = () => {
         const response = await apiRequest({
           url: 'http://localhost:3000/api/events/',
           method: 'POST',
-          data: event,
+          data: { ...event, images },
         });
-        setProcessedEvents([...processedEvents, response.data]);
+        const response2 = await apiRequest({
+          url: 'http://localhost:3000/api/gatherings/',
+          method: 'POST',
+          data: { ...event, Event_ID: response.data.Event.Event_ID },
+        });
+        setEventsData([...EventsData, response.data, response2.data]);
       } catch (error) {
         console.error('Error adding event:', error);
       }
@@ -126,6 +148,12 @@ const EventsAdmin = () => {
       Edate: '',
       Location_ID: '',
       ScoutLeader_ID: '',
+      GeneralOutcome: '',
+      EducationalOutcome: '',
+      PhysicalOutcome: '',
+      ScientificOutcome: '',
+      ArtOutcome: '',
+      ExtraOutcome: '',
     });
     setIsModalOpen(false);
     setIsEditMode(false);
@@ -175,12 +203,12 @@ const EventsAdmin = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-6 bg-white rounded-lg shadow-md">
       <h2
         className="mb-4 text-2xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
-        قائمة الاحداث
+        قائمة الاجتماعات
       </h2>
 
       {/* Add event Button */}
@@ -193,25 +221,36 @@ const EventsAdmin = () => {
             Edate: '',
             Location_ID: '',
             ScoutLeader_ID: '',
+            GeneralOutcome: '',
+            EducationalOutcome: '',
+            PhysicalOutcome: '',
+            ScientificOutcome: '',
+            ArtOutcome: '',
+            ExtraOutcome: '',
           });
           setIsModalOpen(true);
         }}
         className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
         style={{ background: 'var(--secondary-color)' }}
       >
-        إضافة حدث
+        إضافة اجتماع
       </button>
 
       {/* Events Table */}
       <table className="min-w-full border-collapse border border-gray-200 mt-4">
         <thead>
           <tr>
-            <th className="border px-4 py-2">الحدث</th>
+            <th className="border px-4 py-2">الاجتماع</th>
             <th className="border px-4 py-2">الميزانية</th>
             <th className="border px-4 py-2">التاريخ</th>
             <th className="border px-4 py-2">الموقع</th>
-            <th className="border px-4 py-2">القائد</th>{' '}
-            {/* Number of members */}
+            <th className="border px-4 py-2">القائد</th>
+            <th className="border px-4 py-2">المهارات</th>
+            <th className="border px-4 py-2">التربوي</th>
+            <th className="border px-4 py-2">الفني</th>
+            <th className="border px-4 py-2">البدني</th>
+            <th className="border px-4 py-2">العلمي</th>
+            <th className="border px-4 py-2">النتائج الإضافية</th>
             <th className="border px-4 py-2">تعديل</th>
             <th className="border px-4 py-2">حذف</th>
           </tr>
@@ -227,8 +266,25 @@ const EventsAdmin = () => {
               </td>
               <td className="border px-4 py-2">
                 {event.LeaderName || 'لا يوجد'}
-              </td>{' '}
-              {/* Display number of members */}
+              </td>
+              <td className="border px-4 py-2">
+                {event.GeneralOutcome || 'لا توجد'}
+              </td>
+              <td className="border px-4 py-2">
+                {event.EducationalOutcome || 'لا توجد'}
+              </td>
+              <td className="border px-4 py-2">
+                {event.ArtOutcome || 'لا توجد'}
+              </td>
+              <td className="border px-4 py-2">
+                {event.PhysicalOutcome || 'لا توجد'}
+              </td>
+              <td className="border px-4 py-2">
+                {event.ScientificOutcome || 'لا توجد'}
+              </td>
+              <td className="border px-4 py-2">
+                {event.ExtraOutcome || 'لا توجد'}
+              </td>
               <td className="border px-4 py-2">
                 <button
                   onClick={() => handleEdit(event.Event_ID)}
@@ -255,7 +311,7 @@ const EventsAdmin = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
             <h3 className="text-xl mb-4 font-bold">
-              {isEditMode ? 'تعديل' : 'إضافة'} إنجاز
+              {isEditMode ? 'تعديل' : 'إضافة'} اجتماع
             </h3>
             <form onSubmit={handleSubmitEvent}>
               <div className="mb-4">
@@ -263,7 +319,7 @@ const EventsAdmin = () => {
                   htmlFor="Ename"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  اسم الحدث
+                  اسم الاجتماع
                 </label>
                 <input
                   type="text"
@@ -292,7 +348,6 @@ const EventsAdmin = () => {
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
                 />
               </div>
-
               <div className="mb-4">
                 <label
                   htmlFor="Edate"
@@ -303,12 +358,111 @@ const EventsAdmin = () => {
                 <input
                   type="date"
                   name="Edate"
-                  value={isEditMode && event.Edate}
+                  value={event?.Edate}
                   onChange={onChange}
                   id="Edate"
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
                 />
               </div>
+              <div className="mb-4 grid grid-cols-2 gap-4">
+                <div className="mb-4">
+                  <label
+                    htmlFor="GeneralOutcome"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    المهارات
+                  </label>
+                  <input
+                    type="text"
+                    name="GeneralOutcome"
+                    value={event?.GeneralOutcome}
+                    onChange={onChange}
+                    id="GeneralOutcome"
+                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="EducationalOutcome"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    التربوي
+                  </label>
+                  <input
+                    type="text"
+                    name="EducationalOutcome"
+                    value={event?.EducationalOutcome}
+                    onChange={onChange}
+                    id="EducationalOutcome"
+                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="ArtOutcome"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    الفني
+                  </label>
+                  <input
+                    type="text"
+                    name="ArtOutcome"
+                    value={event?.ArtOutcome}
+                    onChange={onChange}
+                    id="ArtOutcome"
+                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="PhysicalOutcome"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    البدني
+                  </label>
+                  <input
+                    type="text"
+                    name="PhysicalOutcome"
+                    value={event?.PhysicalOutcome}
+                    onChange={onChange}
+                    id="PhysicalOutcome"
+                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="ScientificOutcome"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    العلمي
+                  </label>
+                  <input
+                    type="text"
+                    name="ScientificOutcome"
+                    value={event?.ScientificOutcome}
+                    onChange={onChange}
+                    id="ScientificOutcome"
+                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="ExtraOutcome"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    النتائج الإضافية
+                  </label>
+                  <input
+                    type="text"
+                    name="ExtraOutcome"
+                    value={event?.ExtraOutcome}
+                    onChange={onChange}
+                    id="ExtraOutcome"
+                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  />
+                </div>
+              </div>
+
               <div className="mb-4">
                 <label
                   htmlFor="Location"
@@ -317,7 +471,8 @@ const EventsAdmin = () => {
                 <select
                   name="Location_ID"
                   onChange={onChange}
-                  defaultValue={isEditMode ? event.Location_ID : 0}
+                  value={event?.Location_ID}
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl"
                 >
                   <option value="" disabled>
                     اختر الموقع
@@ -340,7 +495,8 @@ const EventsAdmin = () => {
                 <select
                   name="ScoutLeader_ID"
                   onChange={onChange}
-                  defaultValue={isEditMode ? event.ScoutLeader_ID : 0}
+                  value={event?.ScoutLeader_ID}
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl"
                 >
                   <option value="" disabled>
                     اختر القائد
@@ -354,6 +510,23 @@ const EventsAdmin = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="imageUpload"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  رفع الصور
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="imageUpload"
+                  name="images"
+                  multiple
+                  onChange={handleImageChange}
+                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                />
               </div>
 
               <div className="flex justify-between">
@@ -403,5 +576,4 @@ const EventsAdmin = () => {
     </div>
   );
 };
-
-export default EventsAdmin;
+export default GatheringsAdmin;
