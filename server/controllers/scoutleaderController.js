@@ -46,6 +46,21 @@ exports.addScoutleader = async (req, res) => {
   }
 };
 
+exports.updateScoutleader = async (req, res) => {
+  const { isAdmin, startDate } = req.body;
+  const { id } = req.params;
+  console.log(isAdmin, startDate);
+  try {
+    const query = `UPDATE "ScoutLeader" SET "isAdmin" = $2, "startDate" = $3 WHERE "User_ID" = $1 RETURNING *`;
+    const params = [id, isAdmin, startDate];
+    const result = await db.query(query, params);
+    return res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 exports.deleteScoutleader = async (req, res) => {
   const { id } = req.params;
   try {
