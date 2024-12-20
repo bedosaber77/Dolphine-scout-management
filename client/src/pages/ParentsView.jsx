@@ -24,6 +24,7 @@ const Parents = () => {
       const parents = parentsFetch.data;
 
       setParentsData(parents);
+      console.log(parents.data);
     } catch (error) {
       console.error('Error fetching parents data:', error);
     } finally {
@@ -123,6 +124,8 @@ const Parents = () => {
               <th className="border px-4 py-2">الرقم التعريفي</th>
               <th className="border px-4 py-2">الاسم</th>
               <th className="border px-4 py-2">العلاقة</th>
+              <th className="border px-4 py-2">رقم الهاتف</th>
+              <th className="border px-4 py-2">البريد الإلكتروني</th>
               <th className="border px-4 py-2">عدد الأطفال</th>
               <th className="border px-4 py-2">تعديل</th>
               <th className="border px-4 py-2">حذف</th>
@@ -130,13 +133,21 @@ const Parents = () => {
           </thead>
           <tbody>
             {parentsData.map((parent) => (
-              <tr key={parent.Parent_ID} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{parent.Parent_ID}</td>
+              <tr key={parent.User_ID} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">{parent.User_ID}</td>
                 <td className="border px-4 py-2">
-                  {parent.name || 'غير متوفر'}
+                  {parent.Fname && parent.Lname
+                    ? `${parent.Fname} ${parent.Lname}`
+                    : 'غير متوفر'}
                 </td>
                 <td className="border px-4 py-2">
                   {parent.relationship || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {parent.Phonenum || 'غير متوفر'}
+                </td>
+                <td className="border px-4 py-2">
+                  {parent.email || 'غير متوفر'}
                 </td>
                 <td className="border px-4 py-2">
                   {parent.childrenIDs?.length || 0}
