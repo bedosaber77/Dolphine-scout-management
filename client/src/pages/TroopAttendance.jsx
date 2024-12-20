@@ -107,7 +107,7 @@ function TroopAttendance() {
               url: `http://localhost:3000/api/events/${selectedEventId}/attendance`,
               method: 'POST',
               data: {
-                User_ID: scoutId,
+                Scout_ID: scoutId,
               },
             });
           } catch (err) {
