@@ -114,7 +114,6 @@ exports.refreshToken = async (req, res) => {
   }
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    console.log('decoded', decoded.user);
     const accessToken = jwtGenerator(decoded.user, '30 min');
     const { password, ...user } = decoded.user;
     return res.status(200).json({ accessToken, user });
