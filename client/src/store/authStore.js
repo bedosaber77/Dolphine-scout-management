@@ -5,7 +5,7 @@ const useAuthStore = create((set) => ({
   user: null,
   accessToken: null,
   loading: true,
-  login: async (data, onLogin) => {
+  login: async (data) => {
     try {
       const response = await axios.post(
         'http://localhost:3000/api/auth/login',
@@ -18,14 +18,24 @@ const useAuthStore = create((set) => ({
       console.log(response);
       if (response.status === 200) {
         set({ user: result.user, accessToken: result.accessToken });
-
-        onLogin('/');
+        return { success: true };
       }
     } catch (err) {
-      console.error(err);
+      if (err.response && err.response.status === 401) {
+        return { success: false, message: 'كلمة السر خاطئة اعد المحاولة' };
+      } else if (err.response && err.response.status === 404) {
+        return {
+          success: false,
+          message: 'لا يوجد حساب مربوط بهذا البريد الالكتروني اعد المحاولة',
+        };
+      }
+      return {
+        success: false,
+        message: 'عملية تسجيل الدخول فشلت اعد المحاولة',
+      };
     }
   },
-  register: async (data, onRegister) => {
+  register: async (data) => {
     try {
       const response = await axios.post(
         'http://localhost:3000/api/auth/register',
@@ -34,15 +44,24 @@ const useAuthStore = create((set) => ({
           withCredentials: true,
         }
       );
-      console.log(response);
-      // const result = response.data;
       if (response.status === 201) {
-        onRegister('/');
+        return { success: true };
       }
     } catch (err) {
-      console.error(err);
+      if (err.response && err.response.status === 409) {
+        return {
+          success: false,
+          message:
+            'هذا البريد الالكتروني لديه حساب بالفعل. الرجاء تسجيل الدخول بدلاً من ذلك.',
+        };
+      }
+      return {
+        success: false,
+        message: 'عملية تسجيل الحساب فشلت اعد المحاولة',
+      };
     }
   },
+
   logout: (onLogout) => {
     set({ user: null, loading: false, accessToken: null }); //needs to be a fetch also
     try {

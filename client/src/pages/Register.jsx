@@ -12,7 +12,8 @@ const Register = () => {
     password: '',
     confirmPassword: '',
   });
-
+  const [dialogOpen, setDialogOpen] = useState(false); // State to control dialog visibility
+  const [dialogMessage, setDialogMessage] = useState('');
   const navigate = useNavigate();
   const registerAction = useAuthStore((state) => state.register);
 
@@ -79,7 +80,7 @@ const Register = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (values.password !== values.confirmPassword) {
@@ -87,7 +88,13 @@ const Register = () => {
       return;
     }
 
-    registerAction(values, (path) => navigate(path));
+    const result = await registerAction(values);
+    if (result.success) {
+      navigate('/');
+    } else {
+      setDialogMessage(result.message);
+      setDialogOpen(true);
+    }
   };
 
   return (
@@ -136,6 +143,33 @@ const Register = () => {
           </div>
         </form>
       </div>
+      {dialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex  justify-center items-center ">
+          <div className="bg-white p-10 rounded-md shadow-md flex flex-col gap-10 ">
+            <p className="text-xl font-semibold">{dialogMessage}</p>
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={() => setDialogOpen(false)}
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
+              >
+                إلغاء
+              </button>
+              <button
+                type="submit"
+                className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                style={{ background: 'var(--secondary-color)' }}
+                onClick={() => {
+                  setDialogOpen(false);
+                  navigate('/login');
+                }}
+              >
+                تسجيل دخول
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
