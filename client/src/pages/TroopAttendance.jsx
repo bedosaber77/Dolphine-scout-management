@@ -71,7 +71,7 @@ function TroopAttendance() {
           });
           const attendance = scoutsData.data.reduce((acc, scout) => {
             acc[scout.User_ID] = attendanceData.data.some(
-              (a) => a.User_ID === scout.User_ID
+              (a) => a.Scout_ID === scout.User_ID
             );
             return acc;
           }, {});
@@ -117,7 +117,7 @@ function TroopAttendance() {
           try {
             await apiRequest({
               url: `http://localhost:3000/api/events/${selectedEventId}/attendance/${scoutId}`,
-              method: 'DELETE'
+              method: 'DELETE',
             });
           } catch (err) {
             console.error(err);

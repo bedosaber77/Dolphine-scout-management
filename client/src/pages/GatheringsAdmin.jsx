@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import useApi from '../hooks/useApi';
+import axios from 'axios';
+import useAuthStore from '../store/authStore';
 
 const GatheringsAdmin = () => {
   const apiRequest = useApi();
+  const { accessToken } = useAuthStore();
 
   const [locations, setLocations] = useState([]);
   const [scoutLeaders, setScoutLeaders] = useState([]);
@@ -80,12 +83,9 @@ const GatheringsAdmin = () => {
 
     const fetchData = async () => {
       try {
-        const [eventsResponse, locationsResponse, scoutLeadersResponse] =
-          await Promise.all([
-            fetchEventsData(),
-            fetchLocations(),
-            fetchScoutLeaders(),
-          ]);
+        const eventsResponse = await fetchEventsData();
+        const locationsResponse = await fetchLocations();
+        const scoutLeadersResponse = await fetchScoutLeaders();
         setEventsData(eventsResponse.data);
         setLocations(locationsResponse.data);
         setScoutLeaders(scoutLeadersResponse.data);
@@ -99,30 +99,62 @@ const GatheringsAdmin = () => {
   // Add or update an event
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+
+    // Append event fields to FormData
+    formData.append('Budget', event.Budget);
+    formData.append('Ename', event.Ename);
+    formData.append('Edate', event.Edate);
+    formData.append('Location_ID', event.Location_ID);
+    formData.append('ScoutLeader_ID', event.ScoutLeader_ID);
+    formData.append('GeneralOutcome', event.GeneralOutcome);
+    formData.append('EducationalOutcome', event.EducationalOutcome);
+    formData.append('PhysicalOutcome', event.PhysicalOutcome);
+    formData.append('ScientificOutcome', event.ScientificOutcome);
+    formData.append('ArtOutcome', event.ArtOutcome);
+    formData.append('ExtraOutcome', event.ExtraOutcome);
+
+    // Append images to FormData (assumes "images" is an array of File objects)
+    images.forEach((image) => {
+      formData.append('images', image); // Each image is appended under 'images'
+    });
+    // Debug: Log FormData content (this won't show up like an object in console)
     if (isEditMode && selectedEventID) {
       try {
-        await apiRequest({
-          url: `http://localhost:3000/api/events/${selectedEventID}`,
-          method: 'PUT',
-          data: { ...event, images },
-        });
+        await axios.put(
+          `http://localhost:3000/api/events/${selectedEventID}`,
+          formData,
+          {
+            headers: {
+              accessToken: accessToken,
+            },
+          }
+        );
         await apiRequest({
           url: `http://localhost:3000/api/gatherings/${selectedEventID}`,
           method: 'PUT',
           data: event,
         });
-        console.log('event', event);
-        setEventsData([...EventsData, event]);
+        const updatedEvent = { ...event, Event_ID: selectedEventID };
+        setEventsData(
+          EventsData.map((evt) =>
+            evt.Event_ID === selectedEventID ? updatedEvent : evt
+          )
+        );
       } catch (error) {
         console.error('Error updating event:', error);
       }
     } else {
       try {
-        const response = await apiRequest({
-          url: 'http://localhost:3000/api/events/',
-          method: 'POST',
-          data: { ...event, images },
-        });
+        const response = await axios.post(
+          'http://localhost:3000/api/events',
+          formData,
+          {
+            headers: {
+              accessToken: accessToken,
+            },
+          }
+        );
         const response2 = await apiRequest({
           url: 'http://localhost:3000/api/gatherings/',
           method: 'POST',
@@ -147,6 +179,7 @@ const GatheringsAdmin = () => {
       ArtOutcome: '',
       ExtraOutcome: '',
     });
+    setImages([]);
     setIsModalOpen(false);
     setIsEditMode(false);
   };
@@ -174,21 +207,16 @@ const GatheringsAdmin = () => {
     }
   };
 
-  console.log(event);
-  console.log('locs', locations);
-  console.log('scoutLeaders', scoutLeaders);
   const onChange = (e) => {
     setEvent({ ...event, [e.target.name]: e.target.value });
   };
 
-  console.log('process', processedEvents);
   // Handle edit
   const handleEdit = (Event_ID) => {
     setSelectedEventID(Event_ID);
     const selectedEvent = processedEvents.find(
       (event) => event.Event_ID === Event_ID
     );
-    console.log('sel', selectedEvent);
     setEvent(selectedEvent);
     setIsModalOpen(true);
     setIsEditMode(true);
@@ -250,10 +278,16 @@ const GatheringsAdmin = () => {
         <tbody>
           {processedEvents.map((event) => (
             <tr key={event.Event_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{event.Ename}</td>
+              <td className="border px-4 py-2">
+                <a
+                  href={`/events/${event.Event_ID}`}
+                  className="text-blue-500 hover:underline"
+                >
+                  {event.Ename}
+                </a>
+              </td>
               <td className="border px-4 py-2">{event.Budget || 'لا توجد'}</td>
               <td className="border px-4 py-2">
-                {' '}
                 {new Date(event?.Edate).toLocaleDateString('ar-EG', {
                   year: 'numeric',
                   month: 'long',
@@ -357,7 +391,7 @@ const GatheringsAdmin = () => {
                 <input
                   type="date"
                   name="Edate"
-                  value={event?.Edate}
+                  value={event?.Edate?.split('T')[0]}
                   onChange={onChange}
                   id="Edate"
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
