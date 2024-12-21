@@ -71,6 +71,7 @@ exports.login = async (req, res) => {
         email: user.email,
         Fname: user.Fname,
         Lname: user.Lname,
+        Phonenum: user.Phonenum,
         role: user.role,
         ...user2,
       },
@@ -114,9 +115,29 @@ exports.refreshToken = async (req, res) => {
   }
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    const accessToken = jwtGenerator(decoded.user, '30 min');
-    const { password, ...user } = decoded.user;
-    return res.status(200).json({ accessToken, user });
+    const query = `SELECT * FROM "User" WHERE "User_ID" = $1`;
+    const params = [decoded.user.User_ID];
+    const result = await db.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    let user = result.rows[0];
+
+    let query2 = '';
+    if (user.role === 'Scout')
+      query2 = `SELECT * FROM "Scout" WHERE "User_ID" = $1`;
+    else if (user.role === 'Parent')
+      query2 = `SELECT * FROM "Parent" WHERE "User_ID" = $1`;
+    else if (user.role === 'Scoutleader')
+      query2 = `SELECT * FROM "ScoutLeader" WHERE "User_ID" = $1`;
+    const params2 = [user.User_ID];
+    const result2 = await db.query(query2, params2);
+
+    const user2 = result2.rows[0];
+    user = { ...user, ...user2 };
+    const accessToken = jwtGenerator(user, '30 min');
+    const { password, ...newuser } = user;
+    return res.status(200).json({ accessToken, user: newuser });
   } catch (error) {
     console.error('Error verifying token', error);
     return res.status(401).json({ message: 'Unauthorized - Invalid token' });

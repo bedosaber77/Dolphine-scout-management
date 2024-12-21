@@ -78,7 +78,7 @@ exports.addUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { email, password, Fname, Lname, role, Phonenum } = req.body;
+  const { email, Fname, Lname, role, Phonenum } = req.body;
   try {
     let query = `UPDATE "User" SET`;
     let params = [];
@@ -88,11 +88,11 @@ exports.updateUser = async (req, res) => {
       params.push(email.toLowerCase());
       count++;
     }
-    if (password) {
-      query += ` "password" = $${count++},`;
-      const hashedPassword = await bcrypt.hash(password, 10);
-      params.push(hashedPassword);
-    }
+    // if (password) {
+    //   const hashedPassword = await bcrypt.hash(password, 10);
+    //   query += ` "password" = $${count++},`;
+    //   params.push(hashedPassword);
+    // }
     if (Fname) {
       query += ` "Fname" = $${count++},`;
       params.push(Fname);
@@ -111,7 +111,6 @@ exports.updateUser = async (req, res) => {
     }
     query = query.slice(0, -1); // remove the last comma
     query += ` WHERE "User_ID" = $${count} RETURNING *`;
-    console.log(query);
     params.push(id);
     const result = await db.query(query, params);
 
