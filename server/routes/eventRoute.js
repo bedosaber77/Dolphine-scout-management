@@ -10,16 +10,18 @@ const {
 
 Router.route('/')
   .get(eventController.getEvents)
-  .post(validateAddEvent, upload.array('images'), eventController.addEvent);
+  .post(upload.array('images'), validateAddEvent, eventController.addEvent);
 
 Router.route('/:event_id')
   .get(eventController.getEvent)
-  .put(eventController.updateEvent)
+  .put(upload.array('images'), eventController.updateEvent)
   .delete(eventController.deleteEvent);
 
 Router.route('/:event_id/attendance')
   .get(eventController.getEventAttendees)
   .post(validateAddEventAttendace, eventController.addEventAttendee);
+
+Router.route('/:event_id/media').get(eventController.getEventMedia);
 
 Router.delete(
   '/:event_id/attendance/:scout_id',
