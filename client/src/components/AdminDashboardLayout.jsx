@@ -124,9 +124,13 @@ const AdminDashboardLayout = () => {
         >
           الاجتماعات
         </Tab>
-        {/* <Tab to="statistics" currentPath={location.pathname} color="var(--secondary-color)">
-        الاحصائيات
-        </Tab> */}
+        <Tab
+          to="statistics"
+          currentPath={location.pathname}
+          color="var(--secondary-color)"
+        >
+          الاحصائيات
+        </Tab>
       </div>
 
       {/* Render the active route's component */}
