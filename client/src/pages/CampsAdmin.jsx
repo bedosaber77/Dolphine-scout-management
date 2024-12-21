@@ -95,22 +95,33 @@ const CampsAdmin = () => {
   // Add or update an event
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+
+    // Append event fields to FormData
+    formData.append('Budget', event.Budget);
+    formData.append('Ename', event.Ename);
+    formData.append('Edate', event.Edate);
+    formData.append('Location_ID', event.Location_ID);
+    formData.append('ScoutLeader_ID', event.ScoutLeader_ID);
+    formData.append('Season', event.Season);
+    formData.append('Duration', event.Duration);
+
+    // Append images to FormData (assumes "images" is an array of File objects)
+    images.forEach((image) => {
+      formData.append('images', image); // Each image is appended under 'images'
+    });
     if (isEditMode && selectedEventID) {
       try {
         await apiRequest({
           url: `http://localhost:3000/api/events/${selectedEventID}`,
           method: 'PUT',
-          data: {
-            ...event,
-            images,
-          },
+          data: formData,
         });
         await apiRequest({
           url: `http://localhost:3000/api/camps/${selectedEventID}`,
           method: 'PUT',
           data: { ...event, Duration: `${event.Duration} days` },
         });
-        console.log(selectedEventID, event);
         setEventsData((prevData) =>
           prevData.map((eve) =>
             eve.Event_ID === selectedEventID ? event : eve
@@ -124,7 +135,7 @@ const CampsAdmin = () => {
         const response = await apiRequest({
           url: 'http://localhost:3000/api/events/',
           method: 'POST',
-          data: { ...event, images },
+          data: formData,
         });
         const response2 = await apiRequest({
           url: 'http://localhost:3000/api/camps/',
@@ -177,21 +188,16 @@ const CampsAdmin = () => {
     }
   };
 
-  console.log(event);
-  console.log('locs', locations);
-  console.log('scoutLeaders', scoutLeaders);
   const onChange = (e) => {
     setEvent({ ...event, [e.target.name]: e.target.value });
   };
 
-  console.log('process', processedEvents);
   // Handle edit
   const handleEdit = (Event_ID) => {
     setSelectedEventID(Event_ID);
     const selectedEvent = processedEvents.find(
       (event) => event.Event_ID === Event_ID
     );
-    console.log('sel', selectedEvent);
     setEvent(selectedEvent);
     setIsModalOpen(true);
     setIsEditMode(true);
@@ -245,7 +251,14 @@ const CampsAdmin = () => {
         <tbody>
           {processedEvents.map((event) => (
             <tr key={event.Event_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{event.Ename}</td>
+              <td className="border px-4 py-2">
+                <a
+                  href={`/events/${event.Event_ID}`}
+                  className="text-blue-500 hover:underline"
+                >
+                  {event.Ename}
+                </a>
+              </td>
               <td className="border px-4 py-2">{event.Budget || 'لا توجد'}</td>
               <td className="border px-4 py-2">
                 {new Date(event?.Edate).toLocaleDateString('ar-EG', {
@@ -261,7 +274,7 @@ const CampsAdmin = () => {
                 {event.LeaderName || 'لا يوجد'}
               </td>
               <td className="border px-4 py-2">
-                {event?.Duration.days || 'لا توجد'}
+                {event?.Duration?.days || 'لا توجد'}
               </td>
               <td className="border px-4 py-2">{event.Season || 'لا توجد'}</td>
               <td className="border px-4 py-2">
@@ -338,7 +351,7 @@ const CampsAdmin = () => {
                 <input
                   type="date"
                   name="Edate"
-                  value={event?.Edate}
+                  value={event?.Edate?.split('T')[0]}
                   onChange={onChange}
                   id="Edate"
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
@@ -354,7 +367,7 @@ const CampsAdmin = () => {
                 <input
                   type="number"
                   name="Duration"
-                  value={event?.Duration}
+                  value={event?.Duration?.days}
                   onChange={onChange}
                   id="Duration"
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
