@@ -38,15 +38,9 @@ const CampsAdmin = () => {
         const leader = scoutLeaders.find(
           (leader) => leader.User_ID === event.ScoutLeader_ID
         );
-        const date = new Date(event.Edate).toLocaleDateString('ar-EG', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
 
         return {
           ...event,
-          Edate: date,
           LocationName: location ? location.LocationName : 'Unknown',
           LeaderName: leader ? `${leader.Fname} ${leader.Lname}` : 'Unknown',
         };
@@ -116,7 +110,8 @@ const CampsAdmin = () => {
           method: 'PUT',
           data: { ...event, Duration: `${event.Duration} days` },
         });
-        setProcessedEvents((prevData) =>
+        console.log(selectedEventID, event);
+        setEventsData((prevData) =>
           prevData.map((eve) =>
             eve.Event_ID === selectedEventID ? event : eve
           )
@@ -131,7 +126,6 @@ const CampsAdmin = () => {
           method: 'POST',
           data: { ...event, images },
         });
-        console.log('response', response);
         const response2 = await apiRequest({
           url: 'http://localhost:3000/api/camps/',
           method: 'POST',
@@ -141,7 +135,8 @@ const CampsAdmin = () => {
             Event_ID: response.data.Event.Event_ID.toString(),
           },
         });
-        setEventsData([...EventsData, response.data, response2.data]);
+        const newEvent = { ...response.data.Event, ...response2.data };
+        setEventsData([...EventsData, newEvent]);
       } catch (error) {
         console.error('Error adding event:', error);
       }
@@ -172,8 +167,8 @@ const CampsAdmin = () => {
         url: `http://localhost:3000/api/events/${selectedEventID}`,
         method: 'DELETE',
       });
-      setProcessedEvents(
-        processedEvents.filter((event) => event.Event_ID !== selectedEventID)
+      setEventsData(
+        EventsData.filter((event) => event.Event_ID !== selectedEventID)
       );
       setIsDeleteDialogOpen(false);
       selectedEventID(null);
@@ -203,7 +198,7 @@ const CampsAdmin = () => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
+    <>
       <h2
         className="mb-4 text-2xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
@@ -252,7 +247,13 @@ const CampsAdmin = () => {
             <tr key={event.Event_ID} className="hover:bg-gray-100">
               <td className="border px-4 py-2">{event.Ename}</td>
               <td className="border px-4 py-2">{event.Budget || 'لا توجد'}</td>
-              <td className="border px-4 py-2">{event.Edate || 'لا توجد'}</td>
+              <td className="border px-4 py-2">
+                {new Date(event?.Edate).toLocaleDateString('ar-EG', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }) || 'لا توجد'}
+              </td>
               <td className="border px-4 py-2">
                 {event.LocationName || 'لا توجد'}
               </td>
@@ -260,7 +261,7 @@ const CampsAdmin = () => {
                 {event.LeaderName || 'لا يوجد'}
               </td>
               <td className="border px-4 py-2">
-                {event.Duration?.days || 'لا توجد'}
+                {event?.Duration.days || 'لا توجد'}
               </td>
               <td className="border px-4 py-2">{event.Season || 'لا توجد'}</td>
               <td className="border px-4 py-2">
@@ -353,7 +354,7 @@ const CampsAdmin = () => {
                 <input
                   type="number"
                   name="Duration"
-                  value={event?.Duration.days}
+                  value={event?.Duration}
                   onChange={onChange}
                   id="Duration"
                   className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
@@ -485,7 +486,7 @@ const CampsAdmin = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

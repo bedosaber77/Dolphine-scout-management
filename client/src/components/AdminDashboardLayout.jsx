@@ -130,7 +130,7 @@ const AdminDashboardLayout = () => {
       </div>
 
       {/* Render the active route's component */}
-      <div className="p-6">
+      <div className="mt-4 p-6 bg-white rounded-lg shadow-lg">
         <Outlet />
       </div>
     </div>

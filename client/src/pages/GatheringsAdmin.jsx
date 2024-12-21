@@ -42,15 +42,9 @@ const GatheringsAdmin = () => {
         const leader = scoutLeaders.find(
           (leader) => leader.User_ID === event.ScoutLeader_ID
         );
-        const date = new Date(event.Edate).toLocaleDateString('ar-EG', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
 
         return {
           ...event,
-          Edate: date,
           LocationName: location ? location.LocationName : 'Unknown',
           LeaderName: leader ? `${leader.Fname} ${leader.Lname}` : 'Unknown',
         };
@@ -117,11 +111,8 @@ const GatheringsAdmin = () => {
           method: 'PUT',
           data: event,
         });
-        setProcessedEvents((prevData) =>
-          prevData.map((eve) =>
-            eve.Event_ID === selectedEventID ? event : eve
-          )
-        );
+        console.log('event', event);
+        setEventsData([...EventsData, event]);
       } catch (error) {
         console.error('Error updating event:', error);
       }
@@ -137,7 +128,8 @@ const GatheringsAdmin = () => {
           method: 'POST',
           data: { ...event, Event_ID: response.data.Event.Event_ID },
         });
-        setEventsData([...EventsData, response.data, response2.data]);
+        const newEvent = { ...response.data.Event, ...response2.data };
+        setEventsData([...EventsData, newEvent]);
       } catch (error) {
         console.error('Error adding event:', error);
       }
@@ -172,8 +164,8 @@ const GatheringsAdmin = () => {
         url: `http://localhost:3000/api/events/${selectedEventID}`,
         method: 'DELETE',
       });
-      setProcessedEvents(
-        processedEvents.filter((event) => event.Event_ID !== selectedEventID)
+      setEventsData(
+        EventsData.filter((event) => event.Event_ID !== selectedEventID)
       );
       setIsDeleteDialogOpen(false);
       selectedEventID(null);
@@ -203,7 +195,7 @@ const GatheringsAdmin = () => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
+    <>
       <h2
         className="mb-4 text-2xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
@@ -260,7 +252,14 @@ const GatheringsAdmin = () => {
             <tr key={event.Event_ID} className="hover:bg-gray-100">
               <td className="border px-4 py-2">{event.Ename}</td>
               <td className="border px-4 py-2">{event.Budget || 'لا توجد'}</td>
-              <td className="border px-4 py-2">{event.Edate || 'لا توجد'}</td>
+              <td className="border px-4 py-2">
+                {' '}
+                {new Date(event?.Edate).toLocaleDateString('ar-EG', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }) || 'لا توجد'}
+              </td>
               <td className="border px-4 py-2">
                 {event.LocationName || 'لا توجد'}
               </td>
@@ -573,7 +572,7 @@ const GatheringsAdmin = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 export default GatheringsAdmin;
