@@ -34,7 +34,17 @@ a {
 footer {
   margin-top: auto;
 }
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* For Internet Explorer and Edge */
+  scrollbar-width: none;
+  /* For Firefox */
+}
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* For Chrome, Safari, and Opera */
+}
 /* .bg-background {
   background-color: var(--background-color);
 }
