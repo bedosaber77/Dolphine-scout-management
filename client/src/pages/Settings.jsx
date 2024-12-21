@@ -23,7 +23,11 @@ import axios from 'axios';
 function Settings() {
   const user = useAuthStore((state) => state.user);
   const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
-  const [newuser, setNewUser] = useState({});
+  const [newuser, setNewUser] = useState({
+    Fname: '',
+    Lname: '',
+    Phonenum: '',
+  });
   const [isFirstNameDisabled, setIsFirstNameDisabled] = useState(true);
   const [isLastNameDisabled, setIsLastNameDisabled] = useState(true);
   const [isPhoneNumberDisabled, setIsPhoneNumberDisabled] = useState(true);
