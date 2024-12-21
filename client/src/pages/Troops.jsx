@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const Troops = () => {
   const apiRequest = useApi();
-
+const [loading, setLoading] = useState(true);
   const [troopsData, setTroopsData] = useState([]);
   const [leadersData, setLeadersData] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -21,6 +21,7 @@ const Troops = () => {
   // Fetch troops and leaders
   useEffect(() => {
     const fetchData = async () => {
+       setLoading(true);
       try {
         const leadersData = await axios.get(
           'http://localhost:3000/api/scoutleaders',
@@ -56,6 +57,8 @@ const Troops = () => {
         console.log(enrichedTroops);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -200,132 +203,161 @@ const Troops = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2
-        className="text-2xl font-semibold mb-4"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        قائمة المجموعات
-      </h2>
+    <div className="p-4 rounded-2xl">
+      <div className="flex justify-between items-center">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة المجموعات
+        </h2>
 
-      {/* Add Troop Button */}
-      <button
-        onClick={handleAddClick}
-        className="bg-secondary-color text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة مجموعة
-      </button>
+        {/* Add Troop Button */}
+        <button
+          onClick={handleAddClick}
+          className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة مجموعة
+        </button>
+      </div>
 
-      {/* Troops Table */}
-      <table className="min-w-full border-collapse border border-gray-200 mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">اسم المجموعة</th>
-            <th className="border px-4 py-2">القائد</th>
-            <th className="border px-4 py-2">الحد الاقصى</th>
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {troopsData.map((troop) => (
-            <tr key={troop.Troop_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{troop.Tname}</td>
-              <td className="border px-4 py-2">{troop.leaderName}</td>
-              <td className="border px-4 py-2">{troop.max_Members}</td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEditClick(troop)}
-                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDeleteClick(troop)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : troopsData.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد فرق للعرض</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">اسم المجموعة</th>
+                <th className="border px-4 py-2 text-center">القائد</th>
+                <th className="border px-4 py-2 text-center">الحد الاقصى</th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              {troopsData.map((troop) => (
+                <tr key={troop.Troop_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {troop.Tname}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {troop.leaderName}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {troop.max_Members}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEditClick(troop)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDeleteClick(troop)}
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {isEditModalOpen && editingTroop && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-bold mb-4">تعديل المجموعة</h3>
-            <form>
-              <label className="block font-medium text-gray-700">
-                اسم المجموعة:
-              </label>
-              <input
-                type="text"
-                value={editingTroop.Tname}
-                onChange={(e) =>
-                  setEditingTroop({ ...editingTroop, Tname: e.target.value })
-                }
-                className="block w-full my-1 p-2 border rounded"
-              />
-              <label
-                className="block font-medium text-gray-700"
-                htmlFor="ScoutLeader_ID"
-              >
-                القائد:
-              </label>
-              <select
-                name="ScoutLeader_ID"
-                value={editingTroop.ScoutLeader_ID}
-                onChange={(e) =>
-                  setEditingTroop({
-                    ...editingTroop,
-                    ScoutLeader_ID: parseInt(e.target.value, 10),
-                  })
-                }
-                className="my-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-              >
-                <option value="">اختر قائدًا</option>
-                {leadersData.map((leader) => (
-                  <option key={leader.User_ID} value={leader.User_ID}>
-                    {leader.Fname} {leader.Lname}
-                  </option>
-                ))}
-              </select>
-              <label className="block font-medium text-gray-700">
-                الحد الأقصى لعدد الكشافة:
-              </label>
-              <input
-                type="number"
-                value={editingTroop.max_Members}
-                onChange={(e) =>
-                  setEditingTroop({
-                    ...editingTroop,
-                    max_Members: parseInt(e.target.value, 10),
-                  })
-                }
-                className="block w-full my-1 p-2 border rounded"
-              />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تعديل {editingTroop.Tname}
+            </h3>
+            <form className="space-y-4">
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  اسم المجموعة:
+                </label>
+                <input
+                  type="text"
+                  value={editingTroop.Tname}
+                  onChange={(e) =>
+                    setEditingTroop({ ...editingTroop, Tname: e.target.value })
+                  }
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-xl font-medium mb-1"
+                  htmlFor="ScoutLeader_ID"
+                >
+                  القائد:
+                </label>
+                <select
+                  name="ScoutLeader_ID"
+                  value={editingTroop.ScoutLeader_ID}
+                  onChange={(e) =>
+                    setEditingTroop({
+                      ...editingTroop,
+                      ScoutLeader_ID: parseInt(e.target.value, 10),
+                    })
+                  }
+                  className="my-1 block w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring focus:ring-secondary-color focus:outline-none"
+                >
+                  <option value="">اختر قائدًا</option>
+                  {leadersData.map((leader) => (
+                    <option key={leader.User_ID} value={leader.User_ID}>
+                      {leader.Fname} {leader.Lname}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  الحد الأقصى لعدد الكشافة:
+                </label>
+                <input
+                  type="number"
+                  value={editingTroop.max_Members}
+                  onChange={(e) =>
+                    setEditingTroop({
+                      ...editingTroop,
+                      max_Members: parseInt(e.target.value, 10),
+                    })
+                  }
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
               <div className="flex justify-between">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                  className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveChanges}
-                  className="bg-secondary-color text-white px-4 py-2 rounded"
+                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
                   style={{ background: 'var(--secondary-color)' }}
                 >
-                  حفظ
+                  تعديل
                 </button>
               </div>
             </form>
@@ -335,55 +367,71 @@ const Troops = () => {
 
       {/* Add Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-bold mb-4">إضافة مجموعة جديدة</h3>
-            <form>
-              <label className="block mb-4">اسم المجموعة:</label>
-              <input
-                type="text"
-                value={newTroopName}
-                onChange={(e) => setNewTroopName(e.target.value)}
-                className="block w-full mt-1 p-2 border rounded"
-              />
-              <label
-                htmlFor="leader_id"
-                className="block font-medium text-gray-700"
-              >
-                القائد:
-              </label>
-              <select
-                name="leader_id"
-                value={newTroopLeader}
-                onChange={(e) => setNewTroopLeader(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
-              >
-                <option value="">اختر قائدًا</option>
-                {leadersData.map((leader) => (
-                  <option key={leader.User_ID} value={leader.User_ID}>
-                    {leader.Fname} {leader.Lname}
-                  </option>
-                ))}
-              </select>
-              <label className="block mb-4">الحد الأقصى لعدد الكشافة:</label>
-              <input
-                type="number"
-                value={newTroopMaxMembers}
-                onChange={(e) => setNewTroopMaxMembers(e.target.value)}
-                className="block w-full mt-1 p-2 border rounded"
-              />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              إضافة مجموعة جديدة
+            </h3>
+            <form className="space-y-4">
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  اسم المجموعة:
+                </label>
+                <input
+                  type="text"
+                  value={newTroopName}
+                  onChange={(e) => setNewTroopName(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-xl font-medium mb-1"
+                  htmlFor="leader_id"
+                >
+                  القائد:
+                </label>
+                <select
+                  name="leader_id"
+                  value={newTroopLeader}
+                  onChange={(e) => setNewTroopLeader(e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring focus:ring-secondary-color focus:outline-none"
+                >
+                  <option value="">اختر قائدًا</option>
+                  {leadersData.map((leader) => (
+                    <option key={leader.User_ID} value={leader.User_ID}>
+                      {leader.Fname} {leader.Lname}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  الحد الأقصى لعدد الكشافة:
+                </label>
+                <input
+                  type="number"
+                  value={newTroopMaxMembers}
+                  onChange={(e) => setNewTroopMaxMembers(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
               <div className="flex justify-between">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                  className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
                 </button>
                 <button
                   type="button"
                   onClick={handleAddTroop}
-                  className="bg-secondary-color text-white px-4 py-2 rounded"
+                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
                   style={{ background: 'var(--secondary-color)' }}
                 >
                   إضافة
@@ -396,23 +444,27 @@ const Troops = () => {
 
       {/* Delete Confirmation Dialog */}
       {isDeleteDialogOpen && deletingTroop && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-4">
-              هل تريد حذف المجموعة {deletingTroop.Tname}؟
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
             </h3>
+            <p>هل أنت متأكد أنك تريد حذف الفرقة {deletingTroop.Tname}؟</p>
             <div className="flex justify-between">
               <button
                 type="button"
                 onClick={() => setIsDeleteDialogOpen(false)}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
               >
                 إلغاء
               </button>
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
               >
                 حذف
               </button>

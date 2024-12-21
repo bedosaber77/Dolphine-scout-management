@@ -143,9 +143,9 @@ const Parents = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 rounded-2xl">
       <h2
-        className="text-2xl font-semibold mb-4"
+        className="mb-4 text-3xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
         قائمة أولياء الأمور
@@ -158,115 +158,141 @@ const Parents = () => {
           لا يوجد أولياء أمور للعرض
         </p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-200 mt-4">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">الرقم التعريفي</th>
-              <th className="border px-4 py-2">الاسم</th>
-              <th className="border px-4 py-2">العلاقة</th>
-              <th className="border px-4 py-2">رقم الهاتف</th>
-              <th className="border px-4 py-2">البريد الإلكتروني</th>
-              <th className="border px-4 py-2">عدد الأطفال</th>
-              <th className="border px-4 py-2">تعديل</th>
-              <th className="border px-4 py-2">حذف</th>
-            </tr>
-          </thead>
-          <tbody>
-            {parentsData.map((parent) => (
-              <tr key={parent.User_ID} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{parent.User_ID}</td>
-                <td className="border px-4 py-2">
-                  {parent.Fname && parent.Lname
-                    ? `${parent.Fname} ${parent.Lname}`
-                    : 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {parent.relationship ==="Father"?'أب':'أم' || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {parent.Phonenum || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {parent.email || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {parent.childrenIDs?.length || 0}
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(parent)}
-                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                    style={{ background: 'var(--secondary-color)' }}
-                  >
-                    تعديل
-                  </button>
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => {
-                      setSelectedParent(parent);
-                      setIsDeleteDialogOpen(true);
-                    }}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
-                  >
-                    حذف
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">الرقم التعريفي</th>
+                <th className="border px-4 py-2 text-center">الاسم</th>
+                <th className="border px-4 py-2 text-center">العلاقة</th>
+                <th className="border px-4 py-2 text-center">رقم الهاتف</th>
+                <th className="border px-4 py-2 text-center">
+                  البريد الإلكتروني
+                </th>
+                <th className="border px-4 py-2 text-center">عدد الأطفال</th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {parentsData.map((parent) => (
+                <tr key={parent.User_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {parent.User_ID}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {parent.Fname && parent.Lname
+                      ? `${parent.Fname} ${parent.Lname}`
+                      : 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {parent.relationship === 'Father'
+                      ? 'أب'
+                      : 'أم' || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {parent.Phonenum || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {parent.email || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {parent.childrenIDs?.length || 0}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEdit(parent)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => {
+                        setSelectedParent(parent);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تعديل  {selectedParent.Fname}</h3>
-            <form onSubmit={handleSubmit}>
-              <label>العلاقة</label>
-              <select
-                name="relationship"
-                value={editAttributes.relationship}
-                onChange={handleAttributeChange}
-                className="border p-2 w-full mb-4"
-              >
-                <option value="">اختر العلاقة</option>
-                <option value="Father">أب</option>
-                <option value="Mother">أم</option>
-              </select>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تعديل {selectedParent.Fname}
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  العلاقة
+                </label>
+                <select
+                  name="relationship"
+                  value={editAttributes.relationship}
+                  onChange={handleAttributeChange}
+                  className="border border-gray-300 rounded-lg p-3 bg-white shadow-sm w-full focus:ring focus:ring-secondary-color focus:outline-none transition-all"
+                >
+                  <option value="">اختر العلاقة</option>
+                  <option value="Father">أب</option>
+                  <option value="Mother">أم</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  الأطفال
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editAttributes.childCount}
+                  onChange={handleChildCountChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
 
-              <label>الأطفال</label>
-              <input
-                type="number"
-                min="0"
-                value={editAttributes.childCount}
-                onChange={handleChildCountChange}
-                className="border p-2 w-full mb-4"
-              />
-
-              {editAttributes.childrenIDs.map((childID, index) => (
-                <div key={index}>
-                  <label>رقم المعرف للطفل {index + 1}</label>
-                  <input
-                    type="text"
-                    value={childID}
-                    onChange={(e) => handleChildIDChange(index, e.target.value)}
-                    className="border p-2 w-full mb-2"
-                  />
-                </div>
-              ))}
+                {editAttributes.childrenIDs.map((childID, index) => (
+                  <div key={index}>
+                    <label>رقم المعرف للطفل {index + 1}</label>
+                    <input
+                      type="text"
+                      value={childID}
+                      onChange={(e) =>
+                        handleChildIDChange(index, e.target.value)
+                      }
+                      className="border p-2 w-full mb-2"
+                    />
+                  </div>
+                ))}
+              </div>
 
               <div className="flex justify-between">
                 <button
                   type="button"
                   onClick={() => setIsDialogOpen(false)}
-                  className="bg-gray-200 px-4 py-2 rounded-lg"
+                  className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
-                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
+                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                  style={{ background: 'var(--secondary-color)' }}
                 >
                   تعديل
                 </button>
@@ -276,10 +302,15 @@ const Parents = () => {
         </div>
       )}
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
-            <p>هل أنت متأكد أنك تريد حذف {selectedParent.Fname} ؟</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
+            <p>هل أنت متأكد أنك تريد حذف ولى الأمر {selectedParent.Fname} ؟</p>
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}

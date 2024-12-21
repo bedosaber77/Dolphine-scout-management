@@ -101,9 +101,9 @@ const ScoutsView = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 rounded-2xl">
       <h2
-        className="text-2xl font-semibold mb-4"
+        className="mb-4 text-3xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
         قائمة الكشافة
@@ -114,119 +114,148 @@ const ScoutsView = () => {
       ) : scoutsData.length === 0 ? (
         <p className="mt-4 text-center text-gray-500">لا يوجد كشافة للعرض</p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-200 mt-4">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">الرقم التعريفي</th>
-              <th className="border px-4 py-2">اسم الكشاف</th>
-              <th className="border px-4 py-2">رقم الهاتف</th>
-              <th className="border px-4 py-2">البريد الإلكتروني</th>
-              <th className="border px-4 py-2">الرتبة</th>
-              <th className="border px-4 py-2">تاريخ الميلاد</th>
-              <th className="border px-4 py-2">السنة الأكاديمية</th>
-              <th className="border px-4 py-2">تعديل</th>
-              <th className="border px-4 py-2">حذف</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scoutsData.map((scout) => (
-              <tr key={scout.User_ID} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{scout.User_ID}</td>
-                <td className="border px-4 py-2">
-                  {scout.Fname && scout.Lname
-                    ? `${scout.Fname} ${scout.Lname}`
-                    : 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {scout.Phonenum || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {scout.email || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {scout.rank || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                
-                  {new Date(scout.Birthdate).toLocaleDateString('ar-EG', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                }) || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {scout.academicYear || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(scout)}
-                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                    style={{ background: 'var(--secondary-color)' }}
-                  >
-                    تعديل
-                  </button>
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => {
-                      setSelectedScout(scout);
-                      setIsDeleteDialogOpen(true);
-                    }}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
-                  >
-                    حذف
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">الرقم التعريفي</th>
+                <th className="border px-4 py-2 text-center">اسم الكشاف</th>
+                <th className="border px-4 py-2 text-center">رقم الهاتف</th>
+                <th className="border px-4 py-2 text-center">
+                  البريد الإلكتروني
+                </th>
+                <th className="border px-4 py-2 text-center">الرتبة</th>
+                <th className="border px-4 py-2 text-center">تاريخ الميلاد</th>
+                <th className="border px-4 py-2 text-center">
+                  السنة الأكاديمية
+                </th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {scoutsData.map((scout) => (
+                <tr key={scout.User_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {scout.User_ID}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {scout.Fname && scout.Lname
+                      ? `${scout.Fname} ${scout.Lname}`
+                      : 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {scout.Phonenum || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {scout.email || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {scout.rank || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {new Date(scout.Birthdate).toLocaleDateString('ar-EG', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    }) || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {scout.academicYear || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEdit(scout)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => {
+                        setSelectedScout(scout);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تعديل كشاف</h3>
-            <form onSubmit={handleSubmit}>
-              <label>الرتبة</label>
-              <input
-                name="rank"
-                value={editAttributes.rank}
-                onChange={handleAttributeChange}
-                className="border p-2 w-full mb-2"
-              />
-              <label>تاريخ الميلاد</label>
-              <input
-                name="Birthdate"
-                type="date"
-                value={editAttributes.Birthdate}
-                onChange={handleAttributeChange}
-                className="border p-2 w-full mb-2"
-              />
-              <label>السنة الأكاديمية</label>
-              <input
-                name="academicYear"
-                value={editAttributes.academicYear}
-                onChange={handleAttributeChange}
-                className="border p-2 w-full mb-2"
-              />
-              <label>تاريخ الانضمام</label>
-              <input
-                name="joinDate"
-                type="date"
-                value={editAttributes.joinDate}
-                onChange={handleAttributeChange}
-                className="border p-2 w-full mb-2"
-              />
-              <div className="flex items-center mb-2">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تعديل {selectedScout.Fname}
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xl font-medium mb-1">الرتبة</label>
+                <input
+                  name="rank"
+                  value={editAttributes.rank}
+                  onChange={handleAttributeChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  تاريخ الميلاد
+                </label>
+                <input
+                  name="Birthdate"
+                  type="date"
+                  value={editAttributes.Birthdate}
+                  onChange={handleAttributeChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  السنة الأكاديمية
+                </label>
+                <input
+                  name="academicYear"
+                  value={editAttributes.academicYear}
+                  onChange={handleAttributeChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  تاريخ الانضمام
+                </label>
+                <input
+                  name="joinDate"
+                  type="date"
+                  value={editAttributes.joinDate}
+                  onChange={handleAttributeChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center">
                 <input
                   type="checkbox"
                   name="PaperSubmitted"
                   checked={editAttributes.PaperSubmitted === 'true'}
                   onChange={handleAttributeChange}
-                  className="mr-2"
+                  className="mr-2 focus:ring focus:ring-secondary-color"
                 />
-                <label>تسليم الورق</label>
+                <label className="mr-2 text-xl">تسليم الورق</label>
               </div>
 
               <div className="flex justify-between">
@@ -251,10 +280,15 @@ const ScoutsView = () => {
       )}
 
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
-            <p>هل أنت متأكد أنك تريد حذف هذا الكشاف؟</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
+            <p>هل أنت متأكد أنك تريد حذف الكشاف {selectedScout.Fname}؟</p>
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
