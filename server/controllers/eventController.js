@@ -1,4 +1,5 @@
 const db = require('../config/DBmanager');
+const { cloudinary } = require('../utils/cloudinary');
 
 exports.getEvents = async (req, res) => {
   try {
@@ -32,7 +33,6 @@ exports.getEvent = async (req, res) => {
 };
 
 exports.addEvent = async (req, res) => {
-  console.log(req.body);
   const { Budget, Ename, Edate, Location_ID, ScoutLeader_ID } = req.body;
   try {
     const query = `INSERT INTO "Event" ("Budget", "Ename", "Edate", "Location_ID", "ScoutLeader_ID") VALUES ($1, $2, $3, $4, $5) RETURNING *`;
@@ -51,7 +51,6 @@ exports.addEvent = async (req, res) => {
           ScoutLeader_ID,
         ];
         const media = await db.query(query, params);
-        console.log(media);
       });
     }
     return res
@@ -66,18 +65,36 @@ exports.addEvent = async (req, res) => {
 exports.deleteEvent = async (req, res) => {
   const { event_id } = req.params;
   try {
-    const query = `DELETE FROM "Event" WHERE "Event_ID" = $1 RETURNING *`;
-    const params = [event_id];
-    const event = await db.query(query, params);
-    if (event.rows.length === 0) {
+    const fetchMediaQuery = `SELECT "Description" FROM "Media" WHERE "Event_ID" = $1`;
+    const mediaResult = await db.query(fetchMediaQuery, [event_id]);
+    const mediaDescriptions = mediaResult.rows.map((row) => row.Description);
+
+    for (const description of mediaDescriptions) {
+      try {
+        const result = await cloudinary.uploader.destroy(description);
+      } catch (error) {
+        console.error(
+          `Failed to delete from Cloudinary: ${description}`,
+          error
+        );
+      }
+    }
+
+    const deleteEventQuery = `DELETE FROM "Event" WHERE "Event_ID" = $1 RETURNING *`;
+    const eventResult = await db.query(deleteEventQuery, [event_id]);
+    if (eventResult.rows.length === 0) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    return res.status(200).json({ message: 'Event deleted successfully' });
+
+    return res
+      .status(200)
+      .json({ message: 'Event and associated media deleted successfully' });
   } catch (error) {
-    console.log('Error executing query', error);
+    console.error('Error executing query', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 exports.updateEvent = async (req, res) => {
   const { event_id } = req.params;
   const { Budget, Ename, Edate, Location_ID, ScoutLeader_ID } = req.body;
@@ -108,7 +125,14 @@ exports.updateEvent = async (req, res) => {
     }
   }
   try {
-    if (!Budget && !Ename && !Edate && !Location_ID && !ScoutLeader_ID) {
+    if (
+      !Budget &&
+      !Ename &&
+      !Edate &&
+      !Location_ID &&
+      !ScoutLeader_ID &&
+      !req.files
+    ) {
       return res.status(400).json({ message: 'No fields to update' });
     }
     const updateFields = [];
@@ -140,6 +164,21 @@ exports.updateEvent = async (req, res) => {
     if (event.rows.length === 0) {
       return res.status(404).json({ message: 'Event not found' });
     }
+    if (req.files) {
+      req.files.forEach(async (file) => {
+        const query = `INSERT INTO "Media" ("UploadDate", "Link", "Description", "Type", "Event_ID", "ScoutLeader_ID")
+               VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
+        const params = [
+          new Date(),
+          file.path,
+          file.filename,
+          'Image',
+          event_id,
+          ScoutLeader_ID,
+        ];
+        const media = await db.query(query, params);
+      });
+    }
     return res
       .status(200)
       .json({ message: 'Event updated successfully', Event: event.rows[0] });
@@ -154,8 +193,7 @@ exports.getEventAttendees = async (req, res) => {
   try {
     const query = `SELECT 
     ea.*,
-    s."User_ID" AS "Scout_ID",
-    u."User_ID",
+    u."User_ID" as "Scout_ID",
     u."Fname",
     u."Lname",
     u."Phonenum",
@@ -165,9 +203,7 @@ exports.getEventAttendees = async (req, res) => {
 FROM 
     "EventAttendance" ea
 JOIN 
-    "Scout" s ON ea."Scout_ID" = s."User_ID"
-JOIN 
-    "User" u ON s."User_ID" = u."User_ID"
+    "User" u ON u."User_ID" = ea."Scout_ID"
 JOIN 
     "Event" e ON e."Event_ID" = ea."Event_ID"
 WHERE e."Event_ID" = $1;
@@ -209,6 +245,19 @@ exports.deleteEventAttendee = async (req, res) => {
     return res
       .status(200)
       .json({ message: 'Event Attendance deleted successfully' });
+  } catch (error) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getEventMedia = async (req, res) => {
+  const { event_id } = req.params;
+  try {
+    const query = `SELECT * FROM "Media" WHERE "Event_ID" = $1`;
+    const params = [event_id];
+    const media = await db.query(query, params);
+    return res.status(200).json(media.rows);
   } catch (error) {
     console.log('Error executing query', error);
     return res.status(500).json({ message: 'Internal server error' });

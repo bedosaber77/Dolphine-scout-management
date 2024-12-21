@@ -78,6 +78,7 @@ const tabs = [
   { to: 'verifications', label: 'تفعيل الحساب' },
   { to: 'camps', label: 'المعسكرات' },
   { to: 'gatherings', label: 'الاجتماعات' },
+  { to: 'statistics', label: 'الاحصائيات' },
 ];
 
 export default AdminDashboardLayout;
