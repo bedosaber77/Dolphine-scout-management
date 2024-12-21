@@ -14,6 +14,9 @@
   --footer-bg: #043873;
   /* --input-bg: #f9f9f9; or dark version */
 }
+html {
+  scroll-behavior: smooth;
+}
 
 .bg-background {
   /* background-color: var(--background-secondary); */
