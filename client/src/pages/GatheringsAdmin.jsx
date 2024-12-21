@@ -391,7 +391,7 @@ const GatheringsAdmin = () => {
               <input
             type="date"
             name="Edate"
-            value={event?.Edate}
+            value={event?.Edate?.split('T')[0]}
             onChange={onChange}
             id="Edate"
             className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
