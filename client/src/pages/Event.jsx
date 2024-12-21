@@ -15,7 +15,7 @@ const OPTIONS = {
 
 const Event = () => {
   const { id } = useParams();
-  const { accessToken } = useAuthStore();
+  const { accessToken, user } = useAuthStore();
   const event = useFetchEvent(id);
   const gathering = useFetchGathering(id);
   const camp = useFetchCamp(id);
@@ -70,16 +70,20 @@ const Event = () => {
               <li>
                 <strong>القائد:</strong> {event.name}
               </li>
-              <li>
-                <strong>حضرت:</strong>
-              </li>
+              {user?.role === 'scout' && (
+                <li>
+                  <strong>حضرت:</strong>
+                </li>
+              )}
               <li>
                 <strong>الميزانية:</strong> {event.Budget}
               </li>
             </ul>
-            <button className="mt-6 w-full lg:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
-              سجل الحضور
-            </button>
+            {user?.role === 'Scoutleader' && (
+              <button className="mt-6 w-full lg:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+                سجل الحضور
+              </button>
+            )}
           </div>
           {/* Carousel Section */}
         </div>
