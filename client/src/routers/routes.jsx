@@ -38,6 +38,7 @@ import AllAchievementsPage from '../pages/AllAchievementsPage';
 import CampsAdmin from '../pages/CampsAdmin';
 import SponsorsView from '../pages/SponsorsView';
 import GatheringsAdmin from '../pages/GatheringsAdmin';
+import Settings from '../pages/Settings';
 
 const AppRoutes = () => {
   const user = useAuthStore((state) => state.user);
@@ -67,6 +68,10 @@ const AppRoutes = () => {
         {
           path: 'verify',
           element: <WaitVerify />,
+        },
+        {
+          path: '/settings',
+          element: <Settings />,
         },
         {
           path: '/troops/:id',
