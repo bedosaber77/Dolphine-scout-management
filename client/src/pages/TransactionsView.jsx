@@ -6,6 +6,7 @@ import useApi from '../hooks/useApi';
 
 const Transactions = () => {
   const apiRequest = useApi();
+  const [loading, setLoading] = useState(true);
   const { accessToken } = useAuthStore();
   const [transactions, setTransactions] = useState([]);
   const [leaders, setLeaders] = useState([]);
@@ -16,6 +17,7 @@ const Transactions = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         'http://localhost:3000/api/transactions',
         {
@@ -27,11 +29,14 @@ const Transactions = () => {
       setTransactions(response.data); // Update the state with fetched data
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchLeaders = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         'http://localhost:3000/api/scoutleaders',
         {
@@ -43,11 +48,14 @@ const Transactions = () => {
       setLeaders(response.data); // Update the state with fetched data
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchSponsors = async () => {
     try {
+      setLoading(true);
       const response = await axios.get('http://localhost:3000/api/sponsors', {
         headers: {
           accessToken: accessToken, // Ensure accessToken is defined
@@ -56,6 +64,8 @@ const Transactions = () => {
       setSponsors(response.data); // Update the state with fetched data
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,90 +145,122 @@ const Transactions = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2
-        className="mb-4 text-3x font-bold"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        الرصيد الإجمالي: {totalBalance.toLocaleString('ar-EG')} جنيه
-      </h2>
+    <div className="p-4 rounded-2xl">
+      <div className="flex justify-between">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة المعاملات
+        </h2>
+        <h3
+          className="mb-4 pr-5 pl-5 text-3x font-bold shadow-md rounded-2xl"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          الرصيد الإجمالي: {totalBalance.toLocaleString('ar-EG')} جنيه
+        </h3>
 
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة معاملة
-      </button>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة معاملة
+        </button>
+      </div>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : transaction.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد معاملات للعرض</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">وصف المعاملة</th>
+                <th className="border px-4 py-2 text-center">صادر/وارد</th>
+                <th className="border px-4 py-2 text-center">المبلغ</th>
+                <th className="border px-4 py-2 text-center">
+                  اسم صاحب العملية
+                </th>
+                <th className="border px-4 py-2 text-center">طريفة الدفع</th>
+                <th className="border px-4 py-2 text-center">التاريخ</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((transaction, index) => (
+                <tr key={index} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {transaction.Purpose}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {transaction.TransactionType}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {transaction.Amount.toLocaleString('ar-EG')}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {transaction.ScoutLeader_ID
+                      ? leaders.find(
+                          (leader) =>
+                            leader.User_ID === transaction.ScoutLeader_ID
+                        )?.Fname +
+                        ' ' +
+                        leaders.find(
+                          (leader) =>
+                            leader.User_ID === transaction.ScoutLeader_ID
+                        )?.Lname
+                      : transaction.Sponsor_ID
+                      ? sponsors.find(
+                          (sponsor) =>
+                            sponsor.Sponsor_ID === transaction.Sponsor_ID
+                        )?.Fname +
+                        ' ' +
+                        sponsors.find(
+                          (sponsor) =>
+                            sponsor.Sponsor_ID === transaction.Sponsor_ID
+                        )?.Lname
+                      : 'N/A'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {transaction.PaymentMethod}
+                  </td>
 
-      {/* Transactions Table */}
-      <table className="min-w-full border-collapse border border-gray-200">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">وصف المعاملة</th>
-            <th className="border px-4 py-2">صادر/وارد</th>
-            <th className="border px-4 py-2">المبلغ</th>
-            <th className="border px-4 py-2">اسم صاحب العملية</th>
-            <th className="border px-4 py-2">طريفة الدفع</th>
-            <th className="border px-4 py-2">التاريخ</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction, index) => (
-            <tr key={index} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{transaction.Purpose}</td>
-              <td className="border px-4 py-2">
-                {transaction.TransactionType}
-              </td>
-              <td className="border px-4 py-2">
-                {transaction.Amount.toLocaleString('ar-EG')}
-              </td>
-              <td className="border px-4 py-2">
-                {transaction.ScoutLeader_ID
-                  ? leaders.find(
-                      (leader) => leader.User_ID === transaction.ScoutLeader_ID
-                    )?.Fname +
-                    ' ' +
-                    leaders.find(
-                      (leader) => leader.User_ID === transaction.ScoutLeader_ID
-                    )?.Lname
-                  : transaction.Sponsor_ID
-                  ? sponsors.find(
-                      (sponsor) => sponsor.Sponsor_ID === transaction.Sponsor_ID
-                    )?.Fname +
-                    ' ' +
-                    sponsors.find(
-                      (sponsor) => sponsor.Sponsor_ID === transaction.Sponsor_ID
-                    )?.Lname
-                  : 'N/A'}
-              </td>
-              <td className="border px-4 py-2">{transaction.PaymentMethod}</td>
-
-              <td className="border px-4 py-2">
-                {new Date(transaction.Tdate).toLocaleDateString('ar-EG', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(transaction)}
-                  className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  <td className="border px-4 py-2 text-center">
+                    {new Date(transaction.Tdate).toLocaleDateString('ar-EG', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(transaction)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
             <p>هل أنت متأكد من أنك تريد حذف هذه العملية؟</p>
             <div className="flex justify-between">
               <button
@@ -240,14 +282,19 @@ const Transactions = () => {
 
       {/* Modal for Adding Transaction */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">إضافة معاملة</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              إضافة معاملة
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="purpose"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الوصف
                 </label>
@@ -257,15 +304,15 @@ const Transactions = () => {
                   value={transaction.purpose}
                   onChange={handleInputChange}
                   id="purpose"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="method"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   طريقة الدفع
                 </label>
@@ -274,17 +321,17 @@ const Transactions = () => {
                   value={transaction.method}
                   onChange={handleInputChange}
                   id="method"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="Cash">Cash</option>
                   <option value="Visa">Visa</option>
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="type"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   نوع المعاملة
                 </label>
@@ -293,17 +340,17 @@ const Transactions = () => {
                   value={transaction.type}
                   onChange={handleInputChange}
                   id="type"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="Deposit">ايداع</option>
                   <option value="Withdraw">سحب</option>
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="amount"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   المبلغ
                 </label>
@@ -313,22 +360,22 @@ const Transactions = () => {
                   value={transaction.amount}
                   onChange={handleInputChange}
                   id="amount"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="leader_id"
-                  className="block text-sm font-medium text-gray-700"
                 >
-                  كود القائد
+                  اسم القائد
                 </label>
                 <select
                   name="leader_id"
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="">اختر قائدًا</option>
                   {leaders.map((leader) => (
@@ -339,17 +386,17 @@ const Transactions = () => {
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="sponsor_id"
-                  className="block text-sm font-medium text-gray-700"
                 >
-                  كود الممول
+                  اسم الممول
                 </label>
                 <select
                   name="sponsor_id"
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="">اختر ممولًا</option>
                   {sponsors.map((sponsor) => (
@@ -360,10 +407,10 @@ const Transactions = () => {
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="date"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   التاريخ
                 </label>
@@ -373,7 +420,7 @@ const Transactions = () => {
                   value={transaction.date}
                   onChange={handleInputChange}
                   id="date"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>

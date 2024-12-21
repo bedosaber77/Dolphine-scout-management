@@ -265,7 +265,7 @@ const [loading, setLoading] = useState(true);
                   <td className="border px-4 py-2 text-center">
                     <button
                       onClick={() => handleDeleteClick(troop)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
                     >
                       حذف
                     </button>
@@ -464,7 +464,7 @@ const [loading, setLoading] = useState(true);
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 حذف
               </button>

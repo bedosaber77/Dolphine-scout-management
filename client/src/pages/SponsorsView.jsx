@@ -6,6 +6,7 @@ import useApi from '../hooks/useApi';
 
 const SponsorsView = () => {
   const apiRequest = useApi();
+  const [loading, setLoading] = useState(true);
   const { accessToken } = useAuthStore();
   const [sponsors, setSponsors] = useState([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -14,6 +15,7 @@ const SponsorsView = () => {
 
   const fetchSponsors = async () => {
     try {
+      setLoading(true);
       const response = await axios.get('http://localhost:3000/api/sponsors', {
         headers: {
           accessToken: accessToken,
@@ -22,6 +24,8 @@ const SponsorsView = () => {
       setSponsors(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,72 +137,87 @@ const SponsorsView = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2
-        className="mb-4 text-3x font-bold"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        الممولين
-      </h2>
+    <div className="p-4 rounded-2xl">
+      <div className="flex justify-between">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة الممولين
+        </h2>
 
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة ممول
-      </button>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="mb-4 bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة ممول
+        </button>
+      </div>
 
       {/* SponsorsView Table */}
-      <table className="min-w-full border-collapse border border-gray-200">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">اسم الممول</th>
-            <th className="border px-4 py-2">رقم الهاتف</th>
-            <th className="border px-4 py-2">البريد الالكتروني</th>
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sponsors.map((sponsor, index) => (
-            <tr key={index} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">
-                {sponsor.Fname + ' ' + sponsor.Lname}
-              </td>
-              <td className="border px-4 py-2">
-                {sponsor.PhoneNum ? sponsor.PhoneNum : 'N/A'}
-              </td>
-              <td className="border px-4 py-2">
-                {sponsor.Email ? sponsor.Email : 'N/A'}
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEditClick(sponsor)}
-                  className="bg-secondary-color text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(sponsor)}
-                  className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : sponsors.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد ممولين للعرض</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">اسم الممول</th>
+                <th className="border px-4 py-2 text-center">رقم الهاتف</th>
+                <th className="border px-4 py-2 text-center">
+                  البريد الالكتروني
+                </th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sponsors.map((sponsor, index) => (
+                <tr key={index} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {sponsor.Fname + ' ' + sponsor.Lname}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {sponsor.PhoneNum ? sponsor.PhoneNum : 'N/A'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {sponsor.Email ? sponsor.Email : 'N/A'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEditClick(sponsor)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(sponsor)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isDeleteDialogOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
-            <p>هل أنت متأكد من أنك تريد حذف هذا الممول؟</p>
+            <p>هل أنت متأكد من أنك تريد حذف الممول {sponsorToDelete.Fname}؟</p>
             <div className="flex justify-between">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -219,14 +238,19 @@ const SponsorsView = () => {
 
       {/* Modal for Adding Transaction */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">إضافة ممول</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              إضافة ممول
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="fName"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الاسم الأول
                 </label>
@@ -236,15 +260,15 @@ const SponsorsView = () => {
                   value={sponsor.fName}
                   onChange={handleInputChange}
                   id="fName"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="lName"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الاسم الأخير
                 </label>
@@ -254,15 +278,15 @@ const SponsorsView = () => {
                   value={sponsor.lName}
                   onChange={handleInputChange}
                   id="lName"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="phoneNum"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   رقم الهاتف
                 </label>
@@ -272,14 +296,14 @@ const SponsorsView = () => {
                   value={sponsor.phoneNum}
                   onChange={handleInputChange}
                   id="phoneNum"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   البريد الالكتروني
                 </label>
@@ -289,7 +313,7 @@ const SponsorsView = () => {
                   value={sponsor.email}
                   onChange={handleInputChange}
                   id="email"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
@@ -317,14 +341,19 @@ const SponsorsView = () => {
 
       {/* Edit Modal */}
       {isEditModalOpen && editingSponsor && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">إضافة ممول</h3>
-            <form onSubmit={handleEdit}>
-              <div className="mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تعديل {editingSponsor.Fname}
+            </h3>
+            <form onSubmit={handleEdit} className="space-y-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Fname"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الاسم الأول
                 </label>
@@ -334,15 +363,15 @@ const SponsorsView = () => {
                   value={editingSponsor.Fname}
                   onChange={handleEditChange}
                   id="Fname"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Lname"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الاسم الأخير
                 </label>
@@ -352,15 +381,15 @@ const SponsorsView = () => {
                   value={editingSponsor.Lname}
                   onChange={handleEditChange}
                   id="Lname"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="PhoneNum"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   رقم الهاتف
                 </label>
@@ -370,14 +399,14 @@ const SponsorsView = () => {
                   value={editingSponsor.PhoneNum}
                   onChange={handleEditChange}
                   id="PhoneNum"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Email"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   البريد الالكتروني
                 </label>
@@ -387,7 +416,7 @@ const SponsorsView = () => {
                   value={editingSponsor.Email}
                   onChange={handleEditChange}
                   id="Email"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>

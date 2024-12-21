@@ -154,9 +154,9 @@ const Verifications = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 rounded-2xl">
       <h2
-        className="text-2xl font-semibold mb-4"
+        className="mb-4 text-3xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
         حسابات قيد الانتظار
@@ -169,189 +169,236 @@ const Verifications = () => {
           لا يوجد حسابات قيد الانتظار
         </p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-200 mt-4">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">اسم المستخدم</th>
-              <th className="border px-4 py-2">رقم الهاتف</th>
-              <th className="border px-4 py-2">البريد الإلكتروني</th>
-              <th className="border px-4 py-2">تفعيل</th>
-              <th className="border px-4 py-2">حذف</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usersData.map((user) => (
-              <tr key={user.User_ID}>
-                <td className="border px-4 py-2">
-                  {user.Fname && user.Lname
-                    ? `${user.Fname} ${user.Lname}`
-                    : 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {user.Phonenum || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {user.email || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleVerification(user)}
-                    className="bg-green-500 text-white hover:text-white px-4 py-2 rounded-lg"
-                  >
-                    تفعيل
-                  </button>
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleDelete(user)}
-                    className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
-                  >
-                    حذف
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">اسم المستخدم</th>
+                <th className="border px-4 py-2 text-center">رقم الهاتف</th>
+                <th className="border px-4 py-2 text-center">
+                  البريد الإلكتروني
+                </th>
+                <th className="border px-4 py-2 text-center">تفعيل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {usersData.map((user) => (
+                <tr key={user.User_ID}>
+                  <td className="border px-4 py-2 text-center">
+                    {user.Fname && user.Lname
+                      ? `${user.Fname} ${user.Lname}`
+                      : 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {user.Phonenum || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {user.email || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleVerification(user)}
+                      className="bg-green-500 text-white hover:text-white px-4 py-2 rounded-lg"
+                    >
+                      تفعيل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(user)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Verification Dialog */}
       {isRoleDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h3 className="text-lg font-bold mb-4">تفعيل الحساب</h3>
-            <label>اختر الدور</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="border p-2 rounded-lg w-full mb-4"
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
             >
-              <option value="">اختر الدور</option>
-              <option value="Scout">كشاف</option>
-              <option value="Parent">ولى امر</option>
-              <option value="Scoutleader">قائد</option>
-            </select>
-
-            {role === 'Scout' && (
-              <>
-                <label>الرتبة</label>
-                <input
-                  name="rank"
-                  onChange={handleExtraAttributeChange}
-                  className="border p-2 w-full mb-2"
-                />
-                <label>تاريخ الميلاد</label>
-                <input
-                  name="Birthdate"
-                  type="date"
-                  onChange={handleExtraAttributeChange}
-                  className="border p-2 w-full mb-2"
-                />
-                <label>السنة الأكاديمية</label>
-                <input
-                  name="academicYear"
-                  onChange={handleExtraAttributeChange}
-                  className="border p-2 w-full mb-2"
-                />
-                <label>تاريخ الانضمام</label>
-                <input
-                  name="joinDate"
-                  type="date"
-                  onChange={handleExtraAttributeChange}
-                  className="border p-2 w-full mb-2"
-                />
-                <div className="flex items-center mb-2">
-                  <input
-                    type="checkbox"
-                    name="PaperSubmitted"
-                    onChange={(e) =>
-                      setExtraAttributes({
-                        ...extraAttributes,
-                        PaperSubmitted: e.target.checked ? 'true' : 'false', // Convert boolean to string
-                      })
-                    }
-                    className="mr-2"
-                  />
-                  <label>تسليم الورق</label>
-                </div>
-              </>
-            )}
-
-            {role === 'Parent' && (
-              <>
-                <label>العلاقة</label>
+              تفعيل الحساب
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  اختر الدور
+                </label>
                 <select
-                  onChange={(e) => setRelationship(e.target.value)}
-                  className="border p-2 w-full mb-4"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 >
-                  <option value="">اختر العلاقة</option>
-                  <option value="Father">الأب</option>
-                  <option value="Mother">الأم</option>
+                  <option value="">اختر الدور</option>
+                  <option value="Scout">كشاف</option>
+                  <option value="Parent">ولى امر</option>
+                  <option value="Scoutleader">قائد</option>
                 </select>
+              </div>
 
-                <label>عدد الأطفال</label>
-                <input
-                  type="number"
-                  min="0"
-                  onChange={handleChildCountChange}
-                  className="border p-2 w-full mb-4"
-                />
-
-                {childrenIDs.map((_, index) => (
-                  <div key={index}>
-                    <label>رقم المعرف للطفل {index + 1}</label>
+              {role === 'Scout' && (
+                <>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      الرتبة
+                    </label>
                     <input
-                      type="text"
-                      onChange={(e) =>
-                        handleChildIDChange(index, e.target.value)
-                      }
-                      className="border p-2 w-full mb-2"
+                      name="rank"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                     />
                   </div>
-                ))}
-              </>
-            )}
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      تاريخ الميلاد
+                    </label>
+                    <input
+                      name="Birthdate"
+                      type="date"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      السنة الأكاديمية
+                    </label>
+                    <input
+                      name="academicYear"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
 
-            {role === 'Scoutleader' && (
-              <>
-                <label>تاريخ البداية</label>
-                <input
-                  name="startDate"
-                  type="date"
-                  onChange={handleExtraAttributeChange}
-                  className="border p-2 w-full mb-2"
-                />
-                {/* Checkbox for هل هو مدير؟ */}
-                <div className="flex items-center mb-2">
-                  <input
-                    type="checkbox"
-                    name="isAdmin"
-                    onChange={(e) =>
-                      setExtraAttributes({
-                        ...extraAttributes,
-                        isAdmin: e.target.checked ? 'true' : 'false', // Convert boolean to string
-                      })
-                    }
-                    className="mr-2"
-                  />
-                  <label>هل هو مدير؟</label>
-                </div>
-              </>
-            )}
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      تاريخ الانضمام
+                    </label>
+                    <input
+                      name="joinDate"
+                      type="date"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="PaperSubmitted"
+                      onChange={(e) =>
+                        setExtraAttributes({
+                          ...extraAttributes,
+                          PaperSubmitted: e.target.checked ? 'true' : 'false', // Convert boolean to string
+                        })
+                      }
+                      className="mr-2 focus:ring focus:ring-secondary-color"
+                    />
+                    <label className="mr-2 text-xl">تسليم الورق</label>
+                  </div>
+                </>
+              )}
 
-            <div className="flex justify-between">
-              <button
-                onClick={() => setIsRoleDialogOpen(false)}
-                className="bg-gray-300 px-4 py-2 hover:text-red-600 rounded-lg mr-2"
-              >
-                إلغاء
-              </button>
-              <button
-                onClick={handleConfirmVerification}
-                className="bg-green-500 text-white hover:text-white px-4 py-2 rounded-lg"
-              >
-                تفعيل
-              </button>
+              {role === 'Parent' && (
+                <>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      العلاقة
+                    </label>
+                    <select
+                      onChange={(e) => setRelationship(e.target.value)}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    >
+                      <option value="">اختر العلاقة</option>
+                      <option value="Father">الأب</option>
+                      <option value="Mother">الأم</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      عدد الأطفال
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      onChange={handleChildCountChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
+                  {childrenIDs.map((_, index) => (
+                    <div key={index}>
+                      <label className="block text-xl font-medium mb-1">
+                        رقم المعرف للطفل {index + 1}
+                      </label>
+                      <input
+                        type="text"
+                        onChange={(e) =>
+                          handleChildIDChange(index, e.target.value)
+                        }
+                        className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {role === 'Scoutleader' && (
+                <>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      تاريخ البداية
+                    </label>
+                    <input
+                      name="startDate"
+                      type="date"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
+                  {/* Checkbox for هل هو مدير؟ */}
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="isAdmin"
+                      onChange={(e) =>
+                        setExtraAttributes({
+                          ...extraAttributes,
+                          isAdmin: e.target.checked ? 'true' : 'false', // Convert boolean to string
+                        })
+                      }
+                      className="mr-2 focus:ring focus:ring-secondary-color"
+                    />
+                    <label className="mr-2 text-xl">هل هو مدير؟</label>
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setIsRoleDialogOpen(false)}
+                  className="bg-gray-300 px-4 py-2 hover:text-red-600 rounded-lg mr-2"
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={handleConfirmVerification}
+                  className="bg-green-500 text-white hover:text-white px-4 py-2 rounded-lg"
+                >
+                  تفعيل
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -359,10 +406,15 @@ const Verifications = () => {
 
       {/* Delete Confirmation Dialog */}
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
-            <p>هل أنت متأكد من أنك تريد حذف هذا الحساب؟</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            
+              >تأكيد الحذف
+            </h3>
+            <p>هل أنت متأكد من أنك تريد حذف هذا حساب {userToDelete.Fname} ؟</p>
             <div className="flex justify-between">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -372,7 +424,7 @@ const Verifications = () => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 حذف
               </button>

@@ -138,83 +138,104 @@ const Locations = () => {
 
   return (
     <div className="p-4">
-      <h2
-        className="text-2xl font-semibold mb-4"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        قائمة المواقع
-      </h2>
+      <div className="flex justify-between justify-center">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة المواقع
+        </h2>
 
-      <button
-        onClick={() => {
-          resetForm();
-          setIsModalOpen(true);
-        }}
-        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة موقع
-      </button>
+        <button
+          onClick={() => {
+            resetForm();
+            setIsModalOpen(true);
+          }}
+          className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة موقع
+        </button>
+      </div>
 
       {loading ? (
         <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
       ) : locationsData.length === 0 ? (
-        <p className="mt-4 text-center text-gray-500">لا توجد مواقع لعرضها.</p>
+        <p className="mt-4 text-center text-gray-500">لا يوجد مواقع لعرضها</p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-200 mt-4">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">اسم الموقع</th>
-              <th className="border px-4 py-2">المدينة</th>
-              <th className="border px-4 py-2">المحافظة</th>
-              <th className="border px-4 py-2">رابط الموقع</th>
-              <th className="border px-4 py-2">تعديل</th>
-              <th className="border px-4 py-2">حذف</th>
-            </tr>
-          </thead>
-          <tbody>
-            {locationsData.map((location) => (
-              <tr key={location.Location_ID} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{location.LocationName}</td>
-                <td className="border px-4 py-2">{location.City}</td>
-                <td className="border px-4 py-2">{location.Government}</td>
-                <td className="border px-4 py-2">
-                  <a
-                    href={location.Link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500"
-                  >
-                    {shortenLink(location.Link)}
-                  </a>
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(location)}
-                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                    style={{ background: 'var(--secondary-color)' }}
-                  >
-                    تعديل
-                  </button>
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleDelete(location)}
-                    className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg"
-                  >
-                    حذف
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">اسم الموقع</th>
+                <th className="border px-4 py-2 text-center">المدينة</th>
+                <th className="border px-4 py-2 text-center">المحافظة</th>
+                <th className="border px-4 py-2 text-center">رابط الموقع</th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {locationsData.map((location) => (
+                <tr key={location.Location_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {location.LocationName}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {location.City}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {location.Government}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <a
+                      href={location.Link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500"
+                    >
+                      {shortenLink(location.Link)}
+                    </a>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEdit(location)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(location)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-bold mb-4">تأكيد الحذف</h3>
-            <p>هل أنت متأكد من أنك تريد حذف هذا الموقع</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
+            <p>
+              هل أنت متأكد من أنك تريد حذف موقع {locationToDelete.LocationName}{' '}
+              ؟
+            </p>
             <div className="flex justify-between">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -234,18 +255,22 @@ const Locations = () => {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
               {locationToEdit ? 'تعديل' : 'إضافة'} موقع
             </h3>
             <form
               onSubmit={locationToEdit ? handleEditLocation : handleAddLocation}
+              className="space-y-4"
             >
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="locationName"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   اسم الموقع
                 </label>
@@ -255,15 +280,15 @@ const Locations = () => {
                   value={locationName}
                   onChange={(e) => setLocationName(e.target.value)}
                   id="locationName"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="city"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   المدينة
                 </label>
@@ -273,15 +298,15 @@ const Locations = () => {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   id="city"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="government"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   المحافظة
                 </label>
@@ -291,15 +316,15 @@ const Locations = () => {
                   value={government}
                   onChange={(e) => setGovernment(e.target.value)}
                   id="government"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="link"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   رابط الموقع
                 </label>
@@ -309,7 +334,7 @@ const Locations = () => {
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                   id="link"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
