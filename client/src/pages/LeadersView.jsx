@@ -120,9 +120,9 @@ const handleSubmit = async (e) => {
 };
 
   return (
-    <div className="p-4">
+    <div className="p-4 rounded-2xl">
       <h2
-        className="mb-4 text-lg font-bold"
+        className="mb-4 text-3xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
         قائمة القادة
@@ -133,95 +133,117 @@ const handleSubmit = async (e) => {
       ) : leadersData.length === 0 ? (
         <p className="mt-4 text-center text-gray-500">لا يوجد قادة للعرض</p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-200">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">الرقم التعريفي</th>
-              <th className="border px-4 py-2">الاسم</th>
-              <th className="border px-4 py-2">رقم الهاتف</th>
-              <th className="border px-4 py-2">البريد الإلكتروني</th>
-              <th className="border px-4 py-2">المجموعات التي يقودها</th>
-              <th className="border px-4 py-2">تاريخ البدء</th>
-              <th className="border px-4 py-2">هل هو مدير ؟</th>
-              <th className="border px-4 py-2">تعديل</th>
-              <th className="border px-4 py-2">حذف</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leadersData.map((leader) => (
-              <tr key={leader.User_ID} className="hover:bg-gray-100">
-                <td className="border px-4 py-2">{leader.User_ID}</td>
-                <td className="border px-4 py-2">
-                  {leader.Fname && leader.Lname
-                    ? `${leader.Fname} ${leader.Lname}`
-                    : 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {leader.Phonenum || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {leader.email || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">{leader.troops}</td>
-                <td className="border px-4 py-2">
-                  {new Date(leader.startDate).toLocaleDateString('ar-EG', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  }) || 'غير متوفر'}
-                </td>
-                <td className="border px-4 py-2">
-                  {leader.isAdmin ? 'نعم' : 'لا'}
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(leader)}
-                    className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                    style={{ background: 'var(--secondary-color)' }}
-                  >
-                    تعديل
-                  </button>
-                </td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => {
-                      setSelectedLeader(leader);
-                      setIsDeleteDialogOpen(true);
-                    }}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
-                  >
-                    حذف
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">الرقم التعريفي</th>
+                <th className="border px-4 py-2 text-center">الاسم</th>
+                <th className="border px-4 py-2 text-center">رقم الهاتف</th>
+                <th className="border px-4 py-2 text-center">
+                  البريد الإلكتروني
+                </th>
+                <th className="border px-4 py-2 text-center">
+                  المجموعات التي يقودها
+                </th>
+                <th className="border px-4 py-2 text-center">تاريخ البدء</th>
+                <th className="border px-4 py-2 text-center">هل هو مدير ؟</th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {leadersData.map((leader) => (
+                <tr key={leader.User_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {leader.User_ID}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {leader.Fname && leader.Lname
+                      ? `${leader.Fname} ${leader.Lname}`
+                      : 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {leader.Phonenum || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {leader.email || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {leader.troops}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {new Date(leader.startDate).toLocaleDateString('ar-EG', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    }) || 'غير متوفر'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {leader.isAdmin ? 'نعم' : 'لا'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEdit(leader)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => {
+                        setSelectedLeader(leader);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Edit Dialog */}
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تعديل قائد</h3>
-            <form onSubmit={handleSubmit}>
-              <label>تاريخ البدء</label>
-              <input
-                name="startDate"
-                type="date"
-                value={editAttributes.startDate}
-                onChange={handleAttributeChange}
-                className="border p-2 w-full mb-2"
-              />
-              <div className="flex items-center mb-2">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تعديل {selectedLeader.Fname}
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  تاريخ البدء
+                </label>
+                <input
+                  name="startDate"
+                  type="date"
+                  value={editAttributes.startDate}
+                  onChange={handleAttributeChange}
+                  className="border p-2 w-full mb-2"
+                />
+              </div>
+              <div className="flex items-center">
                 <input
                   type="checkbox"
                   name="isAdmin"
                   checked={editAttributes.isAdmin === 'true'}
                   onChange={handleAttributeChange}
-                  className="mr-2"
+                  className="mr-2 focus:ring focus:ring-secondary-color"
                 />
-                <label>هل هو مدير ؟</label>
+                <label className="mr-2 text-xl">هل هو مدير ؟</label>
               </div>
               <div className="flex justify-between">
                 <button
@@ -246,10 +268,15 @@ const handleSubmit = async (e) => {
 
       {/* Delete Confirmation Dialog */}
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
-            <p>هل أنت متأكد أنك تريد حذف هذا القائد؟</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
+            <p>هل أنت متأكد أنك تريد حذف القائد {selectedLeader.Fname}؟</p>
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -259,7 +286,7 @@ const handleSubmit = async (e) => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 حذف
               </button>
