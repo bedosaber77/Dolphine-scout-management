@@ -173,8 +173,6 @@ const Statistics = () => {
     fetchData();
   }, [apiRequest]);
 
-  console.log('tt', transactionsStatistics);
-
   return (
     <>
       <h2

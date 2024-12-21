@@ -1,21 +1,16 @@
-// import Form from 'react-bootstrap/Form';
-// import FloatingLabel from 'react-bootstrap/FloatingLabel';
-// import '../styles/formInputs.css';
-// import { use } from 'react';
 import { useState } from 'react';
-// import { useAuth } from '../hooks/AuthProvider';
 import useAuthStore from '../store/authStore';
 import { NavLink, useNavigate } from 'react-router-dom';
 import FormInput from '../components/FormInput';
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [values, setValues] = useState({
     email: '',
     password: '',
   });
+
+  const [dialogOpen, setDialogOpen] = useState(false); // State to control dialog visibility
+  const [dialogMessage, setDialogMessage] = useState('');
   const loginAction = useAuthStore((state) => state.login);
-  const accessToken = useAuthStore((state) => state.accessToken);
   const navigate = useNavigate();
 
   const loginInput = [
@@ -41,17 +36,19 @@ const Login = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  // const auth = useAuth();
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (values.email !== '' && values.password !== '') {
-      const input = values;
-      loginAction(input, (path) => navigate(path));
-      console.log(accessToken);
-      // console.log(auth.isAuthenticated);
-      return;
+      const result = await loginAction(values);
+      console.log(result);
+      if (result.success) {
+        navigate('/');
+      } else {
+        setDialogMessage(result.message);
+        setDialogOpen(true);
+      }
     }
-    alert('please provide a valid input');
+    // alert('please provide a valid input');
   };
 
   return (
@@ -116,6 +113,25 @@ const Login = () => {
           </div>
         </form>
       </div>
+      {dialogOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex  justify-center items-center ">
+          <div className="bg-white p-10 rounded-md shadow-md flex flex-col gap-10 ">
+            <p className="text-xl font-semibold">{dialogMessage}</p>
+            <div className="flex justify-between">
+              <button
+                type="submit"
+                className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                style={{ background: 'var(--secondary-color)' }}
+                onClick={() => {
+                  setDialogOpen(false);
+                }}
+              >
+                حسناّّ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
