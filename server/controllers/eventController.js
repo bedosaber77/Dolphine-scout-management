@@ -125,7 +125,14 @@ exports.updateEvent = async (req, res) => {
     }
   }
   try {
-    if (!Budget && !Ename && !Edate && !Location_ID && !ScoutLeader_ID  && !req.files) {
+    if (
+      !Budget &&
+      !Ename &&
+      !Edate &&
+      !Location_ID &&
+      !ScoutLeader_ID &&
+      !req.files
+    ) {
       return res.status(400).json({ message: 'No fields to update' });
     }
     const updateFields = [];
@@ -186,8 +193,7 @@ exports.getEventAttendees = async (req, res) => {
   try {
     const query = `SELECT 
     ea.*,
-    s."User_ID" AS "Scout_ID",
-    u."User_ID",
+    u."User_ID" as "Scout_ID",
     u."Fname",
     u."Lname",
     u."Phonenum",
@@ -197,9 +203,7 @@ exports.getEventAttendees = async (req, res) => {
 FROM 
     "EventAttendance" ea
 JOIN 
-    "Scout" s ON ea."Scout_ID" = s."User_ID"
-JOIN 
-    "User" u ON s."User_ID" = u."User_ID"
+    "User" u ON u."User_ID" = ea."Scout_ID"
 JOIN 
     "Event" e ON e."Event_ID" = ea."Event_ID"
 WHERE e."Event_ID" = $1;

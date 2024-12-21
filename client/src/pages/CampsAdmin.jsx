@@ -76,12 +76,9 @@ const CampsAdmin = () => {
 
     const fetchData = async () => {
       try {
-        const [eventsResponse, locationsResponse, scoutLeadersResponse] =
-          await Promise.all([
-            fetchEventsData(),
-            fetchLocations(),
-            fetchScoutLeaders(),
-          ]);
+        const eventsResponse = await fetchEventsData();
+        const locationsResponse = await fetchLocations();
+        const scoutLeadersResponse = await fetchScoutLeaders();
         setEventsData(eventsResponse.data);
         setLocations(locationsResponse.data);
         setScoutLeaders(scoutLeadersResponse.data);

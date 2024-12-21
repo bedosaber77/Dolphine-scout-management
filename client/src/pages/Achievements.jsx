@@ -14,9 +14,11 @@ const Achievements = () => {
   const [achievementToDelete, setAchievementToDelete] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [achievementToEdit, setAchievementToEdit] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const achievementsFetch = await apiRequest({
         url: 'http://localhost:3000/api/achievements/',
         method: 'GET',
@@ -25,6 +27,9 @@ const Achievements = () => {
       console.log('ach fetch', achievementsFetch);
     } catch (error) {
       console.error(error);
+
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -120,93 +125,114 @@ const Achievements = () => {
 
   return (
     <div className="p-4">
-      <h2
-        className="mb-4 text-lg font-bold"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        قائمة الإنجازات
-      </h2>
+      <div className="flex justify-between justify-center">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة الإنجازات
+        </h2>
 
-      {/* Add Achievement Button */}
-      <button
-        onClick={() => {
-          // Clear the form state for adding new equipment
-          setAchievement('');
-          setLevel('');
-          setDescription('');
-          setCriteria('');
-          setIsModalOpen(true);
-        }}
-        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة إنجاز
-      </button>
+        {/* Add Achievement Button */}
+        <button
+          onClick={() => {
+            // Clear the form state for adding new equipment
+            setAchievement('');
+            setLevel('');
+            setDescription('');
+            setCriteria('');
+            setIsModalOpen(true);
+          }}
+          className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة إنجاز
+        </button>
+      </div>
 
       {/* Achievements Table */}
-      <table className="min-w-full border-collapse border border-gray-200 mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">الإنجاز</th>
-            <th className="border px-4 py-2">المستوى</th>
-            <th className="border px-4 py-2">الوصف</th>
-            <th className="border px-4 py-2">المعايير</th>
-            <th className="border px-4 py-2">عدد الأفراد</th>{' '}
-            {/* Number of members */}
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {achievementsData.map((achievement) => (
-            <tr key={achievement.Achievement_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{achievement.Aname}</td>
-              <td className="border px-4 py-2">
-                {achievement.Level || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {achievement.Description || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {achievement.Criteria || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : achievementsData.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد إنجازات للعرض</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">الإنجاز</th>
+                <th className="border px-4 py-2 text-center">المستوى</th>
+                <th className="border px-4 py-2 text-center">الوصف</th>
+                <th className="border px-4 py-2 text-center">المعايير</th>
+                {/* <th className="border px-4 py-2 text-center">عدد الأفراد</th>{' '} */}
+                {/* Number of members */}
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              {achievementsData.map((achievement) => (
+                <tr
+                  key={achievement.Achievement_ID}
+                  className="hover:bg-gray-100"
+                >
+                  <td className="border px-4 py-2 text-center">
+                    {achievement.Aname}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {achievement.Level || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {achievement.Description || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {achievement.Criteria || 'لا توجد'}
+                  </td>
+                  {/* <td className="border px-4 py-2 text-center">
                 {achievement.individuals ? achievement.individuals.length : 0}
-              </td>{' '}
-              {/* Display number of members */}
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEdit(achievement)}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(achievement)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
-                >
-                  حذف
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </td>{' '} */}
+                  {/* Display number of members */}
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEdit(achievement)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(achievement)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
               {isEditMode ? 'تعديل' : 'إضافة'} إنجاز
             </h3>
-            <form onSubmit={handleSubmitAchievement}>
-              <div className="mb-4">
+            <form onSubmit={handleSubmitAchievement} className="space-y-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="achievementName"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   اسم الإنجاز
                 </label>
@@ -216,15 +242,15 @@ const Achievements = () => {
                   value={achievement}
                   onChange={(e) => setAchievement(e.target.value)}
                   id="achievementName"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="level"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   المستوى
                 </label>
@@ -234,14 +260,14 @@ const Achievements = () => {
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
                   id="level"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="description"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الوصف
                 </label>
@@ -250,13 +276,13 @@ const Achievements = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   id="description"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="criteria"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   المعايير
                 </label>
@@ -265,7 +291,7 @@ const Achievements = () => {
                   value={criteria}
                   onChange={(e) => setCriteria(e.target.value)}
                   id="criteria"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
 
@@ -295,7 +321,7 @@ const Achievements = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
             <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
-            <p>هل أنت متأكد أنك تريد حذف هذا الإنجاز؟</p>
+            <p>هل أنت متأكد أنك تريد حذف إنجاز {achievementToDelete.Aname}؟</p>
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -305,7 +331,7 @@ const Achievements = () => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 حذف
               </button>

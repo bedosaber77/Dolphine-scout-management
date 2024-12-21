@@ -11,10 +11,13 @@ const Equipment = () => {
   // For delete confirmation
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState(null);
+    const [loading, setLoading] = useState(true);
+
 
   const fetchEquipmentAndLocation = async () => {
     try {
       // Fetch locations
+      setLoading(true);
       const locationsFetch = await apiRequest({
         url: 'http://localhost:3000/api/locations/',
         method: 'GET',
@@ -53,6 +56,8 @@ const Equipment = () => {
       setEquipmentData(EquipmentWithLocation);
     } catch (error) {
       console.error('Error fetching equipment and locations:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,93 +181,116 @@ const Equipment = () => {
   console.log('equipmentData', equipmentData);
   return (
     <div className="p-4">
-      <h2
-        className="text-2xl font-semibold mb-4"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        قائمة المعدات
-      </h2>
+      <div className="flex justify-between justify-center">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة المعدات
+        </h2>
 
-      {/* Add Equipment Button */}
-      <button
-        onClick={() => {
-          // Clear the form state for adding new equipment
-          setEquipmentName('');
-          setEquipmentLocation('');
-          setEquipmentAmount('');
-          setEditingEquipmentId(null); // Ensure editing ID is null
-          setIsModalOpen(true);
-        }}
-        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة معدات
-      </button>
+        {/* Add Equipment Button */}
+        <button
+          onClick={() => {
+            // Clear the form state for adding new equipment
+            setEquipmentName('');
+            setEquipmentLocation('');
+            setEquipmentAmount('');
+            setEditingEquipmentId(null); // Ensure editing ID is null
+            setIsModalOpen(true);
+          }}
+          className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة معدات
+        </button>
+      </div>
 
       {/* Equipment Table */}
-      <table className="min-w-full border-collapse border border-gray-200 mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">اسم المعدات</th>
-            <th className="border px-4 py-2">الموقع</th>
-            <th className="border px-4 py-2">الكمية</th>
-            <th className="border px-4 py-2">نعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {equipmentData.map((equipment) => (
-            <tr key={equipment?.Equipment_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">{equipment.Ename}</td>
-              <td className="border px-4 py-2">
-                <a
-                  href={equipment.locationLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-blue-500"
-                >
-                  {equipment.locationName}
-                </a>
-              </td>
-              <td className="border px-4 py-2">{equipment.Quantity}</td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEditEquipment(equipment.Equipment_ID)}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => confirmDelete(equipment.Equipment_ID)}
-                  className="bg-red-600 text-white hover:text-white px-4 py-2 rounded-lg"
-                >
-                  حذف
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : equipmentData.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد معدات للعرض</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">اسم المعدات</th>
+                <th className="border px-4 py-2 text-center">الموقع</th>
+                <th className="border px-4 py-2 text-center">الكمية</th>
+                <th className="border px-4 py-2 text-center">نعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              {equipmentData.map((equipment) => (
+                <tr key={equipment?.Equipment_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    {equipment.Ename}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <a
+                      href={equipment.locationLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-blue-500"
+                    >
+                      {equipment.locationName}
+                    </a>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {equipment.Quantity}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() =>
+                        handleEditEquipment(equipment.Equipment_ID)
+                      }
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => confirmDelete(equipment.Equipment_ID)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Modal for Adding or Editing Equipment */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
               {editingEquipmentId ? 'تعديل المعدات' : 'إضافة معدات'}
             </h3>
             <form
               onSubmit={
                 editingEquipmentId ? handleUpdateEquipment : handleAddEquipment
               }
+              className="space-y-4"
             >
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="equipmentName"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   اسم المعدات
                 </label>
@@ -272,15 +300,15 @@ const Equipment = () => {
                   value={equipmentName}
                   onChange={(e) => setEquipmentName(e.target.value)}
                   id="equipmentName"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="equipmentLocation"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الموقع
                 </label>
@@ -289,7 +317,7 @@ const Equipment = () => {
                   value={equipmentLocation}
                   onChange={(e) => setEquipmentLocation(e.target.value)}
                   id="equipmentLocation"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 >
                   <option value="" disabled>
@@ -303,10 +331,10 @@ const Equipment = () => {
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="equipmentAmount"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الكمية
                 </label>
@@ -316,7 +344,7 @@ const Equipment = () => {
                   value={equipmentAmount}
                   onChange={(e) => setEquipmentAmount(e.target.value)}
                   id="equipmentAmount"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
@@ -344,10 +372,15 @@ const Equipment = () => {
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">هل أنت متأكد من الحذف؟</h3>
-            <p className="mb-4">سيتم حذف المعدات بشكل دائم.</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
+            <p>هل أنت متأكد أنك تريد حذف هذه المعدات؟</p>
             <div className="flex justify-between">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
@@ -357,7 +390,7 @@ const Equipment = () => {
               </button>
               <button
                 onClick={handleDeleteEquipment}
-                className="bg-red-600 text-white hover:text-white px-4 py-2 rounded-lg"
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 حذف
               </button>
