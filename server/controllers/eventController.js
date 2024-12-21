@@ -191,7 +191,8 @@ exports.updateEvent = async (req, res) => {
 exports.getEventAttendees = async (req, res) => {
   const { event_id } = req.params;
   try {
-    const query = `SELECT 
+    const query = `SELECT
+    ea.*,
     u."User_ID",
     u."Fname",
     u."Lname",
