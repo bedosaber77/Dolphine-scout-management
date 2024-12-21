@@ -265,6 +265,7 @@ const AppHeader = () => {
   const isHomePage = location.pathname === '/';
 
   const handleDashboardRoute = () => {
+    toggleDropdown();
     if (accessToken) {
       if (user?.role) {
         if (user?.role === 'Scoutleader' && user?.isAdmin)
@@ -274,6 +275,13 @@ const AppHeader = () => {
     }
   };
 
+  const handleSettingsRoute = () => {
+    toggleDropdown();
+    if (accessToken) {
+      //console.log('Settings');
+      navigate('/settings');
+    }
+  };
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
 
@@ -363,15 +371,26 @@ const AppHeader = () => {
                     <li>
                       <button
                         onClick={handleDashboardRoute}
-                        className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 w-full text-left"
+                        className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 w-full text-center"
                       >
                         لوحة التحكم
                       </button>
                     </li>
                     <li>
                       <button
-                        onClick={() => logout((path) => navigate(path))}
-                        className="block px-4 py-2 text-red-600 hover:bg-red-100 w-full text-left"
+                        onClick={handleSettingsRoute}
+                        className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 text-center text-xl w-full"
+                      >
+                        اعدادات الحساب
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          toggleDropdown();
+                          logout((path) => navigate(path));
+                        }}
+                        className="block px-4 py-2 text-red-600 hover:bg-red-100 w-full text-center"
                       >
                         تسجيل الخروج
                       </button>

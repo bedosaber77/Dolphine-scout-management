@@ -77,8 +77,7 @@ const useAuthStore = create((set) => ({
           user: result.user,
           loading: false,
         });
-
-        //await fetchUserDetails(result.user.id);
+        // await fetchUserDetailsloc(result.user.User_ID);
       } else {
         set({ user: null, accessToken: null, loading: false });
       }
@@ -87,27 +86,48 @@ const useAuthStore = create((set) => ({
       set({ user: null, accessToken: null, loading: false });
     }
   },
+  fetchUserDetails: async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/users/${userId}`,
+        {
+          headers: {
+            accessToken: useAuthStore.getState().accessToken,
+          },
+        }
+      );
+      const result = response.data;
+      const { password, ...res } = result;
+      console.log(response);
+      if (response.status === 200) {
+        useAuthStore.setState({ user: res });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  },
 }));
 
-const fetchUserDetails = async (userId) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:3000/api/users/${userId}`,
-      {
-        headers: {
-          accessToken: useAuthStore.getState().accessToken,
-        },
-      }
-    );
-    const result = response.data;
-    console.log(response);
-    if (response.status === 200) {
-      useAuthStore.setState({ user: result });
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
+// const fetchUserDetailsloc = async (userId) => {
+//   try {
+//     const response = await axios.get(
+//       `http://localhost:3000/api/users/${userId}`,
+//       {
+//         headers: {
+//           accessToken: useAuthStore.getState().accessToken,
+//         },
+//       }
+//     );
+//     const result = response.data;
+//     const { password, ...res } = result;
+//     console.log(response);
+//     if (response.status === 200) {
+//       useAuthStore.setState({ user: res });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//   }
+// };
 
 useAuthStore.subscribe((state) => console.log('State changed:', state));
 
