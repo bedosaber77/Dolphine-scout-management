@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import AchievementCard from '../components/AchievementCard';
 import useApi from '../hooks/useApi';
 import { BiUpArrowAlt } from 'react-icons/bi';
+import useAuthStore from '../store/authStore';
 
 const AllAchievementsPage = () => {
   const apiRequest = useApi();
   const [achievements, setAchievements] = useState([]);
   const [levelAsc, setLevelAsc] = useState(true);
+  const user = useAuthStore((state) => state.user);
 
   const totalAchievements = 10;
 
@@ -14,7 +16,7 @@ const AllAchievementsPage = () => {
     const fetchAchievements = async () => {
       try {
         const response = await apiRequest({
-          url: 'http://localhost:3000/api/achievements',
+          url: `http://localhost:3000/api/scouts/${user?.User_ID}/achievements`,
           method: 'GET',
         });
         setAchievements(response.data);

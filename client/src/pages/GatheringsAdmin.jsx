@@ -342,7 +342,7 @@ const GatheringsAdmin = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3 h-3/4 overflow-y-scroll scrollbar-hide">
             <h3 className="text-xl mb-4 font-bold">
               {isEditMode ? 'تعديل' : 'إضافة'} اجتماع
             </h3>

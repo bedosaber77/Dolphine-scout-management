@@ -10,8 +10,7 @@ const Verifications = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [role, setRole] = useState('');
   const [extraAttributes, setExtraAttributes] = useState({});
-  const [childrenIDs, setChildrenIDs] = useState([]); // Child inputs
-  const [relationship, setRelationship] = useState([]); // Track relationships for children
+  const [gender, setgender] = useState([]); // Track genders for children
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -40,7 +39,6 @@ const Verifications = () => {
     setSelectedUser(user);
     setRole('');
     setExtraAttributes({});
-    setChildrenIDs([]);
     setIsRoleDialogOpen(true);
   };
 
@@ -68,24 +66,13 @@ const Verifications = () => {
     setExtraAttributes({ ...extraAttributes, [name]: value });
   };
 
-  const handleChildCountChange = (e) => {
-    const count = parseInt(e.target.value, 10);
-    setChildrenIDs(Array(count).fill('')); 
-  };
-
-  const handleChildIDChange = (index, value) => {
-    const updatedChildren = [...childrenIDs];
-    updatedChildren[index] = value;
-    setChildrenIDs(updatedChildren);
-  };
-
   const handleConfirmVerification = async () => {
     if (!role) {
       alert('يرجى اختيار دور للمستخدم');
       return;
     }
 
-    if (role === 'parent' && !relationship) {
+    if (role === 'parent' && !gender) {
       alert('يرجى اختيار العلاقة (الأب أو الأم)');
       return;
     }
@@ -97,47 +84,35 @@ const Verifications = () => {
       console.log(payload);
 
       if (role === 'Scout') {
-          url = 'http://localhost:3000/api/scouts';
-          await apiRequest({ url, method: 'POST', data: payload });
+        url = 'http://localhost:3000/api/scouts';
+        await apiRequest({ url, method: 'POST', data: payload });
 
-          await apiRequest({
-            url: `http://localhost:3000/api/users/${userID}`,
-            method: 'PATCH',
-            data: { role: role },
-          });
+        await apiRequest({
+          url: `http://localhost:3000/api/users/${userID}`,
+          method: 'PATCH',
+          data: { role: role },
+        });
       } else if (role === 'Scoutleader') {
-          url = 'http://localhost:3000/api/scoutleaders';
-          await apiRequest({ url, method: 'POST', data: payload });
+        url = 'http://localhost:3000/api/scoutleaders';
+        await apiRequest({ url, method: 'POST', data: payload });
 
-          await apiRequest({
-            url: `http://localhost:3000/api/users/${userID}`,
-            method: 'PATCH',
-            data: { role: role },
-          });
-        
+        await apiRequest({
+          url: `http://localhost:3000/api/users/${userID}`,
+          method: 'PATCH',
+          data: { role: role },
+        });
       } else if (role === 'Parent') {
-          url = 'http://localhost:3000/api/parents';
-          await apiRequest({ url, method: 'POST', data: { User_ID: userID } });
-
-          for (const childID of childrenIDs) {
-            if (childID) {
-              await apiRequest({
-                url: `http://localhost:3000/api/parents/${userID}/scouts`,
-                method: 'POST',
-                data: {
-                  id: userID.toString(),
-                  scout_id: childID.toString(),
-                  relationship: relationship,
-                },
-              });
-            }
-          }
-
-          await apiRequest({
-            url: `http://localhost:3000/api/users/${userID}`,
-            method: 'PATCH',
-            data: { role: role },
-          });
+        url = 'http://localhost:3000/api/parents';
+        await apiRequest({
+          url,
+          method: 'POST',
+          data: { User_ID: userID, Gender: gender },
+        });
+        await apiRequest({
+          url: `http://localhost:3000/api/users/${userID}`,
+          method: 'PATCH',
+          data: { role: role },
+        });
         fetchData();
         setIsRoleDialogOpen(false);
         setSelectedUser(null);
@@ -318,39 +293,14 @@ const Verifications = () => {
                       العلاقة
                     </label>
                     <select
-                      onChange={(e) => setRelationship(e.target.value)}
+                      onChange={(e) => setgender(e.target.value)}
                       className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                     >
                       <option value="">اختر العلاقة</option>
-                      <option value="Father">الأب</option>
-                      <option value="Mother">الأم</option>
+                      <option value="Male">الأب</option>
+                      <option value="Female">الأم</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xl font-medium mb-1">
-                      عدد الأطفال
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      onChange={handleChildCountChange}
-                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
-                    />
-                  </div>
-                  {childrenIDs.map((_, index) => (
-                    <div key={index}>
-                      <label className="block text-xl font-medium mb-1">
-                        رقم المعرف للطفل {index + 1}
-                      </label>
-                      <input
-                        type="text"
-                        onChange={(e) =>
-                          handleChildIDChange(index, e.target.value)
-                        }
-                        className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
-                      />
-                    </div>
-                  ))}
                 </>
               )}
 
@@ -411,8 +361,8 @@ const Verifications = () => {
             <h3
               className="text-xl mb-4 font-bold"
               style={{ color: 'var(--secondary-color)' }}
-            
-              >تأكيد الحذف
+            >
+              تأكيد الحذف
             </h3>
             <p>هل أنت متأكد من أنك تريد حذف هذا حساب {userToDelete.Fname} ؟</p>
             <div className="flex justify-between">

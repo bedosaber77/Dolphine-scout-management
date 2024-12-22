@@ -10,7 +10,7 @@ const ScoutProtectedRoute = () => {
     return <div>Loading...</div>; // Render loading indicator
   }
 
-  if (user?.role === 'scout')
+  if (user?.role === 'Scout')
     return <Outlet />; //commented out the role check to test the layout
   else return <Navigate to="/" replace={true} />;
 };

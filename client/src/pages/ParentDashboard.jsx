@@ -25,9 +25,7 @@ const ParentDashboard = () => {
           method: 'GET',
         });
         const childrenFetch = await apiRequest({
-          url: `http://localhost:3000/api/parents/${
-            /*user?.User_ID*/ 2
-          }/scouts`,
+          url: `http://localhost:3000/api/parents/${user?.User_ID}/scouts`,
           method: 'GET',
         });
 
@@ -38,7 +36,11 @@ const ParentDashboard = () => {
           })
         );
 
-        setAnnouncements(announcementsFetch.data);
+        setAnnouncements(
+          announcementsFetch.data.filter((announcement) => {
+            return announcement.Visibility.includes('P');
+          })
+        );
       } catch (err) {
         console.error(err);
       }
