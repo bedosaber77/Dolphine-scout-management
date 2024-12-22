@@ -135,7 +135,9 @@ const GatheringsAdmin = () => {
           }
         );
         await apiRequest({
-          url: `${import.meta.env.VITE_BASEURL}/api/gatherings/${selectedEventID}`,
+          url: `${
+            import.meta.env.VITE_BASEURL
+          }/api/gatherings/${selectedEventID}`,
           method: 'PUT',
           data: event,
         });
@@ -589,7 +591,24 @@ const GatheringsAdmin = () => {
               <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    // empty the form state
+                    setIsModalOpen(false);
+                    setImages([]);
+                    setEvent({
+                      Budget: '',
+                      Ename: '',
+                      Edate: '',
+                      Location_ID: '',
+                      ScoutLeader_ID: '',
+                      GeneralOutcome: '',
+                      EducationalOutcome: '',
+                      PhysicalOutcome: '',
+                      ScientificOutcome: '',
+                      ArtOutcome: '',
+                      ExtraOutcome: '',
+                    });
+                  }}
                   className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
