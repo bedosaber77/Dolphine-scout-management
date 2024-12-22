@@ -2,22 +2,17 @@
   "version": 2,
   "builds": [
     {
-      "src": "./index.js",
+      "src": "index.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": [
-          "./index.js",
-          "package.json",
-          "package-lock.json",
-          "./*"
-        ]
+        "includeFiles": ["**"]
       }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "./index.js"
+      "dest": "index.js"
     }
   ]
 }
