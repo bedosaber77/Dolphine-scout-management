@@ -30,9 +30,14 @@ const query = async (text, params) => {
     throw error;
   }
 };
-const testQuery = async () => {
-  const result = await query('SELECT NOW()');
-  console.log(result.rows[0]);
+const testQuery = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT version();');
+    res.status(200).send(result.rows[0].version);
+  } catch (error) {
+    console.error('Database query error:', error);
+    res.status(500).send('Internal Server Error');
+  }
 };
 module.exports = {
   connect,

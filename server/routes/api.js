@@ -16,6 +16,7 @@ const eventRouter = require('./eventRoute');
 const gatheringRouter = require('./gatheringRoute');
 const campRouter = require('./campRoute');
 const statisticsRoute = require('./statisticsRoute');
+const db = require('../config/DBmanager');
 const authorization = require('../middlewares/authorization');
 
 apiRouter.use('/auth', authRouter);
@@ -38,5 +39,9 @@ apiRouter.use('/gatherings', authorization, gatheringRouter);
 apiRouter.use('/camps', authorization, campRouter);
 apiRouter.use('/parents', authorization, parentRouter);
 apiRouter.use('/statistics', authorization, statisticsRoute);
+
+apiRouter.get('/', async (req, res) => {
+  db.testQuery(req, res);
+});
 
 module.exports = apiRouter;
