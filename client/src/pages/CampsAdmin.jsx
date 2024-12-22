@@ -3,6 +3,7 @@ import useApi from '../hooks/useApi';
 
 const CampsAdmin = () => {
   const apiRequest = useApi();
+  const [loading, setLoading] = useState(true);
 
   const [locations, setLocations] = useState([]);
   const [scoutLeaders, setScoutLeaders] = useState([]);
@@ -76,6 +77,7 @@ const CampsAdmin = () => {
 
     const fetchData = async () => {
       try {
+        setLoading(true);
         const eventsResponse = await fetchEventsData();
         const locationsResponse = await fetchLocations();
         const scoutLeadersResponse = await fetchScoutLeaders();
@@ -84,6 +86,8 @@ const CampsAdmin = () => {
         setScoutLeaders(scoutLeadersResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -201,112 +205,131 @@ const CampsAdmin = () => {
   };
 
   return (
-    <>
-      <h2
-        className="mb-4 text-2xl font-bold"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        قائمة المعسكرات
-      </h2>
+    <div className="p-4 rounded-2xl">
+      <div className="flex justify-between justify-center">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة المعسكرات
+        </h2>
 
-      {/* Add event Button */}
-      <button
-        onClick={() => {
-          // Clear the form state for adding new equipment
-          setEvent({
-            Budget: '',
-            Ename: '',
-            Edate: '',
-            Location_ID: '',
-            ScoutLeader_ID: '',
-            Season: '',
-            Duration: '',
-          });
-          setIsModalOpen(true);
-        }}
-        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة معسكر
-      </button>
+        {/* Add event Button */}
+        <button
+          onClick={() => {
+            // Clear the form state for adding new equipment
+            setEvent({
+              Budget: '',
+              Ename: '',
+              Edate: '',
+              Location_ID: '',
+              ScoutLeader_ID: '',
+              Season: '',
+              Duration: '',
+            });
+            setIsModalOpen(true);
+          }}
+          className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة معسكر
+        </button>
+      </div>
 
-      {/* Events Table */}
-      <table className="min-w-full border-collapse border border-gray-200 mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">المعسكر</th>
-            <th className="border px-4 py-2">الميزانية</th>
-            <th className="border px-4 py-2">التاريخ</th>
-            <th className="border px-4 py-2">الموقع</th>
-            <th className="border px-4 py-2">القائد</th>
-            <th className="border px-4 py-2">المدة (يوم)</th>
-            <th className="border px-4 py-2">الموسم</th>
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {processedEvents.map((event) => (
-            <tr key={event.Event_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">
-                <a
-                  href={`/events/${event.Event_ID}`}
-                  className="text-blue-500 hover:underline"
-                >
-                  {event.Ename}
-                </a>
-              </td>
-              <td className="border px-4 py-2">{event.Budget || 'لا توجد'}</td>
-              <td className="border px-4 py-2">
-                {new Date(event?.Edate).toLocaleDateString('ar-EG', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                }) || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.LocationName || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.LeaderName || 'لا يوجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event?.Duration?.days || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">{event.Season || 'لا توجد'}</td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEdit(event.Event_ID)}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(event.Event_ID)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
-                >
-                  حذف
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : processedEvents.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد معسكرات للعرض</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">المعسكر</th>
+                <th className="border px-4 py-2 text-center">الميزانية</th>
+                <th className="border px-4 py-2 text-center">التاريخ</th>
+                <th className="border px-4 py-2 text-center">الموقع</th>
+                <th className="border px-4 py-2 text-center">القائد</th>
+                <th className="border px-4 py-2 text-center">المدة (يوم)</th>
+                <th className="border px-4 py-2 text-center">الموسم</th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              {processedEvents.map((event) => (
+                <tr key={event.Event_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    <a
+                      href={`/events/${event.Event_ID}`}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {event.Ename}
+                    </a>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.Budget || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {new Date(event?.Edate).toLocaleDateString('ar-EG', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    }) || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.LocationName || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.LeaderName || 'لا يوجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event?.Duration?.days || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.Season || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEdit(event.Event_ID)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(event.Event_ID)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto hide-scrollbar">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
               {isEditMode ? 'تعديل' : 'إضافة'} معسكر
             </h3>
-            <form onSubmit={handleSubmitEvent}>
-              <div className="mb-4">
+            <form onSubmit={handleSubmitEvent} className="space-y-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Ename"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   اسم المعسكر
                 </label>
@@ -316,15 +339,15 @@ const CampsAdmin = () => {
                   value={event?.Ename}
                   onChange={onChange}
                   id="Ename"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Budget"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الميزانية
                 </label>
@@ -334,14 +357,14 @@ const CampsAdmin = () => {
                   value={event?.Budget}
                   onChange={onChange}
                   id="Budget"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Edate"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   التاريخ
                 </label>
@@ -351,13 +374,13 @@ const CampsAdmin = () => {
                   value={event?.Edate?.split('T')[0]}
                   onChange={onChange}
                   id="Edate"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Duration"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   المدة
                 </label>
@@ -367,13 +390,13 @@ const CampsAdmin = () => {
                   value={event?.Duration?.days}
                   onChange={onChange}
                   id="Duration"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Season"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الموسم
                 </label>
@@ -383,19 +406,19 @@ const CampsAdmin = () => {
                   value={event?.Season}
                   onChange={onChange}
                   id="Season"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Location"
-                  className="block text-sm font-medium text-gray-700"
                 ></label>
                 <select
                   name="Location_ID"
                   onChange={onChange}
                   value={event?.Location_ID}
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="" disabled>
                     اختر الموقع
@@ -410,16 +433,16 @@ const CampsAdmin = () => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Leader"
-                  className="block text-sm font-medium text-gray-700"
                 ></label>
                 <select
                   name="ScoutLeader_ID"
                   onChange={onChange}
                   value={event?.ScoutLeader_ID}
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="" disabled>
                     اختر القائد
@@ -434,10 +457,10 @@ const CampsAdmin = () => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="imageUpload"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   رفع الصور
                 </label>
@@ -448,7 +471,7 @@ const CampsAdmin = () => {
                   name="images"
                   multiple
                   onChange={handleImageChange}
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
 
@@ -475,10 +498,15 @@ const CampsAdmin = () => {
 
       {/* Delete Confirmation Dialog */}
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
-            <p>هل أنت متأكد أنك تريد حذف هذا الحدث؟</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
+            <p>هل أنت متأكد أنك تريد حذف هذا المعسكر ؟</p>
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -488,7 +516,7 @@ const CampsAdmin = () => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 حذف
               </button>
@@ -496,7 +524,7 @@ const CampsAdmin = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

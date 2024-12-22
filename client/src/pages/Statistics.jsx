@@ -107,6 +107,7 @@ const renderActiveShape = (props) => {
 };
 
 const Statistics = () => {
+    const [loading, setLoading] = useState(true);
   const [scoutsStatistics, setScoutsStatistics] = useState([]);
   const [transactionsStatistics, setTransactionsStatistics] = useState([]);
   const [eventsAttendanceStatistics, setEventsAttendanceStatistics] = useState(
@@ -145,6 +146,7 @@ const Statistics = () => {
 
     const fetchData = async () => {
       try {
+        setLoading(true);
         const [
           scoutsStatisticsfetch,
           transactionsStatisticsfetch,
@@ -168,22 +170,29 @@ const Statistics = () => {
         setEventsAttendanceStatistics(eventsAttendanceStatisticsfetch.data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, [apiRequest]);
 
   return (
-    <>
+    <div className="p-4 rounded-2xl">
       <h2
-        className="mb-4 text-2xl font-bold"
+        className="mb-4 text-3xl font-bold"
         style={{ color: 'var(--secondary-color)' }}
       >
         قائمة الإحصائيات
       </h2>
-      <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 gap-10">
-        <div className="bg-white-100 p-4 shadow-md rounded-md" dir="ltr">
-          <h3 className="text-lg font-semibold mb-2"> الكشافة</h3>
+      <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 gap-10 ">
+        <div className="bg-white-100 p-4 shadow-md rounded-xl" dir="ltr">
+          <h3
+            className="text-2xl font-semibold mb-2"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            الكشافة
+          </h3>
           <PieChart width={400} height={400}>
             <Pie
               activeIndex={activeIndex}
@@ -200,10 +209,15 @@ const Statistics = () => {
           </PieChart>
         </div>
         <div
-          className="bg-white-100 p-4 shadow-md rounded-md flex flex-col justify-center"
+          className="bg-white-100 p-4 shadow-md rounded-md flex flex-col "
           dir="ltr"
         >
-          <h3 className="text-lg font-semibold mb-2">معاملات العام الحالي</h3>
+          <h3
+            className="text-2xl font-semibold mb-2"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            معاملات العام الحالي
+          </h3>
           <ResponsiveContainer width={'100%'} height={300}>
             <BarChart
               data={transactionsStatistics}
@@ -233,7 +247,11 @@ const Statistics = () => {
           </ResponsiveContainer>
         </div>
         <div className="bg-white-100 p-4 shadow-md rounded-md" dir="ltr">
-          <h3 className="text-lg font-semibold mb-2">إحصائيات الغياب</h3>
+          <h3
+            className="text-2xl font-semibold mb-2"
+            style={{ color: 'var(--secondary-color)' }}
+            >إحصائيات الغياب
+          </h3>
           <ResponsiveContainer width={'100%'} height={300}>
             <LineChart data={eventsAttendanceStatistics} margin={{ top: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -251,7 +269,7 @@ const Statistics = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
