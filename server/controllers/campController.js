@@ -8,9 +8,6 @@ exports.getAllCamps = async (req, res) => {
      INNER JOIN "Event" E
      ON E."Event_ID" = C."Event_ID"`;
     const camps = await db.query(query);
-    if (camps.rowCount === 0) {
-      return res.status(404).json({ message: 'No camps found' });
-    }
     return res.json(camps.rows);
   } catch (error) {
     console.log('Error executing query', error);
