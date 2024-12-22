@@ -11,7 +11,7 @@ const ParentProtectedRoute = () => {
     return <div>Loading...</div>; // Render loading indicator
   }
 
-  if (user?.role === 'parent') {
+  if (user?.role === 'Parent') {
     /*commented out the role check to test the layout*/
     return (
       <>
