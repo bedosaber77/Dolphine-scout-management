@@ -20,7 +20,7 @@ Router.route('/:id/achievements')
   .get(validateScoutID, scoutController.getScoutAchievements)
   .post(validateScoutAchievement, scoutController.addScoutAchievement);
 
-Router.route('/:id/achievements:achievement_id').delete(
+Router.route('/:id/achievements/:achievement_id').delete(
   scoutController.deleteScoutAchievement
 );
 

@@ -1,15 +1,15 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  //   connectionString: process.env.connectionString,
-  //   ssl: {
-  //     rejectUnauthorized: false,
-  //   },
-  host: 'localhost',
-  port: process.env.DBPORT || 5432,
-  user: process.env.DBUSER || 'postgres',
-  password: process.env.DBPASS || '1234',
-  database: process.env.DBNAME || 'Db project',
+  connectionString: process.env.connectionString,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  // host: 'localhost',
+  // port: process.env.DBPORT || 5432,
+  // user: process.env.DBUSER || 'postgres',
+  // password: process.env.DBPASS || '1234',
+  // database: process.env.DBNAME || 'Db project',
 });
 
 const connect = async () => {
@@ -30,9 +30,14 @@ const query = async (text, params) => {
     throw error;
   }
 };
-const testQuery = async () => {
-  const result = await query('SELECT NOW()');
-  console.log(result.rows[0]);
+const testQuery = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT version();');
+    res.status(200).send(result.rows[0].version);
+  } catch (error) {
+    console.error('Database query error:', error);
+    res.status(500).send('Internal Server Error');
+  }
 };
 module.exports = {
   connect,
