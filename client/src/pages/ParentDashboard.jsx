@@ -26,8 +26,9 @@ const ParentDashboard = () => {
         });
         const childrenFetch = await apiRequest({
           url: `${import.meta.env.VITE_BASEURL}/api/parents/${
-            /*user?.User_ID*/ 2
+            user?.User_ID
           }/scouts`,
+
           method: 'GET',
         });
 
@@ -38,7 +39,11 @@ const ParentDashboard = () => {
           })
         );
 
-        setAnnouncements(announcementsFetch.data);
+        setAnnouncements(
+          announcementsFetch.data.filter((announcement) => {
+            return announcement.Visibility.includes('P');
+          })
+        );
       } catch (err) {
         console.error(err);
       }

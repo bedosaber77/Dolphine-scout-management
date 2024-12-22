@@ -95,7 +95,7 @@ const AppRoutes = () => {
           element: <Dashboard />,
           children: [
             {
-              path: 'scout',
+              path: 'Scout',
               element: <ScoutProtectedRoute />,
               children: [
                 {

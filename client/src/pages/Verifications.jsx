@@ -4,14 +4,24 @@ import useApi from '../hooks/useApi';
 const Verifications = () => {
   const apiRequest = useApi();
   const [usersData, setUsersData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
+  const [loading, setLoading] = useState(true);
+  const [parents, setParents] = useState([]);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [role, setRole] = useState('');
-  const [extraAttributes, setExtraAttributes] = useState({});
-  const [childrenIDs, setChildrenIDs] = useState([]); // Child inputs
-  const [relationship, setRelationship] = useState([]); // Track relationships for children
+  const [extraAttributes, setExtraAttributes] = useState({
+    rank: '',
+    Birthdate: '',
+    academicYear: '',
+    joinDate: '',
+    PaperSubmitted: '',
+    Father: '',
+    Mother: '',
+    startDate: '',
+    isAdmin: '',
+  });
+  const [gender, setgender] = useState([]); // Track genders for children
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -23,6 +33,11 @@ const Verifications = () => {
         url: `${import.meta.env.VITE_BASEURL}/api/users/unverified`,
         method: 'GET',
       });
+      const parentsFetch = await apiRequest({
+        url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+        method: 'GET',
+      });
+      setParents(parentsFetch.data);
       setUsersData(usersFetch.data);
       console.log(usersFetch.data);
     } catch (error) {
@@ -40,7 +55,6 @@ const Verifications = () => {
     setSelectedUser(user);
     setRole('');
     setExtraAttributes({});
-    setChildrenIDs([]);
     setIsRoleDialogOpen(true);
   };
 
@@ -52,7 +66,9 @@ const Verifications = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `${import.meta.env.VITE_BASEURL}/api/users/${userToDelete.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${
+          userToDelete.User_ID
+        }`,
         method: 'DELETE',
       });
       fetchData();
@@ -68,24 +84,13 @@ const Verifications = () => {
     setExtraAttributes({ ...extraAttributes, [name]: value });
   };
 
-  const handleChildCountChange = (e) => {
-    const count = parseInt(e.target.value, 10);
-    setChildrenIDs(Array(count).fill('')); 
-  };
-
-  const handleChildIDChange = (index, value) => {
-    const updatedChildren = [...childrenIDs];
-    updatedChildren[index] = value;
-    setChildrenIDs(updatedChildren);
-  };
-
   const handleConfirmVerification = async () => {
     if (!role) {
       alert('يرجى اختيار دور للمستخدم');
       return;
     }
 
-    if (role === 'parent' && !relationship) {
+    if (role === 'parent' && !gender) {
       alert('يرجى اختيار العلاقة (الأب أو الأم)');
       return;
     }
@@ -97,47 +102,183 @@ const Verifications = () => {
       console.log(payload);
 
       if (role === 'Scout') {
-          url = `${import.meta.env.VITE_BASEURL}/api/scouts`;
-          await apiRequest({ url, method: 'POST', data: payload });
+        url = `${import.meta.env.VITE_BASEURL}/api/scouts`;
+        await apiRequest({ url, method: 'POST', data: payload });
 
-          await apiRequest({
-            url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
-            method: 'PATCH',
-            data: { role: role },
-          });
-      } else if (role === 'Scoutleader') {
-          url = `${import.meta.env.VITE_BASEURL}/api/scoutleaders`;
-          await apiRequest({ url, method: 'POST', data: payload });
+        await apiRequest({
+          url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
+          method: 'PATCH',
+          data: { role: role },
+        });
 
-          await apiRequest({
-            url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
-            method: 'PATCH',
-            data: { role: role },
-          });
-        
-      } else if (role === 'Parent') {
-          url = `${import.meta.env.VITE_BASEURL}/api/parents`;
-          await apiRequest({ url, method: 'POST', data: { User_ID: userID } });
-
-          for (const childID of childrenIDs) {
-            if (childID) {
-              await apiRequest({
-                url: `${import.meta.env.VITE_BASEURL}/api/parents/${userID}/scouts`,
-                method: 'POST',
-                data: {
-                  id: userID.toString(),
-                  scout_id: childID.toString(),
-                  relationship: relationship,
-                },
-              });
-            }
+        console.log('ff', extraAttributes.Father);
+        console.log('mm', extraAttributes.Mother);
+        if (
+          typeof extraAttributes.Father !== 'undefined' &&
+          typeof extraAttributes.Mother !== 'undefined'
+        ) {
+          console.log('111');
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Father)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Father)
+          ) {
+            console.log('dssdsa?');
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Father, gender: 'Male' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Father
+              }`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
           }
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Mother, gender: 'Female' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Mother
+              }`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          }
+        } else if (typeof extraAttributes.Father !== 'undefined') {
+          console.log('222');
+          console.log(parents);
+          console.log(usersData);
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Father)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Father)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Father, gender: 'Male' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Father
+              }`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          }
+        } else if (typeof extraAttributes.Mother !== 'undefined') {
+          console.log('444');
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Mother, gender: 'Female' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Mother
+              }`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          }
+        }
+      } else if (role === 'Scoutleader') {
+        url = `${import.meta.env.VITE_BASEURL}/api/scoutleaders`;
+        await apiRequest({ url, method: 'POST', data: payload });
 
-          await apiRequest({
-            url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
-            method: 'PATCH',
-            data: { role: role },
-          });
+        await apiRequest({
+          url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
+          method: 'PATCH',
+          data: { role: role },
+        });
+      } else if (role === 'Parent') {
+        url = `${import.meta.env.VITE_BASEURL}/api/parents`;
+        await apiRequest({
+          url,
+          method: 'POST',
+          data: { User_ID: userID, Gender: gender },
+        });
+        await apiRequest({
+          url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
+          method: 'PATCH',
+          data: { role: role },
+        });
         fetchData();
         setIsRoleDialogOpen(false);
         setSelectedUser(null);
@@ -176,6 +317,7 @@ const Verifications = () => {
               style={{ color: 'var(--secondary-color)' }}
             >
               <tr>
+                <th className="border px-4 py-2 text-center">الرقم التعريفي</th>
                 <th className="border px-4 py-2 text-center">اسم المستخدم</th>
                 <th className="border px-4 py-2 text-center">رقم الهاتف</th>
                 <th className="border px-4 py-2 text-center">
@@ -188,6 +330,9 @@ const Verifications = () => {
             <tbody>
               {usersData.map((user) => (
                 <tr key={user.User_ID}>
+                  <td className="border px-4 py-2 text-center">
+                    {user.User_ID}
+                  </td>
                   <td className="border px-4 py-2 text-center">
                     {user.Fname && user.Lname
                       ? `${user.Fname} ${user.Lname}`
@@ -244,7 +389,6 @@ const Verifications = () => {
                 >
                   <option value="">اختر الدور</option>
                   <option value="Scout">كشاف</option>
-                  <option value="Parent">ولى امر</option>
                   <option value="Scoutleader">قائد</option>
                 </select>
               </div>
@@ -308,6 +452,26 @@ const Verifications = () => {
                     />
                     <label className="mr-2 text-xl">تسليم الورق</label>
                   </div>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      الرقم التعريفي للأب
+                    </label>
+                    <input
+                      name="Father"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      الرقم التعريفي للأم
+                    </label>
+                    <input
+                      name="Mother"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
                 </>
               )}
 
@@ -318,39 +482,14 @@ const Verifications = () => {
                       العلاقة
                     </label>
                     <select
-                      onChange={(e) => setRelationship(e.target.value)}
+                      onChange={(e) => setgender(e.target.value)}
                       className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                     >
                       <option value="">اختر العلاقة</option>
-                      <option value="Father">الأب</option>
-                      <option value="Mother">الأم</option>
+                      <option value="Male">الأب</option>
+                      <option value="Female">الأم</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xl font-medium mb-1">
-                      عدد الأطفال
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      onChange={handleChildCountChange}
-                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
-                    />
-                  </div>
-                  {childrenIDs.map((_, index) => (
-                    <div key={index}>
-                      <label className="block text-xl font-medium mb-1">
-                        رقم المعرف للطفل {index + 1}
-                      </label>
-                      <input
-                        type="text"
-                        onChange={(e) =>
-                          handleChildIDChange(index, e.target.value)
-                        }
-                        className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
-                      />
-                    </div>
-                  ))}
                 </>
               )}
 
@@ -411,8 +550,8 @@ const Verifications = () => {
             <h3
               className="text-xl mb-4 font-bold"
               style={{ color: 'var(--secondary-color)' }}
-            
-              >تأكيد الحذف
+            >
+              تأكيد الحذف
             </h3>
             <p>هل أنت متأكد من أنك تريد حذف هذا حساب {userToDelete.Fname} ؟</p>
             <div className="flex justify-between">

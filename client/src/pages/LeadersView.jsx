@@ -6,12 +6,12 @@ const ScoutLeaders = () => {
   const [leadersData, setLeadersData] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [selectedLeader, setSelectedLeader] = useState(null);
+  const [selectedLeader, setSelectedLeader] = useState(null);
 
-const [editAttributes, setEditAttributes] = useState({
+  const [editAttributes, setEditAttributes] = useState({
     startDate: '',
     isAdmin: 'false',
-});
+  });
   const [loading, setLoading] = useState(true); // For loading state
 
   const fetchScoutLeaders = async () => {
@@ -28,7 +28,9 @@ const [editAttributes, setEditAttributes] = useState({
         scoutLeaders.map(async (leader) => {
           try {
             const troopsFetch = await apiRequest({
-              url: `${import.meta.env.VITE_BASEURL}/api/troops/leader/${leader.User_ID}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/troops/leader/${
+                leader.User_ID
+              }`,
               method: 'GET',
               data: { id: leader.User_ID },
             });
@@ -55,7 +57,7 @@ const [editAttributes, setEditAttributes] = useState({
     } finally {
       setLoading(false);
     }
-  }; 
+  };
 
   useEffect(() => {
     fetchScoutLeaders();
@@ -75,12 +77,18 @@ const [editAttributes, setEditAttributes] = useState({
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/${selectedLeader.User_ID}`, //////////////////////////////////
+        url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/${
+          selectedLeader.User_ID
+        }`, //////////////////////////////////
         method: 'DELETE',
       });
-      setLeadersData((prev) =>
-        prev.filter((lead) => lead.User_ID !== selectedLeader.User_ID)
-      );
+      await apiRequest({
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${
+          selectedLeader.User_ID
+        }`,
+        method: 'PATCH',
+        data: { role: null },
+      });
       setIsDeleteDialogOpen(false);
       setSelectedLeader(null);
       fetchScoutLeaders();
@@ -96,28 +104,30 @@ const [editAttributes, setEditAttributes] = useState({
       [name]: type === 'checkbox' ? (checked ? 'true' : 'false') : value,
     }));
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await apiRequest({
-      url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/${selectedLeader.User_ID}`,
-      method: 'PUT',
-      data: editAttributes,
-    });
-    setLeadersData((prevData) =>
-      prevData.map((lead) =>
-        lead.User_ID === selectedLeader.User_ID
-          ? { ...lead, ...editAttributes }
-          : lead
-      )
-    );
-    setIsDialogOpen(false);
-    setSelectedLeader(null);
-    fetchScoutLeaders();
-  } catch (error) {
-    console.error('Error updating leader:', error);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await apiRequest({
+        url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/${
+          selectedLeader.User_ID
+        }`,
+        method: 'PUT',
+        data: editAttributes,
+      });
+      setLeadersData((prevData) =>
+        prevData.map((lead) =>
+          lead.User_ID === selectedLeader.User_ID
+            ? { ...lead, ...editAttributes }
+            : lead
+        )
+      );
+      setIsDialogOpen(false);
+      setSelectedLeader(null);
+      fetchScoutLeaders();
+    } catch (error) {
+      console.error('Error updating leader:', error);
+    }
+  };
 
   return (
     <div className="p-4 rounded-2xl">
@@ -230,7 +240,7 @@ const handleSubmit = async (e) => {
                 <input
                   name="startDate"
                   type="date"
-                  value={editAttributes.startDate}
+                  value={editAttributes.startDate.split('T')[0]}
                   onChange={handleAttributeChange}
                   className="border p-2 w-full mb-2"
                 />

@@ -16,6 +16,8 @@ Router.route('/:id')
   .put(scoutController.updateScout)
   .delete(scoutController.deleteScout);
 
+Router.route('/:id/parents').get(scoutController.getScoutParents);
+
 Router.route('/:id/achievements')
   .get(validateScoutID, scoutController.getScoutAchievements)
   .post(validateScoutAchievement, scoutController.addScoutAchievement);

@@ -482,8 +482,8 @@ const ValidateAddUser = async (req, res, next) => {
 
 const validateParentScout = async (req, res, next) => {
   const { id } = req.params;
-  const { scout_id, relationship } = req.body;
-  console.log(id, scout_id, relationship);
+  const { scout_id } = req.body;
+  console.log(id, scout_id);
 
   if (!id || !scout_id) {
     return res
@@ -496,12 +496,6 @@ const validateParentScout = async (req, res, next) => {
   }
   if (!validate.isInt(scout_id)) {
     return res.status(400).json({ message: 'Invalid scout id' });
-  }
-  const allowedRelationship = ['Father', 'Mother'];
-  if (!allowedRelationship.includes(relationship)) {
-    return res
-      .status(400)
-      .json({ message: `relationship must be one of "Father", "Mother"` });
   }
 
   try {

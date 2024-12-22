@@ -13,134 +13,24 @@ import Announcements from '../components/AnnouncementsContainer';
 import AnnouncementsContainer from '../components/AnnouncementsContainer';
 import AchievementsComponent from '../components/AchievementsComponent';
 
-// const ScoutDashboard = () => {
-//   const apiRequest = useApi();
-
-//   const navigate = useNavigate();
-//   const groupName = 'المجموعة الأولى';
-//   const groupLeader = 'محمد';
-//   const [events, setEvents] = useState([]);
-//   const [attendance, setAttendance] = useState([]);
-//   const [announcements, setAnnouncements] = useState([]);
-//   const [achievements, setAchievements] = useState([]);
-
-//   const user = useAuthStore((state) => state.user);
-//   const accessToken = useAuthStore((state) => state.accessToken);
-
-//   const arr = ['المهارات', 'الأنشطة', 'المهام', 'المشاريع'];
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const eventsFetch = await apiRequest({
-//           url: '${import.meta.env.VITE_BASEURL}/api/events',
-//           method: 'GET',
-//         });
-//         const attendanceFetch = await apiRequest({
-//           url: '${import.meta.env.VITE_BASEURL}/api/scouts/1/attendance',
-//           method: 'GET',
-//         });
-//         const announcementsFetch = await apiRequest({
-//           url: '${import.meta.env.VITE_BASEURL}/api/announcements',
-//           method: 'GET',
-//         });
-//         const achievementsFetch = await apiRequest({
-//           url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
-//             1 /*user?.User_ID*/
-//           }/achievements`,
-//           method: 'GET',
-//         });
-//         console.log('ach', achievementsFetch);
-//         console.log('ann', announcementsFetch);
-//         console.log(eventsFetch);
-//         console.log(attendanceFetch);
-//         setEvents(
-//           eventsFetch.data.filter((event) => {
-//             return new Date(event.Edate) > new Date();
-//           })
-//         );
-
-//         setAttendance(attendanceFetch.data);
-//         setAnnouncements(announcementsFetch.data);
-//         setAchievements(achievementsFetch.data);
-//       } catch (error) {
-//         console.error(error);
-//       }
-//     };
-//     fetchData();
-//   }, [apiRequest]);
-//   console.log('events', events);
-
-//   const upcomingEvents = events.map((event) => {
-//     return {
-//       id: event.Event_ID,
-//       name: event.Ename,
-//       date: new Date(event.Edate).toISOString().split('T')[0],
-//       details: event.Ename,
-//     };
-//   });
-
-//   const attendanceFilter = attendance.map((event) => {
-//     return {
-//       date: new Date(event.Edate).toISOString().split('T')[0],
-//       hasAttended: event.Event_ID != null,
-//     };
-//   });
-
-//   return (
-//     <div className="dashboard flex flex-col md:flex-row gap-4">
-//       <Sidebar />
-//       <div className="main-content col-span-4 grid grid-cols-1 md:grid-cols-[repeat(2,minmax(200px,1fr))] lg:grid-cols-[repeat(5,minmax(200px,1fr))] gap-4">
-//         <div className="profile-details col-span-1 border-2 border-gray-200 lg:col-start-5 lg:col-span-1 lg:row-span-2 rounded-xl p-6 bg-white shadow-md">
-//           <h1 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-100 pb-2">
-//             معلوماتي
-//           </h1>
-//           <p className="text-gray-700 mb-2">
-//             <span className="font-semibold">الاسم:</span>{' '}
-//             {user?.Fname + ' ' + user?.Lname}
-//           </p>
-//           <p className="text-gray-700 mb-2">
-//             <span className="font-semibold">المجموعة:</span> {groupName}
-//           </p>
-//           <p className="text-gray-700">
-//             <span className="font-semibold">قائد المجموعة:</span> {groupLeader}
-//           </p>
-//         </div>
-
-//         <div className="relative announcement border-2 rounded-xl p-4 lg:col-start-1 lg:col-span-2 row-start-1 ">
-//           <h2>الإعلانات</h2>
-//           <AnnouncementsContainer announcements={announcements} />
-//         </div>
-
-//         <div className="calendar border-2 rounded-xl p-4 lg:col-start-3  lg:col-span-2 lg:row-start-1">
-//           <h2>التقويم</h2>
-//           <Calendar attendance={attendanceFilter} />
-//         </div>
-
-//         <div className="upcoming-events border-2 rounded-xl p-4 lg:col-start-3 lg:col-span-2">
-//           <UpcomingEvents events={upcomingEvents} />
-//         </div>
-
-//         <div className="relative achievements border-2 rounded-xl p-4 lg:col-start-1 lg:col-span-2 lg:row-start-2">
-//           <h2>الإنجازات</h2>
-//           <AchievementsComponent achievements={achievements} />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ScoutDashboard;
-
 const ScoutDashboard = () => {
   const apiRequest = useApi();
   const navigate = useNavigate();
-  const groupName = 'المجموعة الأولى';
-  const groupLeader = 'محمد';
   const [events, setEvents] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [achievements, setAchievements] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [announcement, setAnnouncement] = useState({});
+
+  const handleAnnouncementClick = (announcement) => {
+    setAnnouncement(announcement);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
 
   const user = useAuthStore((state) => state.user);
 
@@ -152,7 +42,10 @@ const ScoutDashboard = () => {
           method: 'GET',
         });
         const attendanceFetch = await apiRequest({
-          url: `${import.meta.env.VITE_BASEURL}/api/scouts/1/attendance`,
+          url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
+            user?.User_ID
+          }/attendance`,
+
           method: 'GET',
         });
         const announcementsFetch = await apiRequest({
@@ -161,8 +54,9 @@ const ScoutDashboard = () => {
         });
         const achievementsFetch = await apiRequest({
           url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
-            1 /*user?.User_ID*/
+            user?.User_ID
           }/achievements`,
+
           method: 'GET',
         });
 
@@ -173,7 +67,11 @@ const ScoutDashboard = () => {
         );
 
         setAttendance(attendanceFetch.data);
-        setAnnouncements(announcementsFetch.data);
+        setAnnouncements(
+          announcementsFetch.data.filter((announcement) => {
+            return announcement.Visibility.includes('S');
+          })
+        );
         setAchievements(achievementsFetch.data);
       } catch (error) {
         console.error(error);
@@ -193,6 +91,7 @@ const ScoutDashboard = () => {
 
   const attendanceFilter = attendance.map((event) => {
     return {
+      id: event.Event_ID,
       date: new Date(event.Edate).toISOString().split('T')[0],
       hasAttended: event.Event_ID != null,
     };
@@ -201,40 +100,117 @@ const ScoutDashboard = () => {
   return (
     <div className="main-content col-span-4 grid grid-cols-1 md:grid-cols-[repeat(2,minmax(200px,1fr))] lg:grid-cols-[repeat(5,minmax(200px,1fr))] gap-10">
       <div className="profile-details col-span-1 lg:col-start-5 lg:col-span-1 lg:row-span-2 rounded-xl p-6 bg-white shadow-lg">
-        <h1 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-200 pb-2">
+        <h1 className="text-4xl font-bold text-gray-800 mb-4 border-b-2 border-gray-200 pb-2">
           معلوماتي
         </h1>
         <p className="text-gray-700 mb-2">
-          <span className="font-semibold">الاسم:</span>{' '}
+          <span
+            className="font-semibold"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            الرقم التعريفي:
+          </span>{' '}
+          {user?.User_ID}
+        </p>
+        <p className="text-gray-700 mb-2">
+          <span
+            className="font-semibold"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            الاسم:
+          </span>{' '}
           {user?.Fname + ' ' + user?.Lname}
         </p>
         <p className="text-gray-700 mb-2">
-          <span className="font-semibold">المجموعة:</span> {groupName}
+          <span
+            className="font-semibold"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            البريد الإلكتروني:
+          </span>{' '}
+          {user?.email}
         </p>
-        <p className="text-gray-700">
-          <span className="font-semibold">قائد المجموعة:</span> {groupLeader}
+        <p className="text-gray-700 mb-2">
+          <span
+            className="font-semibold"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            الرتبة:
+          </span>{' '}
+          {user?.rank}
+        </p>
+        <p className="text-gray-700 mb-2">
+          <span
+            className="font-semibold"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            رقم الهاتف:
+          </span>{' '}
+          {user?.Phonenum || 'لا يوجد'}
+        </p>
+        <p className="text-gray-700 mb-2">
+          <span
+            className="font-semibold"
+            style={{ color: 'var(--secondary-color)' }}
+          >
+            السنة الاكاديمية:
+          </span>{' '}
+          {user?.academicYear || 'لا يوجد'}
         </p>
       </div>
 
       <div className="relative announcement lg:col-start-1 lg:col-span-2 row-start-1 bg-white shadow-lg rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">الإعلانات</h2>
-        <AnnouncementsContainer announcements={announcements} />
+        <h1 className="text-4xl font-bold text-gray-800 mb-4 border-b-2 border-gray-200 pb-2">
+          الإعلانات
+        </h1>
+        <AnnouncementsContainer
+          handleAnnouncementClick={handleAnnouncementClick}
+          announcements={announcements}
+        />
       </div>
 
       <div className="calendar lg:col-start-3 lg:col-span-2 lg:row-start-1 bg-white shadow-lg rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">التقويم</h2>
+        <h1 className="text-4xl font-bold text-gray-800 mb-4 border-b-2 border-gray-200 pb-2">
+          التقويم
+        </h1>
         <Calendar attendance={attendanceFilter} />
       </div>
 
       <div className="upcoming-events lg:col-start-3 lg:col-span-2 bg-white shadow-lg rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">الأحداث القادمة</h2>
+        <h1 className="text-4xl font-bold text-gray-800 mb-4 border-b-2 border-gray-200 pb-2">
+          الأحداث القادمة
+        </h1>
         <UpcomingEvents events={upcomingEvents} />
       </div>
 
       <div className="relative achievements lg:col-start-1 lg:col-span-2 lg:row-start-2 bg-white shadow-lg rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">الإنجازات</h2>
+        <h1 className="text-4xl font-bold text-gray-800 mb-4 border-b-2 border-gray-200 pb-2">
+          الإنجازات
+        </h1>
         <AchievementsComponent achievements={achievements} />
       </div>
+      {dialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full flex flex-col gap-4 max-w-md mx-4">
+            <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+              {announcement.Content}
+            </h2>
+            <p className="text-2xl text-gray-600">
+              <span className="font-bold">اولوية:</span> {announcement.Priority}
+            </p>
+            <p className="text-2xl text-gray-600">
+              <span className="font-bold">تاريخ:</span>{' '}
+              {new Date(announcement.CreateDate).toLocaleString()}
+            </p>
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded-lg mt-4"
+              onClick={handleCloseDialog}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

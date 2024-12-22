@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import AchievementCard from '../components/AchievementCard';
 import useApi from '../hooks/useApi';
 import { BiUpArrowAlt } from 'react-icons/bi';
+import useAuthStore from '../store/authStore';
 
 const AllAchievementsPage = () => {
   const apiRequest = useApi();
   const [achievements, setAchievements] = useState([]);
   const [levelAsc, setLevelAsc] = useState(true);
+  const user = useAuthStore((state) => state.user);
 
   const totalAchievements = 10;
 

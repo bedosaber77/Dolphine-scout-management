@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import useApi from '../hooks/useApi';
 import { BiUpArrowAlt } from 'react-icons/bi';
+import useAuthStore from '../store/authStore';
 
 const AllAnnouncementsPage = () => {
   const apiRequest = useApi();
   const [announcements, setAnnouncements] = useState([]);
   const [dateAsc, setDateAsc] = useState(true);
   const [priorityAsc, setPriorityAsc] = useState(true);
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -16,7 +18,20 @@ const AllAnnouncementsPage = () => {
           url: `${import.meta.env.VITE_BASEURL}/api/announcements`,
           method: 'GET',
         });
-        setAnnouncements(response.data);
+        const Visibility =
+          user?.role === 'Scoutleader'
+            ? 'L'
+            : user?.role === 'Scout'
+            ? 'S'
+            : 'P';
+        console.log('before', response.data);
+
+        setAnnouncements(
+          response.data.filter((announcement) => {
+            return announcement.Visibility.includes(Visibility);
+          })
+        );
+        console.log('after', announcements);
       } catch (error) {
         console.error(error);
       }

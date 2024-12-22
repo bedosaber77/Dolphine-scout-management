@@ -23,6 +23,7 @@ const createCalendar = (attendance) => {
     let hoverDetails = '';
     let navigateUrl = '#';
     let eventFound = false;
+    //fdf
 
     if (
       currentEvent < attendance.length &&
@@ -35,7 +36,7 @@ const createCalendar = (attendance) => {
       circleClass = attendance[currentEvent].hasAttended
         ? 'bg-green-500 text-white'
         : 'bg-red-500 text-white';
-      navigateUrl = `/event/${attendance[currentEvent].date}`;
+      navigateUrl = `/events/${attendance[currentEvent].id}`;
       currentEvent++;
     }
 

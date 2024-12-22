@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import useApi from '../hooks/useApi';
 import useAuthStore from '../store/authStore';
 
-
 const Announcements = () => {
   const apiRequest = useApi();
   const user = useAuthStore((state) => state.user);
@@ -90,8 +89,10 @@ const Announcements = () => {
       console.log(newAnnouncement);
       const response = await apiRequest({
         url: announcementToEdit
-          ? `http://localhost:3000/api/announcements/${announcementToEdit.Announcement_ID}`
-          : 'http://localhost:3000/api/announcements/',
+          ? `${import.meta.env.VITE_BASEURL}/api/announcements/${
+              announcementToEdit.Announcement_ID
+            }`
+          : `${import.meta.env.VITE_BASEURL}/api/announcements/`,
         method: announcementToEdit ? 'PUT' : 'POST',
         data: newAnnouncement,
       });
@@ -140,7 +141,9 @@ const Announcements = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/announcements/${announcementToDelete.Announcement_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/announcements/${
+          announcementToDelete.Announcement_ID
+        }`,
         method: 'DELETE',
       });
       setAnnouncementsData(

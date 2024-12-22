@@ -8,12 +8,16 @@ const ScoutsView = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedScout, setSelectedScout] = useState(null);
+  const [parents, setParents] = useState([]);
+  const [users, setUsers] = useState([]);
   const [editAttributes, setEditAttributes] = useState({
     rank: '',
     Birthdate: '',
     academicYear: '',
     joinDate: '',
     PaperSubmitted: 'false',
+    Father: '',
+    Mother: '',
   });
 
   const fetchScouts = async () => {
@@ -23,7 +27,33 @@ const ScoutsView = () => {
         url: `${import.meta.env.VITE_BASEURL}/api/scouts/`,
         method: 'GET',
       });
+      const usersFetch = await apiRequest({
+        url: `${import.meta.env.VITE_BASEURL}/api/users/unverified`,
+        method: 'GET',
+      });
+      const parentsallFetch = await apiRequest({
+        url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+        method: 'GET',
+      });
+      setParents(parentsallFetch.data);
+      setUsers(usersFetch.data);
       const scouts = scoutsFetch.data;
+
+      scouts.forEach(async (scout) => {
+        const parentsFetch = await apiRequest({
+          url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
+            scout.User_ID
+          }/parents`,
+          method: 'GET',
+        });
+        scout.Father = parentsFetch.data.find(
+          (parent) => parent.gender === 'Male'
+        )?.User_ID;
+
+        scout.Mother = parentsFetch.data.find(
+          (parent) => parent.gender === 'Female'
+        )?.User_ID;
+      });
 
       console.log('Fetched scouts:', scouts);
 
@@ -48,6 +78,8 @@ const ScoutsView = () => {
       academicYear: scout.academicYear || '',
       joinDate: scout.joinDate || '',
       PaperSubmitted: scout.PaperSubmitted || 'false',
+      Father: scout.Father || '',
+      Mother: scout.Mother || '',
     });
     setIsDialogOpen(true);
   };
@@ -55,8 +87,17 @@ const ScoutsView = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${selectedScout.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
+          selectedScout.User_ID
+        }`,
         method: 'DELETE',
+      });
+      await apiRequest({
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${
+          selectedScout.User_ID
+        }`,
+        method: 'PATCH',
+        data: { role: null },
       });
       setScoutsData((prev) =>
         prev.filter((scout) => scout.User_ID !== selectedScout.User_ID)
@@ -81,10 +122,230 @@ const ScoutsView = () => {
     e.preventDefault();
     try {
       await apiRequest({
-        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${selectedScout.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
+          selectedScout.User_ID
+        }`,
         method: 'PUT',
         data: editAttributes,
       });
+      if (editAttributes.Father != selectedScout.Father) {
+        if (typeof selectedScout.Father === 'undefined') {
+          if (
+            parents.some((parent) => parent.User_ID == editAttributes.Father)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Father
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: selectedScout.User_ID.toString() },
+            });
+          } else if (
+            users.some((user) => user.User_ID == editAttributes.Father)
+          ) {
+            console.log('dssdsa?');
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+              method: 'POST',
+              data: { User_ID: editAttributes.Father, gender: 'Male' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                editAttributes.Father
+              }`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Father
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: selectedScout.User_ID.toString() },
+            });
+          }
+        } else if (
+          typeof editAttributes.Father === 'undefined' ||
+          editAttributes.Father === ''
+        ) {
+          await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts/${selectedScout.User_ID}`,
+            method: 'DELETE',
+          });
+          const children = await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts`,
+            method: 'GET',
+          });
+          if (children.data.length == 0) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Father
+              }`,
+              method: 'DELETE',
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Father
+              }`,
+              method: 'PATCH',
+              data: { role: null },
+            });
+          }
+        } else if (
+          typeof editAttributes.Father !== 'undefined' &&
+          editAttributes.Father !== '' &&
+          typeof selectedScout.Father !== 'undefined'
+        ) {
+          await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts/${selectedScout.User_ID}`,
+            method: 'DELETE',
+          });
+          const children = await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts`,
+            method: 'GET',
+          });
+          if (children.data.length == 0) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Father
+              }`,
+              method: 'DELETE',
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Father
+              }`,
+              method: 'PATCH',
+              data: { role: null },
+            });
+          }
+          await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              editAttributes.Father
+            }/scouts`,
+            method: 'POST',
+            data: { scout_id: selectedScout.User_ID.toString() },
+          });
+        }
+      }
+
+      if (editAttributes.Mother != selectedScout.Mother) {
+        if (typeof selectedScout.Mother === 'undefined') {
+          if (
+            parents.some((parent) => parent.User_ID == editAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Mother
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: selectedScout.User_ID.toString() },
+            });
+          } else if (
+            users.some((user) => user.User_ID == editAttributes.Mother)
+          ) {
+            console.log('dssdsa?');
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
+              method: 'POST',
+              data: { User_ID: editAttributes.Mother, gender: 'Female' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                editAttributes.Mother
+              }`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Mother
+              }/scouts`,
+              method: 'POST',
+              data: { scout_id: selectedScout.User_ID.toString() },
+            });
+          }
+        } else if (
+          typeof editAttributes.Mother === 'undefined' ||
+          editAttributes.Mother === ''
+        ) {
+          await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts/${selectedScout.User_ID}`,
+            method: 'DELETE',
+          });
+          const children = await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts`,
+            method: 'GET',
+          });
+          if (children.data.length == 0) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Mother
+              }`,
+              method: 'DELETE',
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Mother
+              }`,
+              method: 'PATCH',
+              data: { role: null },
+            });
+          }
+        } else if (
+          typeof editAttributes.Mother !== 'undefined' &&
+          editAttributes.Mother !== '' &&
+          typeof selectedScout.Mother !== 'undefined'
+        ) {
+          await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts/${selectedScout.User_ID}`,
+            method: 'DELETE',
+          });
+          const children = await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts`,
+            method: 'GET',
+          });
+          if (children.data.length == 0) {
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Mother
+              }`,
+              method: 'DELETE',
+            });
+            await apiRequest({
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Mother
+              }`,
+              method: 'PATCH',
+              data: { role: null },
+            });
+          }
+          await apiRequest({
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              editAttributes.Mother
+            }/scouts`,
+            method: 'POST',
+            data: { scout_id: selectedScout.User_ID.toString() },
+          });
+        }
+      }
+
       setScoutsData((prevData) =>
         prevData.map((scout) =>
           scout.User_ID === selectedScout.User_ID
@@ -219,7 +480,7 @@ const ScoutsView = () => {
                 <input
                   name="Birthdate"
                   type="date"
-                  value={editAttributes.Birthdate}
+                  value={editAttributes.Birthdate.split('T')[0]}
                   onChange={handleAttributeChange}
                   className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
@@ -242,7 +503,7 @@ const ScoutsView = () => {
                 <input
                   name="joinDate"
                   type="date"
-                  value={editAttributes.joinDate}
+                  value={editAttributes.joinDate.split('T')[0]}
                   onChange={handleAttributeChange}
                   className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
@@ -256,6 +517,28 @@ const ScoutsView = () => {
                   className="mr-2 focus:ring focus:ring-secondary-color"
                 />
                 <label className="mr-2 text-xl">تسليم الورق</label>
+              </div>
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  الرقم التعريفي للأب
+                </label>
+                <input
+                  name="Father"
+                  onChange={handleAttributeChange}
+                  value={editAttributes.Father}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xl font-medium mb-1">
+                  الرقم التعريفي للأم
+                </label>
+                <input
+                  name="Mother"
+                  onChange={handleAttributeChange}
+                  value={editAttributes.Mother}
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                />
               </div>
 
               <div className="flex justify-between">
