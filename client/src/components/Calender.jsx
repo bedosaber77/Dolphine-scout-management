@@ -23,7 +23,6 @@ const createCalendar = (attendance) => {
     let hoverDetails = '';
     let navigateUrl = '#';
     let eventFound = false;
-    //fdf
 
     if (
       currentEvent < attendance.length &&
