@@ -28,11 +28,11 @@ const ScoutsView = () => {
         method: 'GET',
       });
       const usersFetch = await apiRequest({
-        url: 'http://localhost:3000/api/users/unverified',
+        url: `${import.meta.env.VITE_BASEURL}/api/users/unverified`,
         method: 'GET',
       });
       const parentsallFetch = await apiRequest({
-        url: 'http://localhost:3000/api/parents',
+        url: `${import.meta.env.VITE_BASEURL}/api/parents`,
         method: 'GET',
       });
       setParents(parentsallFetch.data);
@@ -41,7 +41,9 @@ const ScoutsView = () => {
 
       scouts.forEach(async (scout) => {
         const parentsFetch = await apiRequest({
-          url: `http://localhost:3000/api/scouts/${scout.User_ID}/parents`,
+          url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
+            scout.User_ID
+          }/parents`,
           method: 'GET',
         });
         scout.Father = parentsFetch.data.find(
@@ -85,11 +87,15 @@ const ScoutsView = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${selectedScout.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
+          selectedScout.User_ID
+        }`,
         method: 'DELETE',
       });
       await apiRequest({
-        url: `http://localhost:3000/api/users/${selectedScout.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${
+          selectedScout.User_ID
+        }`,
         method: 'PATCH',
         data: { role: null },
       });
@@ -116,7 +122,9 @@ const ScoutsView = () => {
     e.preventDefault();
     try {
       await apiRequest({
-        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${selectedScout.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
+          selectedScout.User_ID
+        }`,
         method: 'PUT',
         data: editAttributes,
       });
@@ -126,7 +134,9 @@ const ScoutsView = () => {
             parents.some((parent) => parent.User_ID == editAttributes.Father)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${editAttributes.Father}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Father
+              }/scouts`,
               method: 'POST',
               data: { scout_id: selectedScout.User_ID.toString() },
             });
@@ -135,17 +145,21 @@ const ScoutsView = () => {
           ) {
             console.log('dssdsa?');
             await apiRequest({
-              url: `http://localhost:3000/api/parents`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
               method: 'POST',
               data: { User_ID: editAttributes.Father, gender: 'Male' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${editAttributes.Father}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                editAttributes.Father
+              }`,
               method: 'PATCH',
               data: { role: 'Parent' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${editAttributes.Father}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Father
+              }/scouts`,
               method: 'POST',
               data: { scout_id: selectedScout.User_ID.toString() },
             });
@@ -155,20 +169,28 @@ const ScoutsView = () => {
           editAttributes.Father === ''
         ) {
           await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Father}/scouts/${selectedScout.User_ID}`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts/${selectedScout.User_ID}`,
             method: 'DELETE',
           });
           const children = await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Father}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts`,
             method: 'GET',
           });
           if (children.data.length == 0) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${selectedScout.Father}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Father
+              }`,
               method: 'DELETE',
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${selectedScout.Father}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Father
+              }`,
               method: 'PATCH',
               data: { role: null },
             });
@@ -179,26 +201,36 @@ const ScoutsView = () => {
           typeof selectedScout.Father !== 'undefined'
         ) {
           await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Father}/scouts/${selectedScout.User_ID}`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts/${selectedScout.User_ID}`,
             method: 'DELETE',
           });
           const children = await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Father}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Father
+            }/scouts`,
             method: 'GET',
           });
           if (children.data.length == 0) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${selectedScout.Father}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Father
+              }`,
               method: 'DELETE',
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${selectedScout.Father}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Father
+              }`,
               method: 'PATCH',
               data: { role: null },
             });
           }
           await apiRequest({
-            url: `http://localhost:3000/api/parents/${editAttributes.Father}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              editAttributes.Father
+            }/scouts`,
             method: 'POST',
             data: { scout_id: selectedScout.User_ID.toString() },
           });
@@ -211,7 +243,9 @@ const ScoutsView = () => {
             parents.some((parent) => parent.User_ID == editAttributes.Mother)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${editAttributes.Mother}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Mother
+              }/scouts`,
               method: 'POST',
               data: { scout_id: selectedScout.User_ID.toString() },
             });
@@ -220,17 +254,21 @@ const ScoutsView = () => {
           ) {
             console.log('dssdsa?');
             await apiRequest({
-              url: `http://localhost:3000/api/parents`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
               method: 'POST',
               data: { User_ID: editAttributes.Mother, gender: 'Female' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${editAttributes.Mother}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                editAttributes.Mother
+              }`,
               method: 'PATCH',
               data: { role: 'Parent' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${editAttributes.Mother}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                editAttributes.Mother
+              }/scouts`,
               method: 'POST',
               data: { scout_id: selectedScout.User_ID.toString() },
             });
@@ -240,20 +278,28 @@ const ScoutsView = () => {
           editAttributes.Mother === ''
         ) {
           await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Mother}/scouts/${selectedScout.User_ID}`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts/${selectedScout.User_ID}`,
             method: 'DELETE',
           });
           const children = await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Mother}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts`,
             method: 'GET',
           });
           if (children.data.length == 0) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${selectedScout.Mother}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Mother
+              }`,
               method: 'DELETE',
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${selectedScout.Mother}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Mother
+              }`,
               method: 'PATCH',
               data: { role: null },
             });
@@ -264,26 +310,36 @@ const ScoutsView = () => {
           typeof selectedScout.Mother !== 'undefined'
         ) {
           await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Mother}/scouts/${selectedScout.User_ID}`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts/${selectedScout.User_ID}`,
             method: 'DELETE',
           });
           const children = await apiRequest({
-            url: `http://localhost:3000/api/parents/${selectedScout.Mother}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              selectedScout.Mother
+            }/scouts`,
             method: 'GET',
           });
           if (children.data.length == 0) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${selectedScout.Mother}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                selectedScout.Mother
+              }`,
               method: 'DELETE',
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${selectedScout.Mother}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                selectedScout.Mother
+              }`,
               method: 'PATCH',
               data: { role: null },
             });
           }
           await apiRequest({
-            url: `http://localhost:3000/api/parents/${editAttributes.Mother}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+              editAttributes.Mother
+            }/scouts`,
             method: 'POST',
             data: { scout_id: selectedScout.User_ID.toString() },
           });

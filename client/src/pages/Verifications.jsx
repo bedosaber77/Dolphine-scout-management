@@ -34,7 +34,7 @@ const Verifications = () => {
         method: 'GET',
       });
       const parentsFetch = await apiRequest({
-        url: 'http://localhost:3000/api/parents',
+        url: `${import.meta.env.VITE_BASEURL}/api/parents`,
         method: 'GET',
       });
       setParents(parentsFetch.data);
@@ -102,11 +102,11 @@ const Verifications = () => {
       console.log(payload);
 
       if (role === 'Scout') {
-        url = 'http://localhost:3000/api/scouts';
+        url = `${import.meta.env.VITE_BASEURL}/api/scouts`;
         await apiRequest({ url, method: 'POST', data: payload });
 
         await apiRequest({
-          url: `http://localhost:3000/api/users/${userID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
           method: 'PATCH',
           data: { role: role },
         });
@@ -122,7 +122,9 @@ const Verifications = () => {
             parents.some((parent) => parent.User_ID == extraAttributes.Father)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
@@ -131,17 +133,21 @@ const Verifications = () => {
           ) {
             console.log('dssdsa?');
             await apiRequest({
-              url: `http://localhost:3000/api/parents`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
               method: 'POST',
               data: { User_ID: extraAttributes.Father, gender: 'Male' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${extraAttributes.Father}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Father
+              }`,
               method: 'PATCH',
               data: { role: 'Parent' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
@@ -150,7 +156,9 @@ const Verifications = () => {
             parents.some((parent) => parent.User_ID == extraAttributes.Mother)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
@@ -158,17 +166,21 @@ const Verifications = () => {
             usersData.some((user) => user.User_ID == extraAttributes.Mother)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
               method: 'POST',
               data: { User_ID: extraAttributes.Mother, gender: 'Female' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${extraAttributes.Mother}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Mother
+              }`,
               method: 'PATCH',
               data: { role: 'Parent' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
@@ -181,7 +193,9 @@ const Verifications = () => {
             parents.some((parent) => parent.User_ID == extraAttributes.Father)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
@@ -189,17 +203,21 @@ const Verifications = () => {
             usersData.some((user) => user.User_ID == extraAttributes.Father)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
               method: 'POST',
               data: { User_ID: extraAttributes.Father, gender: 'Male' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${extraAttributes.Father}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Father
+              }`,
               method: 'PATCH',
               data: { role: 'Parent' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Father
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
@@ -210,7 +228,9 @@ const Verifications = () => {
             parents.some((parent) => parent.User_ID == extraAttributes.Mother)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
@@ -218,40 +238,44 @@ const Verifications = () => {
             usersData.some((user) => user.User_ID == extraAttributes.Mother)
           ) {
             await apiRequest({
-              url: `http://localhost:3000/api/parents`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents`,
               method: 'POST',
               data: { User_ID: extraAttributes.Mother, gender: 'Female' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/users/${extraAttributes.Mother}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/users/${
+                extraAttributes.Mother
+              }`,
               method: 'PATCH',
               data: { role: 'Parent' },
             });
             await apiRequest({
-              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+                extraAttributes.Mother
+              }/scouts`,
               method: 'POST',
               data: { scout_id: userID },
             });
           }
         }
       } else if (role === 'Scoutleader') {
-        url = 'http://localhost:3000/api/scoutleaders';
+        url = `${import.meta.env.VITE_BASEURL}/api/scoutleaders`;
         await apiRequest({ url, method: 'POST', data: payload });
 
         await apiRequest({
-          url: `http://localhost:3000/api/users/${userID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
           method: 'PATCH',
           data: { role: role },
         });
       } else if (role === 'Parent') {
-        url = 'http://localhost:3000/api/parents';
+        url = `${import.meta.env.VITE_BASEURL}/api/parents`;
         await apiRequest({
           url,
           method: 'POST',
           data: { User_ID: userID, Gender: gender },
         });
         await apiRequest({
-          url: `http://localhost:3000/api/users/${userID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
           method: 'PATCH',
           data: { role: role },
         });
