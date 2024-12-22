@@ -27,7 +27,7 @@ const Announcements = () => {
     setLoading(true);
     try {
       const announcementsFetch = await apiRequest({
-        url: 'http://localhost:3000/api/announcements/',
+        url: `${import.meta.env.VITE_BASEURL}/api/announcements/`,
         method: 'GET',
       });
       setAnnouncementsData(announcementsFetch.data);

@@ -6,7 +6,7 @@ const getFetchEvents = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/api/events', {
+      .get(`${import.meta.env.VITE_BASEURL}/api/events`, {
         headers: {
           accessToken:
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo0LCJyb2xlIjpudWxsfSwiaWF0IjoxNzMzNTI0MDE2LCJleHAiOjE3MzM1MjU4MTZ9.hdTrpa9akUEBFvettokWxVojenO98iRD8NV-kCv9mqQ',

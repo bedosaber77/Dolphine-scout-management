@@ -13,7 +13,7 @@ const AllAnnouncementsPage = () => {
     const fetchAnnouncements = async () => {
       try {
         const response = await apiRequest({
-          url: 'http://localhost:3000/api/announcements',
+          url: `${import.meta.env.VITE_BASEURL}/api/announcements`,
           method: 'GET',
         });
         setAnnouncements(response.data);

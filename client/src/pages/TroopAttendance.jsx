@@ -40,7 +40,7 @@ function TroopAttendance() {
     const fetchEvents = async () => {
       try {
         const allEventsData = await apiRequest({
-          url: 'http://localhost:3000/api/events',
+          url: `${import.meta.env.VITE_BASEURL}/api/events`,
           method: 'GET',
         });
         const currentDate = new Date();
@@ -62,11 +62,11 @@ function TroopAttendance() {
         setLoading(true);
         try {
           const scoutsData = await apiRequest({
-            url: `http://localhost:3000/api/troops/${id}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/troops/${id}/scouts`,
             method: 'GET',
           });
           const attendanceData = await apiRequest({
-            url: `http://localhost:3000/api/events/${selectedEventId}/attendance`,
+            url: `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventId}/attendance`,
             method: 'GET',
           });
           const attendance = scoutsData.data.reduce((acc, scout) => {
@@ -104,7 +104,7 @@ function TroopAttendance() {
         if (newAttendance[scoutId] === true) {
           try {
             await apiRequest({
-              url: `http://localhost:3000/api/events/${selectedEventId}/attendance`,
+              url: `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventId}/attendance`,
               method: 'POST',
               data: {
                 Scout_ID: scoutId,
@@ -116,7 +116,7 @@ function TroopAttendance() {
         } else {
           try {
             await apiRequest({
-              url: `http://localhost:3000/api/events/${selectedEventId}/attendance/${scoutId}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventId}/attendance/${scoutId}`,
               method: 'DELETE',
             });
           } catch (err) {

@@ -26,7 +26,7 @@ const Event = () => {
   const fetchImages = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/events/${id}/media`,
+        `${import.meta.env.VITE_BASEURL}/api/events/${id}/media`,
         {
           headers: {
             accessToken: accessToken, // Ensure accessToken is defined
@@ -51,7 +51,7 @@ const Event = () => {
   const openAttendanceTable = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/events/${id}/attendance`,
+        `${import.meta.env.VITE_BASEURL}/api/events/${id}/attendance`,
         {
           headers: {
             accessToken: accessToken,

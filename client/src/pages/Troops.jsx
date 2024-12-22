@@ -24,7 +24,7 @@ const [loading, setLoading] = useState(true);
        setLoading(true);
       try {
         const leadersData = await axios.get(
-          'http://localhost:3000/api/scoutleaders',
+          `${import.meta.env.VITE_BASEURL}/api/scoutleaders`,
           {
             headers: {
               accessToken: accessToken, // Ensure accessToken is defined
@@ -34,7 +34,7 @@ const [loading, setLoading] = useState(true);
         const leaders = leadersData.data;
         setLeadersData(leaders);
 
-        const troopsData = await axios.get('http://localhost:3000/api/troops', {
+        const troopsData = await axios.get(`${import.meta.env.VITE_BASEURL}/api/troops`, {
           headers: {
             accessToken: accessToken, // Ensure accessToken is defined
           },
@@ -81,13 +81,13 @@ const [loading, setLoading] = useState(true);
       };
 
       await apiRequest({
-        url: `http://localhost:3000/api/troops/${editingTroop.Troop_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/troops/${editingTroop.Troop_ID}`,
         method: 'PUT',
         data: updatedTroop,
       });
 
       // Update UI
-      const troopsData = await axios.get('http://localhost:3000/api/troops', {
+      const troopsData = await axios.get(`${import.meta.env.VITE_BASEURL}/api/troops`, {
         headers: {
           accessToken: accessToken, // Ensure accessToken is defined
         },
@@ -143,7 +143,7 @@ const [loading, setLoading] = useState(true);
       };
 
       const response = await axios.post(
-        'http://localhost:3000/api/troops',
+        `${import.meta.env.VITE_BASEURL}/api/troops`,
         newTroop,
         {
           headers: {
@@ -152,7 +152,7 @@ const [loading, setLoading] = useState(true);
         }
       );
 
-      const troopsData = await axios.get('http://localhost:3000/api/troops', {
+      const troopsData = await axios.get(`${import.meta.env.VITE_BASEURL}/api/troops`, {
         headers: {
           accessToken: accessToken, // Ensure accessToken is defined
         },
@@ -187,7 +187,7 @@ const [loading, setLoading] = useState(true);
   const handleConfirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/troops/${deletingTroop.Troop_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/troops/${deletingTroop.Troop_ID}`,
         method: 'DELETE',
       });
 

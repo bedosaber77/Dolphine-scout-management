@@ -11,15 +11,15 @@ const useFetchEvent = (id) => {
     const fetchData = async () => {
       try {
         const eventFetch = await apiRequest({
-          url: `http://localhost:3000/api/events/${id}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/events/${id}`,
           method: 'GET',
         });
         const leaderFetch = await apiRequest({
-          url: `http://localhost:3000/api/scoutleaders/${eventFetch.data.ScoutLeader_ID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/${eventFetch.data.ScoutLeader_ID}`,
           method: 'GET',
         });
         const locationFetch = await apiRequest({
-          url: `http://localhost:3000/api/locations/${eventFetch.data.Location_ID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/locations/${eventFetch.data.Location_ID}`,
           method: 'GET',
         });
         setEvent(eventFetch.data);

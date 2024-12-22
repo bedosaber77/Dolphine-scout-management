@@ -6,7 +6,7 @@ const getFetchLocation = (id) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/api/locations/${id}`)
+      .get(`${import.meta.env.VITE_BASEURL}/api/locations/${id}`)
       .then((response) => {
         setLocation(response.data);
       })

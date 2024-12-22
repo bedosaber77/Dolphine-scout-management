@@ -20,7 +20,7 @@ const Verifications = () => {
     setLoading(true);
     try {
       const usersFetch = await apiRequest({
-        url: 'http://localhost:3000/api/users/unverified',
+        url: `${import.meta.env.VITE_BASEURL}/api/users/unverified`,
         method: 'GET',
       });
       setUsersData(usersFetch.data);
@@ -52,7 +52,7 @@ const Verifications = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/users/${userToDelete.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${userToDelete.User_ID}`,
         method: 'DELETE',
       });
       fetchData();
@@ -97,32 +97,32 @@ const Verifications = () => {
       console.log(payload);
 
       if (role === 'Scout') {
-          url = 'http://localhost:3000/api/scouts';
+          url = `${import.meta.env.VITE_BASEURL}/api/scouts`;
           await apiRequest({ url, method: 'POST', data: payload });
 
           await apiRequest({
-            url: `http://localhost:3000/api/users/${userID}`,
+            url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
             method: 'PATCH',
             data: { role: role },
           });
       } else if (role === 'Scoutleader') {
-          url = 'http://localhost:3000/api/scoutleaders';
+          url = `${import.meta.env.VITE_BASEURL}/api/scoutleaders`;
           await apiRequest({ url, method: 'POST', data: payload });
 
           await apiRequest({
-            url: `http://localhost:3000/api/users/${userID}`,
+            url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
             method: 'PATCH',
             data: { role: role },
           });
         
       } else if (role === 'Parent') {
-          url = 'http://localhost:3000/api/parents';
+          url = `${import.meta.env.VITE_BASEURL}/api/parents`;
           await apiRequest({ url, method: 'POST', data: { User_ID: userID } });
 
           for (const childID of childrenIDs) {
             if (childID) {
               await apiRequest({
-                url: `http://localhost:3000/api/parents/${userID}/scouts`,
+                url: `${import.meta.env.VITE_BASEURL}/api/parents/${userID}/scouts`,
                 method: 'POST',
                 data: {
                   id: userID.toString(),
@@ -134,7 +134,7 @@ const Verifications = () => {
           }
 
           await apiRequest({
-            url: `http://localhost:3000/api/users/${userID}`,
+            url: `${import.meta.env.VITE_BASEURL}/api/users/${userID}`,
             method: 'PATCH',
             data: { role: role },
           });
