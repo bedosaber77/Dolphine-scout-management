@@ -105,7 +105,9 @@ const Parents = () => {
         data: { id: selectedParent.User_ID.toString() },
       });
       await apiRequest({
-        url: `http://localhost:3000/api/users/${selectedParent.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${
+          selectedParent.User_ID
+        }`,
         method: 'PATCH',
         data: { role: null },
       });

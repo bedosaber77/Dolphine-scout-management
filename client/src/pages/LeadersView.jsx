@@ -83,7 +83,9 @@ const ScoutLeaders = () => {
         method: 'DELETE',
       });
       await apiRequest({
-        url: `http://localhost:3000/api/users/${selectedLeader.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${
+          selectedLeader.User_ID
+        }`,
         method: 'PATCH',
         data: { role: null },
       });
