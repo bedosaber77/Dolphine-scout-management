@@ -20,6 +20,7 @@ app.use(
     credentials: true, // Allow cookies
   })
 );
+app.options('*', cors()); // For handling preflight requests
 // app.options('*', cors()); // Preflight handling
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
