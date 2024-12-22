@@ -68,7 +68,7 @@ function Settings() {
       newPassword,
     };
     axios
-      .put('http://localhost:3000/api/auth/updatePassword', data, {
+      .put(`${import.meta.env.VITE_BASEURL}/api/auth/updatePassword`, data, {
         headers: {
           accessToken: useAuthStore.getState().accessToken,
         },
@@ -99,7 +99,7 @@ function Settings() {
     try {
       const response = await apiRequest({
         method: 'PUT',
-        url: `http://localhost:3000/api/users/${user?.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${user?.User_ID}`,
         data: {
           Fname: newuser.Fname,
           Lname: newuser.Lname,

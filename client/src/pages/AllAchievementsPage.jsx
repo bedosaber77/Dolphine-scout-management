@@ -14,7 +14,7 @@ const AllAchievementsPage = () => {
     const fetchAchievements = async () => {
       try {
         const response = await apiRequest({
-          url: 'http://localhost:3000/api/achievements',
+          url: `${import.meta.env.VITE_BASEURL}/api/achievements`,
           method: 'GET',
         });
         setAchievements(response.data);

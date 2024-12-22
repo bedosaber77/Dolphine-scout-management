@@ -54,20 +54,20 @@ const EventsAdmin = () => {
   useEffect(() => {
     const fetchEventsData = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Events/',
+        url: `${import.meta.env.VITE_BASEURL}/api/Events/`,
         method: 'GET',
       });
     };
     const fetchLocations = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Locations/',
+        url: `${import.meta.env.VITE_BASEURL}/api/Locations/`,
         method: 'GET',
       });
     };
 
     const fetchScoutLeaders = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Scoutleaders/',
+        url: `${import.meta.env.VITE_BASEURL}/api/Scoutleaders/`,
         method: 'GET',
       });
     };
@@ -96,7 +96,7 @@ const EventsAdmin = () => {
     if (isEditMode && selectedEventID) {
       try {
         await apiRequest({
-          url: `http://localhost:3000/api/events/${selectedEventID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventID}`,
           method: 'PUT',
           data: event,
         });
@@ -111,7 +111,7 @@ const EventsAdmin = () => {
     } else {
       try {
         const response = await apiRequest({
-          url: 'http://localhost:3000/api/events/',
+          url: `${import.meta.env.VITE_BASEURL}/api/events/`,
           method: 'POST',
           data: event,
         });
@@ -141,7 +141,7 @@ const EventsAdmin = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/events/${selectedEventID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventID}`,
         method: 'DELETE',
       });
       setProcessedEvents(

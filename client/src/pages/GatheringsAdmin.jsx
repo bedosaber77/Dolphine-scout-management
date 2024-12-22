@@ -64,20 +64,20 @@ const GatheringsAdmin = () => {
   useEffect(() => {
     const fetchEventsData = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/gatherings/',
+        url: `${import.meta.env.VITE_BASEURL}/api/gatherings/`,
         method: 'GET',
       });
     };
     const fetchLocations = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Locations/',
+        url: `${import.meta.env.VITE_BASEURL}/api/Locations/`,
         method: 'GET',
       });
     };
 
     const fetchScoutLeaders = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Scoutleaders/',
+        url: `${import.meta.env.VITE_BASEURL}/api/Scoutleaders/`,
         method: 'GET',
       });
     };
@@ -126,7 +126,7 @@ const GatheringsAdmin = () => {
     if (isEditMode && selectedEventID) {
       try {
         await axios.put(
-          `http://localhost:3000/api/events/${selectedEventID}`,
+          `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventID}`,
           formData,
           {
             headers: {
@@ -135,7 +135,7 @@ const GatheringsAdmin = () => {
           }
         );
         await apiRequest({
-          url: `http://localhost:3000/api/gatherings/${selectedEventID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/gatherings/${selectedEventID}`,
           method: 'PUT',
           data: event,
         });
@@ -151,7 +151,7 @@ const GatheringsAdmin = () => {
     } else {
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/events',
+          `${import.meta.env.VITE_BASEURL}/api/events`,
           formData,
           {
             headers: {
@@ -160,7 +160,7 @@ const GatheringsAdmin = () => {
           }
         );
         const response2 = await apiRequest({
-          url: 'http://localhost:3000/api/gatherings/',
+          url: `${import.meta.env.VITE_BASEURL}/api/gatherings/`,
           method: 'POST',
           data: { ...event, Event_ID: response.data.Event.Event_ID },
         });
@@ -198,7 +198,7 @@ const GatheringsAdmin = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/events/${selectedEventID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventID}`,
         method: 'DELETE',
       });
       setEventsData(

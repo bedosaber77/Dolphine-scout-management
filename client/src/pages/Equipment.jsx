@@ -19,7 +19,7 @@ const Equipment = () => {
       // Fetch locations
       setLoading(true);
       const locationsFetch = await apiRequest({
-        url: 'http://localhost:3000/api/locations/',
+        url: `${import.meta.env.VITE_BASEURL}/api/locations/`,
         method: 'GET',
       });
       const locationData = locationsFetch.data;
@@ -27,7 +27,7 @@ const Equipment = () => {
 
       // Fetch equipment
       const equipmentFetch = await apiRequest({
-        url: 'http://localhost:3000/api/equipment/',
+        url: `${import.meta.env.VITE_BASEURL}/api/equipment/`,
         method: 'GET',
       });
       const equipment = equipmentFetch.data;
@@ -83,7 +83,7 @@ const Equipment = () => {
       };
 
       await apiRequest({
-        url: 'http://localhost:3000/api/equipment/',
+        url: `${import.meta.env.VITE_BASEURL}/api/equipment/`,
         method: 'POST',
         data: newEquipment,
       });
@@ -126,7 +126,7 @@ const Equipment = () => {
       };
 
       await apiRequest({
-        url: `http://localhost:3000/api/equipment/${editingEquipmentId}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/equipment/${editingEquipmentId}`,
         method: 'PUT',
         data: { ...updatedEquipment },
       });
@@ -155,7 +155,7 @@ const Equipment = () => {
     if (equipmentToDelete) {
       try {
         await apiRequest({
-          url: `http://localhost:3000/api/equipment/${equipmentToDelete}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/equipment/${equipmentToDelete}`,
           method: 'DELETE',
         });
 

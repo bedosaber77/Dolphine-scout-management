@@ -33,19 +33,19 @@ import AchievementsComponent from '../components/AchievementsComponent';
 //     const fetchData = async () => {
 //       try {
 //         const eventsFetch = await apiRequest({
-//           url: 'http://localhost:3000/api/events',
+//           url: '${import.meta.env.VITE_BASEURL}/api/events',
 //           method: 'GET',
 //         });
 //         const attendanceFetch = await apiRequest({
-//           url: 'http://localhost:3000/api/scouts/1/attendance',
+//           url: '${import.meta.env.VITE_BASEURL}/api/scouts/1/attendance',
 //           method: 'GET',
 //         });
 //         const announcementsFetch = await apiRequest({
-//           url: 'http://localhost:3000/api/announcements',
+//           url: '${import.meta.env.VITE_BASEURL}/api/announcements',
 //           method: 'GET',
 //         });
 //         const achievementsFetch = await apiRequest({
-//           url: `http://localhost:3000/api/scouts/${
+//           url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
 //             1 /*user?.User_ID*/
 //           }/achievements`,
 //           method: 'GET',
@@ -148,19 +148,19 @@ const ScoutDashboard = () => {
     const fetchData = async () => {
       try {
         const eventsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/events',
+          url: `${import.meta.env.VITE_BASEURL}/api/events`,
           method: 'GET',
         });
         const attendanceFetch = await apiRequest({
-          url: 'http://localhost:3000/api/scouts/1/attendance',
+          url: `${import.meta.env.VITE_BASEURL}/api/scouts/1/attendance`,
           method: 'GET',
         });
         const announcementsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/announcements',
+          url: `${import.meta.env.VITE_BASEURL}/api/announcements`,
           method: 'GET',
         });
         const achievementsFetch = await apiRequest({
-          url: `http://localhost:3000/api/scouts/${
+          url: `${import.meta.env.VITE_BASEURL}/api/scouts/${
             1 /*user?.User_ID*/
           }/achievements`,
           method: 'GET',

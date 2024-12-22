@@ -18,21 +18,21 @@ const ScoutChild = () => {
   useEffect(() => {
     const fetchScoutData = async (scoutId) => {
       return apiRequest({
-        url: `http://localhost:3000/api/scouts/${scoutId}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${scoutId}`,
         method: 'GET',
       });
     };
 
     const fetchAttendanceData = async (scoutId) => {
       return apiRequest({
-        url: `http://localhost:3000/api/scouts/${scoutId}/attendance`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${scoutId}/attendance`,
         method: 'GET',
       });
     };
 
     const fetchAchievementsData = async (scoutId) => {
       return apiRequest({
-        url: `http://localhost:3000/api/scouts/${scoutId}/achievements`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${scoutId}/achievements`,
         method: 'GET',
       });
     };

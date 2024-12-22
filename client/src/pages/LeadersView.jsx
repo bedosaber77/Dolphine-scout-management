@@ -18,7 +18,7 @@ const [editAttributes, setEditAttributes] = useState({
     setLoading(true);
     try {
       const scoutLeadersFetch = await apiRequest({
-        url: 'http://localhost:3000/api/scoutleaders/',
+        url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/`,
         method: 'GET',
       });
       const scoutLeaders = scoutLeadersFetch.data;
@@ -28,7 +28,7 @@ const [editAttributes, setEditAttributes] = useState({
         scoutLeaders.map(async (leader) => {
           try {
             const troopsFetch = await apiRequest({
-              url: `http://localhost:3000/api/troops/leader/${leader.User_ID}`,
+              url: `${import.meta.env.VITE_BASEURL}/api/troops/leader/${leader.User_ID}`,
               method: 'GET',
               data: { id: leader.User_ID },
             });
@@ -75,7 +75,7 @@ const [editAttributes, setEditAttributes] = useState({
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/scoutleaders/${selectedLeader.User_ID}`, //////////////////////////////////
+        url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/${selectedLeader.User_ID}`, //////////////////////////////////
         method: 'DELETE',
       });
       setLeadersData((prev) =>
@@ -100,7 +100,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     await apiRequest({
-      url: `http://localhost:3000/api/scoutleaders/${selectedLeader.User_ID}`,
+      url: `${import.meta.env.VITE_BASEURL}/api/scoutleaders/${selectedLeader.User_ID}`,
       method: 'PUT',
       data: editAttributes,
     });

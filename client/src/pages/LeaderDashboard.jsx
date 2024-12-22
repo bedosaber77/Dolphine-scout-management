@@ -18,6 +18,7 @@ import useApi from '../hooks/useApi';
 import useAuthStore from '../store/authStore';
 import UpcomingEvents from '../components/UpcomingEvents';
 import AnnouncementsContainer from '../components/AnnouncementsContainer';
+import axios from 'axios';
 
 const color = {
   High: 'red',
@@ -43,7 +44,7 @@ const ScoutLeaderDashboard = () => {
     const fetchEvents = async () => {
       try {
         const eventsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/events',
+          url: `${import.meta.env.VITE_BASEURL}/api/events`,
           method: 'GET',
         });
         setEvents(eventsFetch.data);
@@ -53,17 +54,17 @@ const ScoutLeaderDashboard = () => {
       }
     };
     /*const troopsFetch = await apiRequest({
-          url: `http://localhost:3000/api/troops/leader/${user.User_ID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/troops/leader/${user.User_ID}`,
           method: 'GET',
         });
         const announcementsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/announcements',
+          url: '${import.meta.env.VITE_BASEURL}/api/announcements',
           method: 'GET',
         }); */
     const fetchTroops = async () => {
       try {
         const troopsFetch = await apiRequest({
-          url: `http://localhost:3000/api/troops/leader/${user.User_ID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/troops/leader/${user.User_ID}`,
           method: 'GET',
         });
         setTroops(troopsFetch.data);
@@ -74,10 +75,14 @@ const ScoutLeaderDashboard = () => {
     };
     const fetchAnnouncements = async () => {
       try {
-        const announcementsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/announcements',
-          method: 'GET',
-        });
+        const announcementsFetch = await axios.get(
+          `${import.meta.env.VITE_BASEURL}/api/announcements`,
+          {
+            headers: {
+              accessToken: accessToken,
+            },
+          }
+        );
         setAnnouncements(announcementsFetch.data);
       } catch (err) {
         console.error(err);

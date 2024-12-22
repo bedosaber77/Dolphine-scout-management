@@ -18,7 +18,7 @@ const Parents = () => {
     setLoading(true);
     try {
       const parentsFetch = await apiRequest({
-        url: 'http://localhost:3000/api/parents/',
+        url: `${import.meta.env.VITE_BASEURL}/api/parents/`,
         method: 'GET',
       });
       const parents = parentsFetch.data;
@@ -29,7 +29,7 @@ const Parents = () => {
       const parentsWithChildren = await Promise.all(
         parents.map(async (parent) => {
           const childrenFetch = await apiRequest({
-            url: `http://localhost:3000/api/parents/${parent.User_ID}/scouts`,
+            url: `${import.meta.env.VITE_BASEURL}/api/parents/${parent.User_ID}/scouts`,
             method: 'GET',
             data: { id: parent.User_ID.toString() },
           });
@@ -105,7 +105,7 @@ const Parents = () => {
     e.preventDefault();
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/parents/${selectedParent.Parent_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/parents/${selectedParent.Parent_ID}`,
         method: 'PUT',
         data: editAttributes,
       });
@@ -127,7 +127,7 @@ const Parents = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/parents/${selectedParent.User_ID}`, //////////////////////////////////
+        url: `${import.meta.env.VITE_BASEURL}/api/parents/${selectedParent.User_ID}`, //////////////////////////////////
         method: 'DELETE',
         data: { id: selectedParent.User_ID.toString() },
       });
