@@ -8,7 +8,7 @@ const useAuthStore = create((set) => ({
   login: async (data) => {
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/auth/login',
+        `${import.meta.env.VITE_BASEURL}/api/auth/login`,
         data,
         {
           withCredentials: true,
@@ -38,7 +38,7 @@ const useAuthStore = create((set) => ({
   register: async (data) => {
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/auth/register',
+        `${import.meta.env.VITE_BASEURL}/api/auth/register`,
         data,
         {
           withCredentials: true,
@@ -66,7 +66,7 @@ const useAuthStore = create((set) => ({
     set({ user: null, loading: false, accessToken: null }); //needs to be a fetch also
     try {
       axios.post(
-        'http://localhost:3000/api/auth/logout',
+        `${import.meta.env.VITE_BASEURL}/api/auth/logout`,
         {},
         {
           withCredentials: true,
@@ -82,7 +82,7 @@ const useAuthStore = create((set) => ({
     set({ loading: true });
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/auth/refreshToken',
+        `${import.meta.env.VITE_BASEURL}/api/auth/refreshToken`,
         {},
         {
           withCredentials: true,
@@ -108,7 +108,7 @@ const useAuthStore = create((set) => ({
   fetchUserDetails: async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/users/${userId}`,
+        `${import.meta.env.VITE_BASEURL}/api/users/${userId}`,
         {
           headers: {
             accessToken: useAuthStore.getState().accessToken,
@@ -130,7 +130,7 @@ const useAuthStore = create((set) => ({
 // const fetchUserDetailsloc = async (userId) => {
 //   try {
 //     const response = await axios.get(
-//       `http://localhost:3000/api/users/${userId}`,
+//       `${import.meta.env.VITE_BASEURL}/api/users/${userId}`,
 //       {
 //         headers: {
 //           accessToken: useAuthStore.getState().accessToken,

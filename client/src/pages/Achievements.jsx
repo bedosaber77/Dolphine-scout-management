@@ -20,7 +20,7 @@ const Achievements = () => {
     try {
       setLoading(true);
       const achievementsFetch = await apiRequest({
-        url: 'http://localhost:3000/api/achievements/',
+        url: `${import.meta.env.VITE_BASEURL}/api/achievements/`,
         method: 'GET',
       });
       setAchievementsData(achievementsFetch.data);
@@ -50,7 +50,7 @@ const Achievements = () => {
     if (isEditMode && achievementToEdit) {
       try {
         await apiRequest({
-          url: `http://localhost:3000/api/achievements/${achievementToEdit.Achievement_ID}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/achievements/${achievementToEdit.Achievement_ID}`,
           method: 'PUT',
           data: newAchievement,
         });
@@ -67,7 +67,7 @@ const Achievements = () => {
     } else {
       try {
         const response = await apiRequest({
-          url: 'http://localhost:3000/api/achievements/',
+          url: `${import.meta.env.VITE_BASEURL}/api/achievements/`,
           method: 'POST',
           data: newAchievement,
         });
@@ -97,7 +97,7 @@ const Achievements = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/achievements/${achievementToDelete.Achievement_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/achievements/${achievementToDelete.Achievement_ID}`,
         method: 'DELETE',
       });
       setAchievementsData(

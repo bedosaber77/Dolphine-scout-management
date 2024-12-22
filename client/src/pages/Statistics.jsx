@@ -127,19 +127,19 @@ const Statistics = () => {
   useEffect(() => {
     const fetchScoutsStatistics = async () => {
       return await apiRequest({
-        url: 'http://localhost:3000/api/statistics/rank',
+        url: `${import.meta.env.VITE_BASEURL}/api/statistics/rank`,
         method: 'GET',
       });
     };
     const fetchTransactionsStatistics = async () => {
       return await apiRequest({
-        url: 'http://localhost:3000/api/statistics/transactions',
+        url: `${import.meta.env.VITE_BASEURL}/api/statistics/transactions`,
         method: 'GET',
       });
     };
     const fetchEventsAttendanceStatistics = async () => {
       return await apiRequest({
-        url: 'http://localhost:3000/api/statistics/events',
+        url: `${import.meta.env.VITE_BASEURL}/api/statistics/events`,
         method: 'GET',
       });
     };

@@ -20,7 +20,7 @@ const ScoutsView = () => {
     setLoading(true);
     try {
       const scoutsFetch = await apiRequest({
-        url: 'http://localhost:3000/api/scouts/',
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/`,
         method: 'GET',
       });
       const scouts = scoutsFetch.data;
@@ -55,7 +55,7 @@ const ScoutsView = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/scouts/${selectedScout.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${selectedScout.User_ID}`,
         method: 'DELETE',
       });
       setScoutsData((prev) =>
@@ -81,7 +81,7 @@ const ScoutsView = () => {
     e.preventDefault();
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/scouts/${selectedScout.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${selectedScout.User_ID}`,
         method: 'PUT',
         data: editAttributes,
       });

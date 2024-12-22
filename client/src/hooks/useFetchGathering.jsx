@@ -9,7 +9,7 @@ const useFetchGathering = (id) => {
     const fetchData = async () => {
       try {
         const gatheringFetch = await apiRequest({
-          url: `http://localhost:3000/api/gatherings/${id}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/gatherings/${id}`,
           method: 'GET',
         });
         setGathering(gatheringFetch.data);
