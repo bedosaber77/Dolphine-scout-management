@@ -4,7 +4,7 @@ const jwtGenerator = require('../utils/jwtGenerator');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
-  const { email, Fname, Lname, password, PhoneNum } = req.body;
+  const { email, Fname, Lname, password, Phonenum } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = `INSERT INTO "User" ("email", "Fname", "Lname", "password", "Phonenum") VALUES ($1, $2, $3, $4, $5) 
@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
       Fname,
       Lname,
       hashedPassword,
-      PhoneNum,
+      Phonenum,
     ];
     const result = await db.query(query, params);
     return res.status(201).json({
@@ -146,7 +146,12 @@ exports.refreshToken = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
+
     return res.status(200).json({ message: 'User logged out successfully' });
   } catch (error) {
     console.error('Logout error:', error);

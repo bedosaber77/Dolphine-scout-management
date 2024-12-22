@@ -6,6 +6,7 @@ import useAuthStore from '../store/authStore';
 const GatheringsAdmin = () => {
   const apiRequest = useApi();
   const { accessToken } = useAuthStore();
+  const [loading, setLoading] = useState(true);
 
   const [locations, setLocations] = useState([]);
   const [scoutLeaders, setScoutLeaders] = useState([]);
@@ -63,26 +64,27 @@ const GatheringsAdmin = () => {
   useEffect(() => {
     const fetchEventsData = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/gatherings/',
+        url: `${import.meta.env.VITE_BASEURL}/api/gatherings/`,
         method: 'GET',
       });
     };
     const fetchLocations = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Locations/',
+        url: `${import.meta.env.VITE_BASEURL}/api/Locations/`,
         method: 'GET',
       });
     };
 
     const fetchScoutLeaders = async () => {
       return apiRequest({
-        url: 'http://localhost:3000/api/Scoutleaders/',
+        url: `${import.meta.env.VITE_BASEURL}/api/Scoutleaders/`,
         method: 'GET',
       });
     };
 
     const fetchData = async () => {
       try {
+        setLoading(true);
         const eventsResponse = await fetchEventsData();
         const locationsResponse = await fetchLocations();
         const scoutLeadersResponse = await fetchScoutLeaders();
@@ -91,6 +93,8 @@ const GatheringsAdmin = () => {
         setScoutLeaders(scoutLeadersResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -122,7 +126,7 @@ const GatheringsAdmin = () => {
     if (isEditMode && selectedEventID) {
       try {
         await axios.put(
-          `http://localhost:3000/api/events/${selectedEventID}`,
+          `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventID}`,
           formData,
           {
             headers: {
@@ -131,7 +135,9 @@ const GatheringsAdmin = () => {
           }
         );
         await apiRequest({
-          url: `http://localhost:3000/api/gatherings/${selectedEventID}`,
+          url: `${
+            import.meta.env.VITE_BASEURL
+          }/api/gatherings/${selectedEventID}`,
           method: 'PUT',
           data: event,
         });
@@ -147,7 +153,7 @@ const GatheringsAdmin = () => {
     } else {
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/events',
+          `${import.meta.env.VITE_BASEURL}/api/events`,
           formData,
           {
             headers: {
@@ -156,7 +162,7 @@ const GatheringsAdmin = () => {
           }
         );
         const response2 = await apiRequest({
-          url: 'http://localhost:3000/api/gatherings/',
+          url: `${import.meta.env.VITE_BASEURL}/api/gatherings/`,
           method: 'POST',
           data: { ...event, Event_ID: response.data.Event.Event_ID },
         });
@@ -194,7 +200,7 @@ const GatheringsAdmin = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/events/${selectedEventID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/events/${selectedEventID}`,
         method: 'DELETE',
       });
       setEventsData(
@@ -223,134 +229,154 @@ const GatheringsAdmin = () => {
   };
 
   return (
-    <>
-      <h2
-        className="mb-4 text-2xl font-bold"
-        style={{ color: 'var(--secondary-color)' }}
-      >
-        قائمة الاجتماعات
-      </h2>
+    <div className="p-4 rounded-2xl">
+      <div className="flex justify-between justify-center">
+        <h2
+          className="mb-4 text-3xl font-bold"
+          style={{ color: 'var(--secondary-color)' }}
+        >
+          قائمة الاجتماعات
+        </h2>
 
-      {/* Add event Button */}
-      <button
-        onClick={() => {
-          // Clear the form state for adding new equipment
-          setEvent({
-            Budget: '',
-            Ename: '',
-            Edate: '',
-            Location_ID: '',
-            ScoutLeader_ID: '',
-            GeneralOutcome: '',
-            EducationalOutcome: '',
-            PhysicalOutcome: '',
-            ScientificOutcome: '',
-            ArtOutcome: '',
-            ExtraOutcome: '',
-          });
-          setIsModalOpen(true);
-        }}
-        className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-        style={{ background: 'var(--secondary-color)' }}
-      >
-        إضافة اجتماع
-      </button>
+        {/* Add event Button */}
+        <button
+          onClick={() => {
+            // Clear the form state for adding new equipment
+            setEvent({
+              Budget: '',
+              Ename: '',
+              Edate: '',
+              Location_ID: '',
+              ScoutLeader_ID: '',
+              GeneralOutcome: '',
+              EducationalOutcome: '',
+              PhysicalOutcome: '',
+              ScientificOutcome: '',
+              ArtOutcome: '',
+              ExtraOutcome: '',
+            });
+            setIsModalOpen(true);
+          }}
+          className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+          style={{ background: 'var(--secondary-color)' }}
+        >
+          إضافة اجتماع
+        </button>
+      </div>
 
       {/* Events Table */}
-      <table className="min-w-full border-collapse border border-gray-200 mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">الاجتماع</th>
-            <th className="border px-4 py-2">الميزانية</th>
-            <th className="border px-4 py-2">التاريخ</th>
-            <th className="border px-4 py-2">الموقع</th>
-            <th className="border px-4 py-2">القائد</th>
-            <th className="border px-4 py-2">المهارات</th>
-            <th className="border px-4 py-2">التربوي</th>
-            <th className="border px-4 py-2">الفني</th>
-            <th className="border px-4 py-2">البدني</th>
-            <th className="border px-4 py-2">العلمي</th>
-            <th className="border px-4 py-2">النتائج الإضافية</th>
-            <th className="border px-4 py-2">تعديل</th>
-            <th className="border px-4 py-2">حذف</th>
-          </tr>
-        </thead>
-        <tbody>
-          {processedEvents.map((event) => (
-            <tr key={event.Event_ID} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">
-                <a
-                  href={`/events/${event.Event_ID}`}
-                  className="text-blue-500 hover:underline"
-                >
-                  {event.Ename}
-                </a>
-              </td>
-              <td className="border px-4 py-2">{event.Budget || 'لا توجد'}</td>
-              <td className="border px-4 py-2">
-                {new Date(event?.Edate).toLocaleDateString('ar-EG', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                }) || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.LocationName || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.LeaderName || 'لا يوجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.GeneralOutcome || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.EducationalOutcome || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.ArtOutcome || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.PhysicalOutcome || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.ScientificOutcome || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                {event.ExtraOutcome || 'لا توجد'}
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleEdit(event.Event_ID)}
-                  className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                  style={{ background: 'var(--secondary-color)' }}
-                >
-                  تعديل
-                </button>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleDelete(event.Event_ID)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
-                >
-                  حذف
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <p className="mt-4 text-center text-gray-500">جاري تحميل البيانات...</p>
+      ) : processedEvents.length === 0 ? (
+        <p className="mt-4 text-center text-gray-500">لا يوجد اجتماعات للعرض</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-200 mt-4">
+            <thead
+              className="sticky top-0 z-10"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              <tr>
+                <th className="border px-4 py-2 text-center">الاجتماع</th>
+                <th className="border px-4 py-2 text-center">الميزانية</th>
+                <th className="border px-4 py-2 text-center">التاريخ</th>
+                <th className="border px-4 py-2 text-center">الموقع</th>
+                <th className="border px-4 py-2 text-center">القائد</th>
+                <th className="border px-4 py-2 text-center">المهارات</th>
+                <th className="border px-4 py-2 text-center">التربوي</th>
+                <th className="border px-4 py-2 text-center">الفني</th>
+                <th className="border px-4 py-2 text-center">البدني</th>
+                <th className="border px-4 py-2 text-center">العلمي</th>
+                <th className="border px-4 py-2 text-center">
+                  النتائج الإضافية
+                </th>
+                <th className="border px-4 py-2 text-center">تعديل</th>
+                <th className="border px-4 py-2 text-center">حذف</th>
+              </tr>
+            </thead>
+            <tbody>
+              {processedEvents.map((event) => (
+                <tr key={event.Event_ID} className="hover:bg-gray-100">
+                  <td className="border px-4 py-2 text-center">
+                    <a
+                      href={`/events/${event.Event_ID}`}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {event.Ename}
+                    </a>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.Budget || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {new Date(event?.Edate).toLocaleDateString('ar-EG', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    }) || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.LocationName || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.LeaderName || 'لا يوجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.GeneralOutcome || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.EducationalOutcome || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.ArtOutcome || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.PhysicalOutcome || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.ScientificOutcome || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {event.ExtraOutcome || 'لا توجد'}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleEdit(event.Event_ID)}
+                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
+                      style={{ background: 'var(--secondary-color)' }}
+                    >
+                      تعديل
+                    </button>
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => handleDelete(event.Event_ID)}
+                      className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3 h-3/4 overflow-y-scroll scrollbar-hide">
-            <h3 className="text-xl mb-4 font-bold">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto hide-scrollbar">
+            <h3
+              className="text-2xl font-semibold mb-4 text-center"
+              style={{ color: 'var(--secondary-color)' }}
+            >
               {isEditMode ? 'تعديل' : 'إضافة'} اجتماع
             </h3>
-            <form onSubmit={handleSubmitEvent}>
-              <div className="mb-4">
+            <form onSubmit={handleSubmitEvent} className="space-y-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Ename"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   اسم الاجتماع
                 </label>
@@ -360,15 +386,15 @@ const GatheringsAdmin = () => {
                   value={event?.Ename}
                   onChange={onChange}
                   id="Ename"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Budget"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   الميزانية
                 </label>
@@ -378,13 +404,13 @@ const GatheringsAdmin = () => {
                   value={event?.Budget}
                   onChange={onChange}
                   id="Budget"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Edate"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   التاريخ
                 </label>
@@ -394,14 +420,14 @@ const GatheringsAdmin = () => {
                   value={event?.Edate?.split('T')[0]}
                   onChange={onChange}
                   id="Edate"
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
               <div className="mb-4 grid grid-cols-2 gap-4">
-                <div className="mb-4">
+                <div>
                   <label
+                    className="block text-xl font-medium mb-1"
                     htmlFor="GeneralOutcome"
-                    className="block text-sm font-medium text-gray-700"
                   >
                     المهارات
                   </label>
@@ -411,13 +437,13 @@ const GatheringsAdmin = () => {
                     value={event?.GeneralOutcome}
                     onChange={onChange}
                     id="GeneralOutcome"
-                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                    className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
+                    className="block text-xl font-medium mb-1"
                     htmlFor="EducationalOutcome"
-                    className="block text-sm font-medium text-gray-700"
                   >
                     التربوي
                   </label>
@@ -427,13 +453,13 @@ const GatheringsAdmin = () => {
                     value={event?.EducationalOutcome}
                     onChange={onChange}
                     id="EducationalOutcome"
-                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                    className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
+                    className="block text-xl font-medium mb-1"
                     htmlFor="ArtOutcome"
-                    className="block text-sm font-medium text-gray-700"
                   >
                     الفني
                   </label>
@@ -443,13 +469,13 @@ const GatheringsAdmin = () => {
                     value={event?.ArtOutcome}
                     onChange={onChange}
                     id="ArtOutcome"
-                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                    className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
+                    className="block text-xl font-medium mb-1"
                     htmlFor="PhysicalOutcome"
-                    className="block text-sm font-medium text-gray-700"
                   >
                     البدني
                   </label>
@@ -459,13 +485,13 @@ const GatheringsAdmin = () => {
                     value={event?.PhysicalOutcome}
                     onChange={onChange}
                     id="PhysicalOutcome"
-                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                    className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
+                    className="block text-xl font-medium mb-1"
                     htmlFor="ScientificOutcome"
-                    className="block text-sm font-medium text-gray-700"
                   >
                     العلمي
                   </label>
@@ -475,13 +501,13 @@ const GatheringsAdmin = () => {
                     value={event?.ScientificOutcome}
                     onChange={onChange}
                     id="ScientificOutcome"
-                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                    className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
+                    className="block text-xl font-medium mb-1"
                     htmlFor="ExtraOutcome"
-                    className="block text-sm font-medium text-gray-700"
                   >
                     النتائج الإضافية
                   </label>
@@ -491,21 +517,21 @@ const GatheringsAdmin = () => {
                     value={event?.ExtraOutcome}
                     onChange={onChange}
                     id="ExtraOutcome"
-                    className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                    className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Location"
-                  className="block text-sm font-medium text-gray-700"
                 ></label>
                 <select
                   name="Location_ID"
                   onChange={onChange}
                   value={event?.Location_ID}
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="" disabled>
                     اختر الموقع
@@ -520,16 +546,16 @@ const GatheringsAdmin = () => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="Leader"
-                  className="block text-sm font-medium text-gray-700"
                 ></label>
                 <select
                   name="ScoutLeader_ID"
                   onChange={onChange}
                   value={event?.ScoutLeader_ID}
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 >
                   <option value="" disabled>
                     اختر القائد
@@ -544,10 +570,10 @@ const GatheringsAdmin = () => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
+              <div>
                 <label
+                  className="block text-xl font-medium mb-1"
                   htmlFor="imageUpload"
-                  className="block text-sm font-medium text-gray-700"
                 >
                   رفع الصور
                 </label>
@@ -558,14 +584,31 @@ const GatheringsAdmin = () => {
                   name="images"
                   multiple
                   onChange={handleImageChange}
-                  className="block w-full mt-1 p-2 border-gray-300 border-2 outline-[#6fc0e5] rounded-xl hover:bg-gray-200"
+                  className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
                 />
               </div>
 
               <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    // empty the form state
+                    setIsModalOpen(false);
+                    setImages([]);
+                    setEvent({
+                      Budget: '',
+                      Ename: '',
+                      Edate: '',
+                      Location_ID: '',
+                      ScoutLeader_ID: '',
+                      GeneralOutcome: '',
+                      EducationalOutcome: '',
+                      PhysicalOutcome: '',
+                      ScientificOutcome: '',
+                      ArtOutcome: '',
+                      ExtraOutcome: '',
+                    });
+                  }}
                   className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
@@ -585,10 +628,15 @@ const GatheringsAdmin = () => {
 
       {/* Delete Confirmation Dialog */}
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-2xl shadow-lg w-1/3">
-            <h3 className="text-xl mb-4 font-bold">تأكيد الحذف</h3>
-            <p>هل أنت متأكد أنك تريد حذف هذا الحدث؟</p>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm mx-4 text-center">
+            <h3
+              className="text-xl mb-4 font-bold"
+              style={{ color: 'var(--secondary-color)' }}
+            >
+              تأكيد الحذف
+            </h3>
+            <p>هل أنت متأكد أنك تريد حذف هذا الاجتماع ؟</p>
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteDialogOpen(false)}
@@ -598,7 +646,7 @@ const GatheringsAdmin = () => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:text-white"
+                className="bg-red-500 text-white hover:text-white px-4 py-2 rounded-lg hover:bg-red-600"
               >
                 حذف
               </button>
@@ -606,7 +654,7 @@ const GatheringsAdmin = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 export default GatheringsAdmin;

@@ -9,7 +9,7 @@ const useFetchCamp = (id) => {
     const fetchData = async () => {
       try {
         const campFetch = await apiRequest({
-          url: `http://localhost:3000/api/camps/${id}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/camps/${id}`,
           method: 'GET',
         });
         setCamp(campFetch.data);

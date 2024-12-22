@@ -17,15 +17,18 @@ const ParentDashboard = () => {
     const fetchData = async () => {
       try {
         const eventsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/events',
+          url: `${import.meta.env.VITE_BASEURL}/api/events`,
           method: 'GET',
         });
         const announcementsFetch = await apiRequest({
-          url: 'http://localhost:3000/api/announcements',
+          url: `${import.meta.env.VITE_BASEURL}/api/announcements`,
           method: 'GET',
         });
         const childrenFetch = await apiRequest({
-          url: `http://localhost:3000/api/parents/${user?.User_ID}/scouts`,
+          url: `${import.meta.env.VITE_BASEURL}/api/parents/${
+            user?.User_ID
+          }/scouts`,
+
           method: 'GET',
         });
 

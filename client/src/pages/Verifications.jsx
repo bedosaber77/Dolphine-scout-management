@@ -30,7 +30,7 @@ const Verifications = () => {
     setLoading(true);
     try {
       const usersFetch = await apiRequest({
-        url: 'http://localhost:3000/api/users/unverified',
+        url: `${import.meta.env.VITE_BASEURL}/api/users/unverified`,
         method: 'GET',
       });
       const parentsFetch = await apiRequest({
@@ -66,7 +66,9 @@ const Verifications = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/users/${userToDelete.User_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/users/${
+          userToDelete.User_ID
+        }`,
         method: 'DELETE',
       });
       fetchData();

@@ -19,7 +19,7 @@ const Transactions = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        'http://localhost:3000/api/transactions',
+        `${import.meta.env.VITE_BASEURL}/api/transactions`,
         {
           headers: {
             accessToken: accessToken, // Ensure accessToken is defined
@@ -38,7 +38,7 @@ const Transactions = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        'http://localhost:3000/api/scoutleaders',
+        `${import.meta.env.VITE_BASEURL}/api/scoutleaders`,
         {
           headers: {
             accessToken: accessToken, // Ensure accessToken is defined
@@ -56,11 +56,14 @@ const Transactions = () => {
   const fetchSponsors = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:3000/api/sponsors', {
-        headers: {
-          accessToken: accessToken, // Ensure accessToken is defined
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASEURL}/api/sponsors`,
+        {
+          headers: {
+            accessToken: accessToken, // Ensure accessToken is defined
+          },
+        }
+      );
       setSponsors(response.data); // Update the state with fetched data
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -94,7 +97,9 @@ const Transactions = () => {
   const confirmDelete = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/transactions/${transactionToDelete.Transaction_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/transactions/${
+          transactionToDelete.Transaction_ID
+        }`,
         method: 'DELETE',
       });
       setIsDeleteDialogOpen(false);
@@ -128,8 +133,10 @@ const Transactions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    transaction?.method ? transaction.method : 'Cash';
+    transaction?.type ? transaction.type : 'Deposit';
     await axios.post(
-      'http://localhost:3000/api/transactions',
+      `${import.meta.env.VITE_BASEURL}/api/transactions`,
       JSON.stringify(transaction),
       {
         headers: {

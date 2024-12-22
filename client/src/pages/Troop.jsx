@@ -49,7 +49,7 @@ const Troop = () => {
   const fetchScoutAchievements = async (scoutId) => {
     try {
       const achievementsData = await apiRequest({
-        url: `http://localhost:3000/api/scouts/${scoutId}/achievements`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${scoutId}/achievements`,
         method: 'GET',
       });
       setScoutAchievements(achievementsData.data);
@@ -64,15 +64,15 @@ const Troop = () => {
     const fetchData = async () => {
       try {
         const scoutsData = await apiRequest({
-          url: `http://localhost:3000/api/troops/${id}/scouts`,
+          url: `${import.meta.env.VITE_BASEURL}/api/troops/${id}/scouts`,
           method: 'GET',
         });
         const troopData = await apiRequest({
-          url: `http://localhost:3000/api/troops/${id}`,
+          url: `${import.meta.env.VITE_BASEURL}/api/troops/${id}`,
           method: 'GET',
         });
         const achievementsData = await apiRequest({
-          url: `http://localhost:3000/api/achievements`,
+          url: `${import.meta.env.VITE_BASEURL}/api/achievements`,
           method: 'GET',
         });
         setAchievements(achievementsData.data);
@@ -112,7 +112,7 @@ const Troop = () => {
   const handleAddAchievement = async () => {
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/scouts/${selectedScout.User_ID}/achievements`,
+        url: `${import.meta.env.VITE_BASEURL}/api/scouts/${selectedScout.User_ID}/achievements`,
         method: 'POST',
         data: {
           achievement_id: `${newAchievement}`,

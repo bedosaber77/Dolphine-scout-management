@@ -19,7 +19,7 @@ const Locations = () => {
     setLoading(true); // Start loading
     try {
       const locationsFetch = await apiRequest({
-        url: 'http://localhost:3000/api/locations/',
+        url: `${import.meta.env.VITE_BASEURL}/api/locations/`,
         method: 'GET',
       });
       setLocationsData(locationsFetch.data);
@@ -44,7 +44,7 @@ const Locations = () => {
     };
     try {
       await apiRequest({
-        url: 'http://localhost:3000/api/locations/',
+        url: `${import.meta.env.VITE_BASEURL}/api/locations/`,
         method: 'POST',
         data: newLocation,
       });
@@ -66,7 +66,7 @@ const Locations = () => {
     };
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/locations/${locationToEdit.Location_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/locations/${locationToEdit.Location_ID}`,
         method: 'PUT',
         data: updatedLocation,
       });
@@ -81,7 +81,7 @@ const Locations = () => {
   // const handleDelete = async (Location_ID) => {
   //   try {
   //     await apiRequest({
-  //       url: `http://localhost:3000/api/locations/${Location_ID}`,
+  //       url: `${import.meta.env.VITE_BASEURL}/api/locations/${Location_ID}`,
   //       method: 'DELETE',
   //     });
   //     fetchData(); // Refresh data
@@ -98,7 +98,7 @@ const Locations = () => {
    const confirmDelete = async () => {
      try {
        await apiRequest({
-         url: `http://localhost:3000/api/locations/${locationToDelete.Location_ID}`,
+         url: `${import.meta.env.VITE_BASEURL}/api/locations/${locationToDelete.Location_ID}`,
          method: 'DELETE',
        });
        setLocationsData(

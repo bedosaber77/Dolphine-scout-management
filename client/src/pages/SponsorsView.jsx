@@ -16,7 +16,7 @@ const SponsorsView = () => {
   const fetchSponsors = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:3000/api/sponsors', {
+      const response = await axios.get(`${import.meta.env.VITE_BASEURL}/api/sponsors`, {
         headers: {
           accessToken: accessToken,
         },
@@ -48,7 +48,7 @@ const SponsorsView = () => {
     console.log('Deleting sponsor:', sponsorToDelete);
     try {
       await apiRequest({
-        url: `http://localhost:3000/api/sponsors/${sponsorToDelete.Sponsor_ID}`,
+        url: `${import.meta.env.VITE_BASEURL}/api/sponsors/${sponsorToDelete.Sponsor_ID}`,
         method: 'DELETE',
       });
       setIsDeleteDialogOpen(false);
@@ -96,7 +96,7 @@ const SponsorsView = () => {
     e.preventDefault();
     sponsor.phoneNum = sponsor.phoneNum ? sponsor.phoneNum : 'N/A';
     await axios.post(
-      'http://localhost:3000/api/sponsors',
+      `${import.meta.env.VITE_BASEURL}/api/sponsors`,
       JSON.stringify(sponsor),
       {
         headers: {
@@ -122,7 +122,7 @@ const SponsorsView = () => {
       email: editingSponsor.Email,
     };
     await axios.put(
-      `http://localhost:3000/api/sponsors/${editingSponsor.Sponsor_ID}`,
+      `${import.meta.env.VITE_BASEURL}/api/sponsors/${editingSponsor.Sponsor_ID}`,
       JSON.stringify(sponsor),
       {
         headers: {
