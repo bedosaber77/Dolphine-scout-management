@@ -98,6 +98,11 @@ const Parents = () => {
         method: 'DELETE',
         data: { id: selectedParent.User_ID.toString() },
       });
+      await apiRequest({
+        url: `http://localhost:3000/api/users/${selectedParent.User_ID}`,
+        method: 'PATCH',
+        data: { role: null },
+      });
       setParentsData((prev) =>
         prev.filter((parent) => parent.User_ID !== selectedParent.User_ID)
       );
@@ -140,7 +145,6 @@ const Parents = () => {
                   البريد الإلكتروني
                 </th>
                 <th className="border px-4 py-2 text-center"> الأطفال</th>
-                <th className="border px-4 py-2 text-center">تعديل</th>
                 <th className="border px-4 py-2 text-center">حذف</th>
               </tr>
             </thead>
@@ -156,7 +160,7 @@ const Parents = () => {
                       : 'غير متوفر'}
                   </td>
                   <td className="border px-4 py-2 text-center">
-                    {parent.Gender === 'Male' ? 'أب' : 'أم' || 'غير متوفر'}
+                    {parent.gender === 'Male' ? 'أب' : 'أم' || 'غير متوفر'}
                   </td>
                   <td className="border px-4 py-2 text-center">
                     {parent.Phonenum || 'غير متوفر'}
@@ -170,15 +174,6 @@ const Parents = () => {
                         {child.Fname} {child.Lname}
                       </div>
                     ))}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    <button
-                      onClick={() => handleEdit(parent)}
-                      className="bg-secondary-color text-white hover:text-white px-4 py-2 rounded-lg"
-                      style={{ background: 'var(--secondary-color)' }}
-                    >
-                      تعديل
-                    </button>
                   </td>
                   <td className="border px-4 py-2 text-center">
                     <button

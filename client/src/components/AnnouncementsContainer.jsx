@@ -1,16 +1,26 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
-const AnnouncementCard = ({ announcement }) => {
+const AnnouncementCard = ({ announcement, handleAnnouncementClick }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleAnnouncement = () => {
+    handleAnnouncementClick(announcement);
+  };
+
   return (
-    <div className="bg-gray-100 w-full shadow-md rounded-lg p-4 hover:shadow-xl transition-shadow duration-300 cursor-pointer">
+    <div
+      className="bg-gray-100 w-full shadow-md rounded-lg p-4 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+      onClick={handleAnnouncement}
+    >
       <h3 className="text-lg font-semibold text-gray-800 mb-2">
         {announcement.Content}
       </h3>
       <p className="text-sm text-gray-600">
-        <span className="font-bold">Priority:</span> {announcement.Priority}
+        <span className="font-bold">اولوية:</span> {announcement.Priority}
       </p>
       <p className="text-sm text-gray-600">
-        <span className="font-bold">Date:</span>{' '}
+        <span className="font-bold">تاريخ:</span>{' '}
         {new Date(announcement.CreateDate).toLocaleString()}
       </p>
     </div>
@@ -18,7 +28,7 @@ const AnnouncementCard = ({ announcement }) => {
 };
 
 // Sort announcements by date, most recent first
-const AnnouncementsContainer = ({ announcements }) => {
+const AnnouncementsContainer = ({ announcements, handleAnnouncementClick }) => {
   const navigate = useNavigate();
   // Sort announcements by date, most recent first
   const sortedAnnouncements = [...announcements]
@@ -32,6 +42,7 @@ const AnnouncementsContainer = ({ announcements }) => {
           <AnnouncementCard
             key={announcement.Announcement_ID}
             announcement={announcement}
+            handleAnnouncementClick={handleAnnouncementClick}
           />
         ))}
       </div>

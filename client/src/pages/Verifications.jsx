@@ -4,12 +4,23 @@ import useApi from '../hooks/useApi';
 const Verifications = () => {
   const apiRequest = useApi();
   const [usersData, setUsersData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
+  const [loading, setLoading] = useState(true);
+  const [parents, setParents] = useState([]);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [role, setRole] = useState('');
-  const [extraAttributes, setExtraAttributes] = useState({});
+  const [extraAttributes, setExtraAttributes] = useState({
+    rank: '',
+    Birthdate: '',
+    academicYear: '',
+    joinDate: '',
+    PaperSubmitted: '',
+    Father: '',
+    Mother: '',
+    startDate: '',
+    isAdmin: '',
+  });
   const [gender, setgender] = useState([]); // Track genders for children
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -22,6 +33,11 @@ const Verifications = () => {
         url: 'http://localhost:3000/api/users/unverified',
         method: 'GET',
       });
+      const parentsFetch = await apiRequest({
+        url: 'http://localhost:3000/api/parents',
+        method: 'GET',
+      });
+      setParents(parentsFetch.data);
       setUsersData(usersFetch.data);
       console.log(usersFetch.data);
     } catch (error) {
@@ -92,6 +108,130 @@ const Verifications = () => {
           method: 'PATCH',
           data: { role: role },
         });
+
+        console.log('ff', extraAttributes.Father);
+        console.log('mm', extraAttributes.Mother);
+        if (
+          typeof extraAttributes.Father !== 'undefined' &&
+          typeof extraAttributes.Mother !== 'undefined'
+        ) {
+          console.log('111');
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Father)
+          ) {
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Father)
+          ) {
+            console.log('dssdsa?');
+            await apiRequest({
+              url: `http://localhost:3000/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Father, gender: 'Male' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/users/${extraAttributes.Father}`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          }
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `http://localhost:3000/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Mother, gender: 'Female' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/users/${extraAttributes.Mother}`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          }
+        } else if (typeof extraAttributes.Father !== 'undefined') {
+          console.log('222');
+          console.log(parents);
+          console.log(usersData);
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Father)
+          ) {
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Father)
+          ) {
+            await apiRequest({
+              url: `http://localhost:3000/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Father, gender: 'Male' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/users/${extraAttributes.Father}`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Father}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          }
+        } else if (typeof extraAttributes.Mother !== 'undefined') {
+          console.log('444');
+          if (
+            parents.some((parent) => parent.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          } else if (
+            usersData.some((user) => user.User_ID == extraAttributes.Mother)
+          ) {
+            await apiRequest({
+              url: `http://localhost:3000/api/parents`,
+              method: 'POST',
+              data: { User_ID: extraAttributes.Mother, gender: 'Female' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/users/${extraAttributes.Mother}`,
+              method: 'PATCH',
+              data: { role: 'Parent' },
+            });
+            await apiRequest({
+              url: `http://localhost:3000/api/parents/${extraAttributes.Mother}/scouts`,
+              method: 'POST',
+              data: { scout_id: userID },
+            });
+          }
+        }
       } else if (role === 'Scoutleader') {
         url = 'http://localhost:3000/api/scoutleaders';
         await apiRequest({ url, method: 'POST', data: payload });
@@ -151,6 +291,7 @@ const Verifications = () => {
               style={{ color: 'var(--secondary-color)' }}
             >
               <tr>
+                <th className="border px-4 py-2 text-center">الرقم التعريفي</th>
                 <th className="border px-4 py-2 text-center">اسم المستخدم</th>
                 <th className="border px-4 py-2 text-center">رقم الهاتف</th>
                 <th className="border px-4 py-2 text-center">
@@ -163,6 +304,9 @@ const Verifications = () => {
             <tbody>
               {usersData.map((user) => (
                 <tr key={user.User_ID}>
+                  <td className="border px-4 py-2 text-center">
+                    {user.User_ID}
+                  </td>
                   <td className="border px-4 py-2 text-center">
                     {user.Fname && user.Lname
                       ? `${user.Fname} ${user.Lname}`
@@ -219,7 +363,6 @@ const Verifications = () => {
                 >
                   <option value="">اختر الدور</option>
                   <option value="Scout">كشاف</option>
-                  <option value="Parent">ولى امر</option>
                   <option value="Scoutleader">قائد</option>
                 </select>
               </div>
@@ -282,6 +425,26 @@ const Verifications = () => {
                       className="mr-2 focus:ring focus:ring-secondary-color"
                     />
                     <label className="mr-2 text-xl">تسليم الورق</label>
+                  </div>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      الرقم التعريفي للأب
+                    </label>
+                    <input
+                      name="Father"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xl font-medium mb-1">
+                      الرقم التعريفي للأم
+                    </label>
+                    <input
+                      name="Mother"
+                      onChange={handleExtraAttributeChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-secondary-color focus:outline-none"
+                    />
                   </div>
                 </>
               )}

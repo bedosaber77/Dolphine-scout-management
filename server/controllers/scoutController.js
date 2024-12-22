@@ -21,23 +21,23 @@ exports.getAllScouts = async (req, res) => {
 
 exports.getScoutbyId = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user?.id; // Extracted from the JWT token
-  const userRole = req.user?.role; // Role from the token (e.g., 'parent' or 'scout')
+  // const userId = req.user?.id; // Extracted from the JWT token
+  // const userRole = req.user?.role; // Role from the token (e.g., 'parent' or 'scout')
   // Role from the token (e.g., 'parent' or 'scout')
   try {
-    if (userRole === 'parent') {
-      //commented for testing uncomment when done
-      // Validate parent-child relationship
-      const result = await db.query(
-        `SELECT * FROM "ParentScout"
-         WHERE "Parent_ID" = $1 AND "Scout_ID" = $2`,
-        [userId, id]
-      );
+    // if (userRole === 'Parent') {
+    //   //commented for testing uncomment when done
+    //   // Validate parent-child relationship
+    //   const result = await db.query(
+    //     `SELECT * FROM "ParentScout"
+    //      WHERE "Parent_ID" = $1 AND "Scout_ID" = $2`,
+    //     [userId, id]
+    //   );
 
-      if (result.rows.length === 0) {
-        return res.status(403).json({ error: 'Unauthorized access' });
-      }
-    }
+    //   if (result.rows.length === 0) {
+    //     return res.status(403).json({ error: 'Unauthorized access' });
+    //   }
+    // }
     const query = `SELECT U.* , S.* 
                     FROM "User" U 
                     INNER JOIN "Scout" S 
@@ -193,6 +193,26 @@ module.exports.getScoutAttendanceCurrentMonth = async (req, res) => {
     const params = [id];
     const result = await db.query(query, params);
     console.log(result.rows);
+    return res.json(result.rows);
+  } catch (error) {
+    console.log('Error executing query', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports.getScoutParents = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query = `
+          SELECT P.*
+          FROM "Parent" P
+          INNER JOIN "ParentScout" PS
+          ON P."User_ID" = PS."Parent_ID"
+          WHERE PS."Scout_ID" = $1
+          `;
+    const params = [id];
+    const result = await db.query(query, params);
+
     return res.json(result.rows);
   } catch (error) {
     console.log('Error executing query', error);

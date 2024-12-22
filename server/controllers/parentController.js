@@ -2,7 +2,7 @@ const db = require('../config/DBmanager');
 
 exports.getAllParents = async (req, res) => {
   try {
-    const query = `SELECT U.*
+    const query = `SELECT U.*, P.*
                     FROM "User" U
                     INNER JOIN "Parent" P
                     ON U."User_ID" = P."User_ID"`;
@@ -10,11 +10,9 @@ exports.getAllParents = async (req, res) => {
     const params = [];
     const result = await db.query(query, params);
 
-    console.log(result.rows);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'no parents found' });
-    }
+    // if (result.rows.length === 0) {
+    //   return res.status(404).json({ message: 'no parents found' });
+    // }
 
     return res.json(result.rows);
   } catch (error) {
@@ -24,11 +22,11 @@ exports.getAllParents = async (req, res) => {
 };
 
 exports.addParent = async (req, res) => {
-  const { User_ID, Gender } = req.body;
-  console.log(User_ID, Gender);
+  const { User_ID, gender } = req.body;
+  console.log(User_ID, gender);
   try {
     const query = `INSERT INTO "Parent" ("User_ID","gender") VALUES ($1,$2) RETURNING *`; // return inserted User
-    const params = [User_ID, Gender];
+    const params = [User_ID, gender];
     const result = await db.query(query, params);
     return res
       .status(201)
@@ -42,7 +40,7 @@ exports.addParent = async (req, res) => {
 exports.getParentById = async (req, res) => {
   const { id } = req.params;
   try {
-    const query = `SELECT U.*
+    const query = `SELECT U.*, P.*
                     FROM "User" U
                     INNER JOIN "Parent" P
                     ON U."User_ID" = P."User_ID"
@@ -92,9 +90,9 @@ module.exports.getScouts = async (req, res) => {
     const params = [id];
     const result = await db.query(query, params);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'no scouts found' });
-    }
+    // if (result.rows.length === 0) {
+    //   return res.status(404).json({ message: 'no scouts found' });
+    // }
 
     return res.json(result.rows);
   } catch (error) {
@@ -105,10 +103,10 @@ module.exports.getScouts = async (req, res) => {
 
 module.exports.addScout = async (req, res) => {
   const { id } = req.params;
-  const { scout_id, relationship } = req.body;
+  const { scout_id } = req.body;
   try {
-    const query = `INSERT INTO "ParentScout" ("Parent_ID", "Scout_ID", "Relationship") VALUES ($1, $2, $3) RETURNING *`;
-    const params = [id, scout_id, relationship];
+    const query = `INSERT INTO "ParentScout" ("Parent_ID", "Scout_ID" ) VALUES ($1, $2) RETURNING *`;
+    const params = [id, scout_id];
     const result = await db.query(query, params);
     return res
       .status(201)
@@ -136,10 +134,10 @@ module.exports.deleteChild = async (req, res) => {
 
 exports.updateParent = async (req, res) => {
   const { id } = req.params;
-  const { Gender } = req.body;
+  const { gender } = req.body;
   try {
-    const query = `UPDATE "Parent"  SET "Gender" = $1 WHERE "User_ID" = $2 RETURNING *`;
-    const params = [Gender];
+    const query = `UPDATE "Parent"  SET "gender" = $1 WHERE "User_ID" = $2 RETURNING *`;
+    const params = [gender, id];
     const result = await db.query(query, params);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Parent not found' });
