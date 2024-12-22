@@ -17,7 +17,9 @@ app.use(
       'http://127.0.0.1:5173',
       'http://localhost:5173',
     ], // Allowed origins
-    credentials: true, // Allow cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+    credentials: true, // Allow cookies and headers like Authorization
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
   })
 );
 app.options('*', cors()); // For handling preflight requests
