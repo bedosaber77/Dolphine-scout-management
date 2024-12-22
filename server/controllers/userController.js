@@ -24,9 +24,9 @@ exports.getUnverifiedUsers = async (req, res) => {
     const params = [];
     const result = await db.query(query, params);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'no users found' });
-    }
+    // if (result.rows.length === 0) {
+    //   return res.status(404).json({ message: 'no users found' });
+    // }
 
     return res.json(result.rows);
   } catch (error) {
