@@ -162,6 +162,7 @@ const CampsAdmin = () => {
       Season: '',
       Duration: '',
     });
+    setImages([]);
     setIsModalOpen(false);
     setIsEditMode(false);
   };
@@ -478,7 +479,19 @@ const CampsAdmin = () => {
               <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setImages([]);
+                    setEvent({
+                      Budget: '',
+                      Ename: '',
+                      Edate: '',
+                      Location_ID: '',
+                      ScoutLeader_ID: '',
+                      Season: '',
+                      Duration: '',
+                    });
+                  }}
                   className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-red-600"
                 >
                   إلغاء
