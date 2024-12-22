@@ -592,6 +592,7 @@ const GatheringsAdmin = () => {
                 <button
                   type="button"
                   onClick={() => {
+                    // empty the form state
                     setIsModalOpen(false);
                     setImages([]);
                     setEvent({
