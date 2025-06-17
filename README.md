@@ -14,6 +14,7 @@
 - [Database](#database)
 - [User Roles & Permissions](#user-roles--permissions)
 - [System Entities](#system-entities)
+- [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -56,7 +57,10 @@
 
 ```
 Dolphine-scout-management/
-├── .vscode/                 # VS Code configuration
+├── README.md
+├── LICENSE
+├── assets/
+|   ├── er-diagram.png
 ├── client/                  # React frontend application
 │   ├── src/
 │   │   ├── assets/         # Static assets (images, icons, etc.)
@@ -211,6 +215,14 @@ The system manages the following core entities:
 - **Media**: Photos, videos, and documentation
 - **Equipment**: Tools and materials for events
 - **Locations**: Geographical information for activities
+
+---
+
+## 🗃️ Entity Relationship Diagram
+
+The following ER diagram illustrates the main entities and their relationships within the Dolphine Scout Management System:
+
+![ER Diagram](./assets/er-diagram.png)
 
 ---
 
