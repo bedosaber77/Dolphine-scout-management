@@ -22,6 +22,7 @@
 
 ---
 
+<a name="features"></a>
 ## 🚀 Features
 
 ### Core Functionality
@@ -41,6 +42,7 @@
 
 ---
 
+<a name="tech-stack"></a>
 ## 🧱 Tech Stack
 
 | Layer     | Technologies                                       |
@@ -52,7 +54,7 @@
 | Dev Tools | Prettier, ESLint, VS Code, Nodemon                 |
 
 ---
-
+<a name="project-structure"></a>
 ## 📁 Project Structure
 
 ```
@@ -88,6 +90,7 @@ Dolphine-scout-management/
 
 ---
 
+<a name="installation"></a>
 ## 🧪 Installation
 
 ### Prerequisites
@@ -129,6 +132,7 @@ Dolphine-scout-management/
    ```
 ---
 
+<a name="usage"></a>
 ## 🎯 Usage
 
 ### Development Mode
@@ -162,6 +166,7 @@ Dolphine-scout-management/
    ```
 ---
 
+<a name="database"></a>
 ## 🗃️ Database
 
 - Uses **PostgreSQL**.  
@@ -170,6 +175,7 @@ Dolphine-scout-management/
 
 ---
 
+<a name="user-roles--permissions"></a>
 ## 👥 User Roles & Permissions
 
 ### 🔧 Admin
@@ -202,6 +208,7 @@ Dolphine-scout-management/
 
 ---
 
+<a name="system-entities"></a>
 ## 🏗️ System Entities
 
 The system manages the following core entities:
@@ -218,6 +225,7 @@ The system manages the following core entities:
 
 ---
 
+<a name="entity-relationship-diagram"></a>
 ## 🗃️ Entity Relationship Diagram
 
 The following ER diagram illustrates the main entities and their relationships within the Dolphine Scout Management System:
@@ -226,6 +234,7 @@ The following ER diagram illustrates the main entities and their relationships w
 
 ---
 
+<a name="roadmap"></a>
 ## 🛣️ Roadmap
 
 - [x] User Role Management  
@@ -238,6 +247,7 @@ The following ER diagram illustrates the main entities and their relationships w
 
 ---
 
+<a name="contributing"></a>
 ## 🤝 Contributing
 
 We welcome contributions to improve the Scout Management System! Please follow these steps:
@@ -257,12 +267,14 @@ We welcome contributions to improve the Scout Management System! Please follow t
 
 ---
 
+<a name="license"></a>
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
+<a name="support"></a>
 ## 📞 Support
 
 For support, questions, or suggestions, please:
